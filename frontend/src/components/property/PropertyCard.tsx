@@ -110,8 +110,8 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
 
   return (
     <article
-      className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-surface transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${
-        featured ? "border-primary/40 ring-1 ring-primary/20" : "border-border"
+      className={`group relative flex flex-col overflow-hidden rounded-3xl border bg-surface hover-lift ${
+        featured ? "border-primary/60 ring-1 ring-primary/30" : "border-border/80"
       }`}
     >
       {/* Featured / Aspect Ratio Image Container */}
@@ -120,17 +120,17 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
           src={property.featuredImage}
           alt={property.title}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
         {/* Top Badges */}
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
-          <span className="inline-flex items-center rounded-pill bg-foreground/85 px-2.5 py-1 text-xs font-semibold text-background backdrop-blur-sm">
+          <span className="inline-flex items-center rounded-full bg-foreground/85 px-3 py-1 text-xs font-semibold text-background backdrop-blur-sm">
             {property.propertyType}
           </span>
           {property.verifications.length > 0 && (
             <span
-              className="inline-flex items-center gap-1 rounded-pill bg-surface/90 px-2.5 py-1 text-xs font-medium text-foreground backdrop-blur-sm shadow-xs"
+              className="inline-flex items-center gap-1 rounded-full bg-surface/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur-sm shadow-xs"
               title="Platform Simulated Verification"
             >
               <ShieldCheck className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
@@ -170,13 +170,13 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
         </div>
 
         {/* Photo Count Pill */}
-        <div className="absolute bottom-3 right-3 rounded-pill bg-foreground/75 px-2 py-0.5 text-[11px] font-medium text-background backdrop-blur-sm">
+        <div className="absolute bottom-3 right-3 rounded-full bg-foreground/75 px-2.5 py-0.5 text-[11px] font-medium text-background backdrop-blur-sm">
           {property.images.length} {isBn ? "ছবি" : "Photos"}
         </div>
 
         {/* Tenant Matching Score Badge */}
         {user?.role === "tenant" && match.hasTenantPreferences && (
-          <div className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-pill bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground shadow-sm">
+          <div className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-sm">
             <Percent className="h-3 w-3" aria-hidden="true" />
             <span>
               {match.overallPercentage}% {isBn ? "ম্যাচ" : "Match"}
@@ -186,7 +186,7 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
       </div>
 
       {/* Card Content */}
-      <div className="flex flex-1 flex-col p-4 md:p-5">
+      <div className="flex flex-1 flex-col p-5">
         {/* Rent & Rental Type */}
         <div className="flex items-baseline justify-between gap-2">
           <div>
@@ -195,7 +195,7 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
             </span>
             <span className="ml-1 text-xs text-muted-foreground">/{isBn ? "মাস" : "month"}</span>
           </div>
-          <span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
+          <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">
             {property.rentalType}
           </span>
         </div>
@@ -244,9 +244,9 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
           <Link
             to="/properties/$propertyId"
             params={{ propertyId: property.id }}
-            className="inline-flex h-10 w-full items-center justify-center rounded-lg bg-secondary text-sm font-semibold text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-2 focus-visible:outline-primary"
+            className="inline-flex h-10 w-full items-center justify-center rounded-full bg-secondary text-xs font-bold text-foreground transition-all hover:bg-primary hover:text-primary-foreground focus-visible:outline-2 focus-visible:outline-primary"
           >
-            {isBn ? "বিস্তারিত দেখুন" : "View Details"}
+            {isBn ? "বিস্তারিত দেখুন ↗" : "View Details ↗"}
           </Link>
         </div>
       </div>

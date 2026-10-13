@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { forwardRef, useId, type ComponentProps } from "react";
 import { AlertCircle } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { MotionReveal } from "@/components/motion/MotionReveal";
 
 export function AuthCard({
   title,
@@ -18,11 +19,13 @@ export function AuthCard({
     <AppShell>
       <div className="bg-hero py-12 md:py-20">
         <div className="mx-auto w-full max-w-md px-5">
-          <div className="rounded-2xl border border-border bg-surface p-6 shadow-md md:p-8">
-            <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-            {subtitle && <p className="mt-2 text-muted-foreground">{subtitle}</p>}
-            <div className="mt-6">{children}</div>
-          </div>
+          <MotionReveal variant="scaleIn" duration={600}>
+            <div className="rounded-3xl border border-border/80 bg-surface/95 p-6 shadow-xl backdrop-blur-md md:p-8">
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
+              {subtitle && <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>}
+              <div className="mt-6">{children}</div>
+            </div>
+          </MotionReveal>
           {footer && <div className="mt-5 text-center text-sm text-muted-foreground">{footer}</div>}
         </div>
       </div>
@@ -45,7 +48,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   const hintId = `${id}-hint`;
   return (
     <div className="grid gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium">
+      <label htmlFor={id} className="text-xs font-semibold text-foreground">
         {label}
       </label>
       <input
@@ -55,11 +58,11 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
         aria-describedby={
           [error ? errId : "", hint ? hintId : ""].filter(Boolean).join(" ") || undefined
         }
-        className="h-12 w-full rounded-lg border border-input bg-surface px-4 text-base text-foreground placeholder:text-muted-foreground aria-[invalid=true]:border-destructive"
+        className="h-11 w-full rounded-full border border-input bg-surface px-4 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-ring aria-[invalid=true]:border-destructive"
         {...rest}
       />
       {hint && !error && (
-        <p id={hintId} className="text-sm text-muted-foreground">
+        <p id={hintId} className="text-xs text-muted-foreground">
           {hint}
         </p>
       )}
@@ -67,9 +70,9 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
         <p
           id={errId}
           role="alert"
-          className="flex items-center gap-1.5 text-sm font-medium text-destructive"
+          className="flex items-center gap-1.5 text-xs font-medium text-destructive"
         >
-          <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" /> {error}
+          <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> {error}
         </p>
       )}
     </div>
@@ -80,7 +83,7 @@ export function FormAlert({ children }: { children: ReactNode }) {
   return (
     <div
       role="alert"
-      className="mb-4 flex items-start gap-2 rounded-lg border border-destructive bg-surface p-3 text-sm font-medium text-destructive"
+      className="mb-4 flex items-start gap-2 rounded-2xl border border-destructive bg-surface p-3.5 text-xs font-medium text-destructive"
     >
       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" /> <span>{children}</span>
     </div>
@@ -92,7 +95,7 @@ export function SubmitButton({ loading, children }: { loading?: boolean; childre
     <button
       type="submit"
       disabled={loading}
-      className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-primary px-6 font-semibold text-primary-foreground transition-opacity hover:opacity-85 disabled:opacity-60"
+      className="inline-flex h-11 w-full items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-90 disabled:opacity-60"
     >
       {children}
     </button>

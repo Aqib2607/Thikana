@@ -38,9 +38,10 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
       {/* Main Large Image Container */}
       <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-secondary md:aspect-[16/9]">
         <img
+          key={activeIndex}
           src={galleryImages[activeIndex]}
           alt={`${title} - Photo ${activeIndex + 1}`}
-          className="h-full w-full object-cover transition-opacity duration-200"
+          className="h-full w-full object-cover animate-fade-in transition-transform duration-500 hover:scale-105"
         />
 
         {/* Featured Image Badge (First Image is Featured per specification) */}
