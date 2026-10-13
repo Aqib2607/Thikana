@@ -91,7 +91,7 @@ export function TenantReviewsPage() {
             {reviews.map((rev) => {
               const prop = propertiesMap[rev.propertyId];
               const propTitle =
-                isBn && prop?.titleBn ? prop.titleBn : prop?.title || rev.propertyId;
+                isBn && prop?.banglaTitle ? prop.banglaTitle : prop?.title || rev.propertyId;
 
               return (
                 <div

@@ -45,8 +45,9 @@ function LandlordMessagesPage() {
     try {
       const data = await mockLandlordApi.getConversations(user.id);
       setConversations(data);
-      if (data.length > 0 && !activeConvId) {
-        setActiveConvId(data[0].id);
+      const first = data[0];
+      if (first && !activeConvId) {
+        setActiveConvId(first.id);
       }
     } finally {
       setLoading(false);

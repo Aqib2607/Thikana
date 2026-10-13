@@ -159,7 +159,17 @@
     "messagesTitle": "বার্তা ও ইনবক্স",
     "visitedBadge": "যাচাইকৃত পরিদর্শক (Visited)",
     "submitReview": "রিভিউ জমা দিন",
-    "reportListing": "লিস্টিং রিপোর্ট করুন"
+    "reportListing": "লিস্টিং রিপোর্ট করুন",
+    "reviewsSubtitle": "আপনার রেটিং এবং পরিদর্শনের অভিজ্ঞতা দেখুন",
+    "noReviewsTitle": "এখনও কোনো রিভিউ দেওয়া হয়নি",
+    "noReviewsDesc": "একটি প্রপার্টি পরিদর্শন শেষ করে খুলনা শিক্ষার্থী সম্প্রদায়ের সাথে আপনার সৎ মতামত শেয়ার করুন।",
+    "exploreProperties": "প্রপার্টি খুঁজুন",
+    "reviewsCount": "{{count}}টি রিভিউ দেখানো হচ্ছে",
+    "accuracyRating": "তথ্য নির্ভুলতা",
+    "landlordRating": "বাড়িওয়ালার আচরণ",
+    "locationRating": "লোকেশন সুবিধা",
+    "experienceRating": "সামগ্রিক অভিজ্ঞতা",
+    "viewPropertyListing": "প্রপার্টি দেখুন"
   },
   "landlord": {
     "myListings": "আমার লিস্টিং",
@@ -213,18 +223,6 @@
     "empty": "বর্তমানে কোনো বিজ্ঞপ্তি নেই।",
     "view": "দেখুন",
     "unreadDot": "অপঠিত"
-  },
-  "tenant": {
-    "reviewsSubtitle": "আপনার রেটিং এবং পরিদর্শনের অভিজ্ঞতা দেখুন",
-    "noReviewsTitle": "এখনও কোনো রিভিউ দেওয়া হয়নি",
-    "noReviewsDesc": "একটি প্রপার্টি পরিদর্শন শেষ করে খুলনা শিক্ষার্থী সম্প্রদায়ের সাথে আপনার সৎ মতামত শেয়ার করুন।",
-    "exploreProperties": "প্রপার্টি খুঁজুন",
-    "reviewsCount": "{{count}}টি রিভিউ দেখানো হচ্ছে",
-    "accuracyRating": "তথ্য নির্ভুলতা",
-    "landlordRating": "বাড়িওয়ালার আচরণ",
-    "locationRating": "লোকেশন সুবিধা",
-    "experienceRating": "সামগ্রিক অভিজ্ঞতা",
-    "viewPropertyListing": "প্রপার্টি দেখুন"
   },
   "common": {
     "errorTitle": "একটি সমস্যা দেখা দিয়েছে",

@@ -159,7 +159,17 @@
     "messagesTitle": "Messages",
     "visitedBadge": "Verified Visitor (Visited)",
     "submitReview": "Submit Review",
-    "reportListing": "Report Listing"
+    "reportListing": "Report Listing",
+    "reviewsSubtitle": "Manage your submitted property ratings and verified experiences",
+    "noReviewsTitle": "No reviews submitted yet",
+    "noReviewsDesc": "After completing a property visit, share your honest feedback with the Khulna student community.",
+    "exploreProperties": "Explore Properties",
+    "reviewsCount": "Showing {{count}} reviews",
+    "accuracyRating": "Accuracy",
+    "landlordRating": "Landlord",
+    "locationRating": "Location",
+    "experienceRating": "Experience",
+    "viewPropertyListing": "View Property"
   },
   "landlord": {
     "myListings": "My Listings",
@@ -213,18 +223,6 @@
     "empty": "No notifications right now.",
     "view": "View",
     "unreadDot": "Unread"
-  },
-  "tenant": {
-    "reviewsSubtitle": "Manage your submitted property ratings and verified experiences",
-    "noReviewsTitle": "No reviews submitted yet",
-    "noReviewsDesc": "After completing a property visit, share your honest feedback with the Khulna student community.",
-    "exploreProperties": "Explore Properties",
-    "reviewsCount": "Showing {{count}} reviews",
-    "accuracyRating": "Accuracy",
-    "landlordRating": "Landlord",
-    "locationRating": "Location",
-    "experienceRating": "Experience",
-    "viewPropertyListing": "View Property"
   },
   "common": {
     "errorTitle": "Something went wrong",
