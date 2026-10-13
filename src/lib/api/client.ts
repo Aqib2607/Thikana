@@ -9,5 +9,5 @@ export type VisitStatus = "pending" | "accepted" | "rejected" | "cancelled" | "c
 
 export interface ApiError { status: number; message: string; fieldErrors?: Record<string, string[]> }
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL as string | undefined;
+export const API_BASE_URL = import.meta.env["VITE_API_BASE_URL"] as string | undefined;
 export const USE_MOCK = !API_BASE_URL;
