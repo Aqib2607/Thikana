@@ -35,6 +35,7 @@ import { Route as TenantDashboardRouteImport } from './routes/tenant/dashboard'
 import { Route as TenantFavoritesRouteImport } from './routes/tenant/favorites'
 import { Route as TenantMessagesRouteImport } from './routes/tenant/messages'
 import { Route as TenantPreferencesRouteImport } from './routes/tenant/preferences'
+import { Route as TenantReviewsRouteImport } from './routes/tenant/reviews'
 import { Route as TenantVisitsRouteImport } from './routes/tenant/visits'
 import { Route as AdminPropertiesPendingRouteImport } from './routes/admin/properties.pending'
 import { Route as LandlordPropertiesIndexRouteImport } from './routes/landlord/properties/index'
@@ -171,6 +172,11 @@ const TenantPreferencesRoute = TenantPreferencesRouteImport.update({
   path: '/tenant/preferences',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TenantReviewsRoute = TenantReviewsRouteImport.update({
+  id: '/tenant/reviews',
+  path: '/tenant/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TenantVisitsRoute = TenantVisitsRouteImport.update({
   id: '/tenant/visits',
   path: '/tenant/visits',
@@ -224,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/tenant/favorites': typeof TenantFavoritesRoute
   '/tenant/messages': typeof TenantMessagesRoute
   '/tenant/preferences': typeof TenantPreferencesRoute
+  '/tenant/reviews': typeof TenantReviewsRoute
   '/tenant/visits': typeof TenantVisitsRoute
   '/properties/': typeof PropertiesIndexRoute
   '/admin/properties/pending': typeof AdminPropertiesPendingRoute
@@ -257,6 +264,7 @@ export interface FileRoutesByTo {
   '/tenant/favorites': typeof TenantFavoritesRoute
   '/tenant/messages': typeof TenantMessagesRoute
   '/tenant/preferences': typeof TenantPreferencesRoute
+  '/tenant/reviews': typeof TenantReviewsRoute
   '/tenant/visits': typeof TenantVisitsRoute
   '/properties': typeof PropertiesIndexRoute
   '/admin/properties/pending': typeof AdminPropertiesPendingRoute
@@ -291,6 +299,7 @@ export interface FileRoutesById {
   '/tenant/favorites': typeof TenantFavoritesRoute
   '/tenant/messages': typeof TenantMessagesRoute
   '/tenant/preferences': typeof TenantPreferencesRoute
+  '/tenant/reviews': typeof TenantReviewsRoute
   '/tenant/visits': typeof TenantVisitsRoute
   '/properties/': typeof PropertiesIndexRoute
   '/admin/properties/pending': typeof AdminPropertiesPendingRoute
@@ -326,6 +335,7 @@ export interface FileRouteTypes {
     | '/tenant/favorites'
     | '/tenant/messages'
     | '/tenant/preferences'
+    | '/tenant/reviews'
     | '/tenant/visits'
     | '/properties/'
     | '/admin/properties/pending'
@@ -359,6 +369,7 @@ export interface FileRouteTypes {
     | '/tenant/favorites'
     | '/tenant/messages'
     | '/tenant/preferences'
+    | '/tenant/reviews'
     | '/tenant/visits'
     | '/properties'
     | '/admin/properties/pending'
@@ -392,6 +403,7 @@ export interface FileRouteTypes {
     | '/tenant/favorites'
     | '/tenant/messages'
     | '/tenant/preferences'
+    | '/tenant/reviews'
     | '/tenant/visits'
     | '/properties/'
     | '/admin/properties/pending'
@@ -426,6 +438,7 @@ export interface RootRouteChildren {
   TenantFavoritesRoute: typeof TenantFavoritesRoute
   TenantMessagesRoute: typeof TenantMessagesRoute
   TenantPreferencesRoute: typeof TenantPreferencesRoute
+  TenantReviewsRoute: typeof TenantReviewsRoute
   TenantVisitsRoute: typeof TenantVisitsRoute
   PropertiesIndexRoute: typeof PropertiesIndexRoute
   LandlordPropertiesNewRoute: typeof LandlordPropertiesNewRoute
@@ -617,6 +630,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantPreferencesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tenant/reviews': {
+      id: '/tenant/reviews'
+      path: '/tenant/reviews'
+      fullPath: '/tenant/reviews'
+      preLoaderRoute: typeof TenantReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tenant/visits': {
       id: '/tenant/visits'
       path: '/tenant/visits'
@@ -693,6 +713,7 @@ const rootRouteChildren: RootRouteChildren = {
   TenantFavoritesRoute: TenantFavoritesRoute,
   TenantMessagesRoute: TenantMessagesRoute,
   TenantPreferencesRoute: TenantPreferencesRoute,
+  TenantReviewsRoute: TenantReviewsRoute,
   TenantVisitsRoute: TenantVisitsRoute,
   PropertiesIndexRoute: PropertiesIndexRoute,
   LandlordPropertiesNewRoute: LandlordPropertiesNewRoute,

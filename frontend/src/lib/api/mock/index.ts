@@ -5,3 +5,4 @@ export * from "./properties";
 export * from "./tenant";
 export * from "./landlord";
 export * from "./admin";
+export * from "./notifications";

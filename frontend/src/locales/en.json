@@ -144,7 +144,8 @@
     "filters": "Filters",
     "reset": "Reset",
     "verified": "Verified",
-    "match": "Match"
+    "match": "Match",
+    "visitedBadge": "Visited / পরিদর্শিত"
   },
   "footer": {
     "note": "Academic demonstration project. Verification badges are platform-level, not government."
@@ -202,6 +203,31 @@
     "details": "Details",
     "areaDemand": "Area Demand & Inquiries",
     "updateCommunity": "Update Community Information"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "bellLabel": "Notifications",
+    "unread": "new",
+    "markRead": "Mark read",
+    "markAllRead": "Mark all read",
+    "empty": "No notifications right now.",
+    "view": "View",
+    "unreadDot": "Unread"
+  },
+  "tenant": {
+    "reviewsSubtitle": "Manage your submitted property ratings and verified experiences",
+    "noReviewsTitle": "No reviews submitted yet",
+    "noReviewsDesc": "After completing a property visit, share your honest feedback with the Khulna student community.",
+    "exploreProperties": "Explore Properties",
+    "reviewsCount": "Showing {{count}} reviews",
+    "accuracyRating": "Accuracy",
+    "landlordRating": "Landlord",
+    "locationRating": "Location",
+    "experienceRating": "Experience",
+    "viewPropertyListing": "View Property"
+  },
+  "common": {
+    "errorTitle": "Something went wrong",
+    "retry": "Try Again"
   }
 }
-

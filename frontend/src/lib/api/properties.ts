@@ -162,3 +162,5 @@ export interface PropertyListResponse {
   totalPages: number;
   areas: string[];
 }
+
+export type Property = PropertyItem;
