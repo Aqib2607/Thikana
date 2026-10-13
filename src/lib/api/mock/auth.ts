@@ -1,6 +1,7 @@
 // Temporary mock adapter. Delete once real API contracts are wired in.
 // Demo only: data lives in localStorage; never store real passwords here.
-import { delay, type ApiError, type Role } from "../client";
+import type { ApiError, Role } from "../client";
+import { delay } from "./index";
 
 export interface User { id: string; name: string; email: string; phone: string; role: Role; verified: boolean }
 interface StoredUser extends User { password: string }
@@ -17,7 +18,7 @@ const seed: StoredUser[] = [
 ];
 
 const fail = (status: number, message: string, fieldErrors?: Record<string, string[]>): never => {
-  const e: ApiError = { status, message, fieldErrors };
+  const e: ApiError = fieldErrors ? { status, message, fieldErrors } : { status, message };
   throw e;
 };
 
