@@ -23,11 +23,17 @@ import {
   ArrowLeft,
   Share2,
   Sparkles,
+  Flag,
+  Star,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { ImageGallery } from "@/components/property/ImageGallery";
 import { CommunityInfoCard } from "@/components/property/CommunityInfoCard";
 import { MatchBreakdownCard } from "@/components/property/MatchBreakdownCard";
+import { VisitRequestModal } from "@/components/tenant/VisitRequestModal";
+import { ReviewFormModal } from "@/components/tenant/ReviewFormModal";
+import { ReportPropertyModal } from "@/components/tenant/ReportPropertyModal";
+import { mockTenantApi } from "@/lib/api/mock";
 import { mockProperties, calculateMatchBreakdown } from "@/lib/api/mock/properties";
 import { useAuth } from "@/lib/auth";
 
@@ -52,9 +58,11 @@ function PropertyDetailsPage() {
   const isBn = i18n.language === "bn";
 
   const [visitModalOpen, setVisitModalOpen] = useState(false);
-  const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
   const [visitRequested, setVisitRequested] = useState(false);
   const [contactRequested, setContactRequested] = useState(false);
+  const [contactSubmitting, setContactSubmitting] = useState(false);
 
   const {
     data: property,
@@ -471,7 +479,7 @@ function PropertyDetailsPage() {
                         );
                         return;
                       }
-                      setVisitRequested(true);
+                      setVisitModalOpen(true);
                     }}
                     className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary font-semibold text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
                   >
@@ -488,7 +496,8 @@ function PropertyDetailsPage() {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => {
+                    disabled={contactSubmitting}
+                    onClick={async () => {
                       if (!user) {
                         alert(
                           isBn
@@ -497,16 +506,65 @@ function PropertyDetailsPage() {
                         );
                         return;
                       }
-                      setContactRequested(true);
+                      setContactSubmitting(true);
+                      try {
+                        await mockTenantApi.sendContactRequest({
+                          propertyId: property.id,
+                          message: `Hello ${property.landlord.name}, I am interested in renting this listing.`,
+                        });
+                        setContactRequested(true);
+                      } finally {
+                        setContactSubmitting(false);
+                      }
                     }}
-                    className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface text-xs font-semibold text-foreground transition-colors hover:bg-secondary"
+                    className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface text-xs font-semibold text-foreground transition-colors hover:bg-secondary disabled:opacity-50"
                   >
                     <MessageSquare className="h-4 w-4" aria-hidden="true" />
                     <span>
-                      {isBn ? "যোগাযোগের আবেদন (Contact Request)" : "Send Contact Request"}
+                      {contactSubmitting
+                        ? isBn
+                          ? "পাঠানো হচ্ছে..."
+                          : "Sending..."
+                        : isBn
+                          ? "যোগাযোগের আবেদন (Contact Request)"
+                          : "Send Contact Request"}
                     </span>
                   </button>
                 )}
+
+                <div className="flex gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!user) {
+                        alert(isBn ? "রিভিউ দিতে লগইন করুন।" : "Please log in to write a review.");
+                        return;
+                      }
+                      setReviewModalOpen(true);
+                    }}
+                    className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface text-[11px] font-semibold text-foreground hover:bg-secondary"
+                  >
+                    <Star className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
+                    <span>{isBn ? "রিভিউ লিখুন" : "Write Review"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!user) {
+                        alert(
+                          isBn ? "রিপোর্ট করতে লগইন করুন।" : "Please log in to report listing.",
+                        );
+                        return;
+                      }
+                      setReportModalOpen(true);
+                    }}
+                    className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface px-3 text-[11px] font-semibold text-destructive hover:bg-destructive/10"
+                  >
+                    <Flag className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>{isBn ? "রিপোর্ট" : "Report"}</span>
+                  </button>
+                </div>
               </div>
 
               {/* Landlord Profile & Privacy Setting */}
@@ -562,6 +620,27 @@ function PropertyDetailsPage() {
           </div>
         </div>
       </div>
+
+      {property && (
+        <>
+          <VisitRequestModal
+            property={property}
+            isOpen={visitModalOpen}
+            onClose={() => setVisitModalOpen(false)}
+            onSuccess={() => setVisitRequested(true)}
+          />
+          <ReviewFormModal
+            property={property}
+            isOpen={reviewModalOpen}
+            onClose={() => setReviewModalOpen(false)}
+          />
+          <ReportPropertyModal
+            property={property}
+            isOpen={reportModalOpen}
+            onClose={() => setReportModalOpen(false)}
+          />
+        </>
+      )}
     </AppShell>
   );
 }

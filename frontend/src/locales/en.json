@@ -147,5 +147,16 @@
   },
   "footer": {
     "note": "Academic demonstration project. Verification badges are platform-level, not government."
+  },
+  "tenant": {
+    "preferencesTitle": "Rental Preferences",
+    "comparisonTitle": "Property Comparison",
+    "comparisonMaxNotice": "You can compare up to 3 properties at a time.",
+    "favoritesTitle": "Saved Properties",
+    "visitsTitle": "Scheduled Visits",
+    "messagesTitle": "Messages",
+    "visitedBadge": "Verified Visitor (Visited)",
+    "submitReview": "Submit Review",
+    "reportListing": "Report Listing"
   }
 }
