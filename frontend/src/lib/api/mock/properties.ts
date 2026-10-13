@@ -811,8 +811,15 @@ export const mockProperties = {
     return MOCK_PROPERTIES.find((p) => p.id === id) || null;
   },
 
+  async getAll(): Promise<PropertyItem[]> {
+    await new Promise((r) => setTimeout(r, 40));
+    return [...MOCK_PROPERTIES];
+  },
+
   async getFeatured(): Promise<PropertyItem[]> {
     await new Promise((r) => setTimeout(r, 40));
     return MOCK_PROPERTIES.slice(0, 4);
   },
 };
+
+export const mockPropertyApi = mockProperties;

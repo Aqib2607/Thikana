@@ -6,6 +6,7 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 
 import { useAuth, ROLE_HOME } from "@/lib/auth";
 import { User as UserIcon, LogOut, LayoutDashboard } from "lucide-react";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 export function SiteHeader() {
   const { t } = useTranslation();
@@ -33,6 +34,7 @@ export function SiteHeader() {
                   {t(`roles.${user.role}`)}
                 </span>
               </Link>
+              <NotificationBell />
               <div className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground">
                 <UserIcon className="h-3.5 w-3.5" aria-hidden="true" />
                 <span className="max-w-[120px] truncate font-medium text-foreground">
