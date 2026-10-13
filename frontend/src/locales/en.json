@@ -130,6 +130,21 @@
     "backHome": "Back to Home",
     "goToMyDashboard": "Go to My Dashboard"
   },
+  "properties": {
+    "title": "Properties in Khulna",
+    "viewDetails": "View Details",
+    "month": "month",
+    "advance": "Advance Deposit",
+    "bedrooms": "Bedrooms",
+    "bathrooms": "Bathrooms",
+    "size": "sqft",
+    "scheduleVisit": "Schedule a Visit",
+    "contactLandlord": "Send Contact Request",
+    "filters": "Filters",
+    "reset": "Reset",
+    "verified": "Verified",
+    "match": "Match"
+  },
   "footer": {
     "note": "Academic demonstration project. Verification badges are platform-level, not government."
   }

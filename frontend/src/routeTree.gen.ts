@@ -17,6 +17,8 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as LandlordDashboardRouteImport } from './routes/landlord/dashboard'
+import { Route as PropertiesIndexRouteImport } from './routes/properties/index'
+import { Route as PropertiesPropertyIdRouteImport } from './routes/properties/$propertyId'
 import { Route as TenantDashboardRouteImport } from './routes/tenant/dashboard'
 
 const IndexRoute = IndexRouteImport.update({
@@ -59,6 +61,16 @@ const LandlordDashboardRoute = LandlordDashboardRouteImport.update({
   path: '/landlord/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PropertiesIndexRoute = PropertiesIndexRouteImport.update({
+  id: '/properties/',
+  path: '/properties/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PropertiesPropertyIdRoute = PropertiesPropertyIdRouteImport.update({
+  id: '/properties/$propertyId',
+  path: '/properties/$propertyId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TenantDashboardRoute = TenantDashboardRouteImport.update({
   id: '/tenant/dashboard',
   path: '/tenant/dashboard',
@@ -74,7 +86,9 @@ export interface FileRoutesByFullPath {
   '/verify-email': typeof VerifyEmailRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/landlord/dashboard': typeof LandlordDashboardRoute
+  '/properties/$propertyId': typeof PropertiesPropertyIdRoute
   '/tenant/dashboard': typeof TenantDashboardRoute
+  '/properties/': typeof PropertiesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -85,7 +99,9 @@ export interface FileRoutesByTo {
   '/verify-email': typeof VerifyEmailRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/landlord/dashboard': typeof LandlordDashboardRoute
+  '/properties/$propertyId': typeof PropertiesPropertyIdRoute
   '/tenant/dashboard': typeof TenantDashboardRoute
+  '/properties': typeof PropertiesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -97,7 +113,9 @@ export interface FileRoutesById {
   '/verify-email': typeof VerifyEmailRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/landlord/dashboard': typeof LandlordDashboardRoute
+  '/properties/$propertyId': typeof PropertiesPropertyIdRoute
   '/tenant/dashboard': typeof TenantDashboardRoute
+  '/properties/': typeof PropertiesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -110,7 +128,9 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/admin/dashboard'
     | '/landlord/dashboard'
+    | '/properties/$propertyId'
     | '/tenant/dashboard'
+    | '/properties/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -121,7 +141,9 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/admin/dashboard'
     | '/landlord/dashboard'
+    | '/properties/$propertyId'
     | '/tenant/dashboard'
+    | '/properties'
   id:
     | '__root__'
     | '/'
@@ -132,7 +154,9 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/admin/dashboard'
     | '/landlord/dashboard'
+    | '/properties/$propertyId'
     | '/tenant/dashboard'
+    | '/properties/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -144,7 +168,9 @@ export interface RootRouteChildren {
   VerifyEmailRoute: typeof VerifyEmailRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   LandlordDashboardRoute: typeof LandlordDashboardRoute
+  PropertiesPropertyIdRoute: typeof PropertiesPropertyIdRoute
   TenantDashboardRoute: typeof TenantDashboardRoute
+  PropertiesIndexRoute: typeof PropertiesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -205,6 +231,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LandlordDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/properties/': {
+      id: '/properties/'
+      path: '/properties'
+      fullPath: '/properties/'
+      preLoaderRoute: typeof PropertiesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/properties/$propertyId': {
+      id: '/properties/$propertyId'
+      path: '/properties/$propertyId'
+      fullPath: '/properties/$propertyId'
+      preLoaderRoute: typeof PropertiesPropertyIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tenant/dashboard': {
       id: '/tenant/dashboard'
       path: '/tenant/dashboard'
@@ -224,7 +264,9 @@ const rootRouteChildren: RootRouteChildren = {
   VerifyEmailRoute: VerifyEmailRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   LandlordDashboardRoute: LandlordDashboardRoute,
+  PropertiesPropertyIdRoute: PropertiesPropertyIdRoute,
   TenantDashboardRoute: TenantDashboardRoute,
+  PropertiesIndexRoute: PropertiesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
