@@ -122,6 +122,7 @@
     "userManagement": "User Management",
     "verifications": "Simulated Verifications",
     "reportsModeration": "Reports & Moderation",
+    "reviewsModeration": "Reviews Moderation",
     "communityManagement": "Community Information",
     "analytics": "Platform Analytics",
     "auditLogs": "Audit Logs",
@@ -176,6 +177,31 @@
     "accept": "Accept",
     "reject": "Reject",
     "markCompleted": "Mark as Completed"
+  },
+  "admin": {
+    "portalTitle": "Platform Administration",
+    "disclaimerBanner": "Simulated Platform Verifications Only — Not Official Government Certification",
+    "disclaimerDesc": "All verification badges and checks on Thikana are platform-level simulations intended for academic demonstration and tenant trust indicators. They do not constitute official municipal or government authentication.",
+    "approveListing": "Approve Listing",
+    "rejectListing": "Reject Listing",
+    "rejectionReason": "Rejection Reason",
+    "suspendUser": "Suspend Account",
+    "activateUser": "Activate Account",
+    "active": "Active",
+    "suspended": "Suspended",
+    "resolveReport": "Resolve Report",
+    "dismissReport": "Dismiss Report",
+    "resolutionNote": "Resolution Note",
+    "deleteReview": "Remove Review",
+    "visitedBadge": "Verified Visitor",
+    "auditLog": "Audit Log",
+    "actor": "Actor",
+    "action": "Action",
+    "target": "Target",
+    "timestamp": "Timestamp",
+    "details": "Details",
+    "areaDemand": "Area Demand & Inquiries",
+    "updateCommunity": "Update Community Information"
   }
 }
 

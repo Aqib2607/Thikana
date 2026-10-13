@@ -221,6 +221,12 @@ export function RoleLayout({
       icon: AlertTriangle,
     },
     {
+      key: "reviews",
+      href: "/admin/reviews",
+      label: t("dashboard.reviewsModeration"),
+      icon: Star,
+    },
+    {
       key: "community",
       href: "/admin/community",
       label: t("dashboard.communityManagement"),
