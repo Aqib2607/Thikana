@@ -158,5 +158,24 @@
     "visitedBadge": "Verified Visitor (Visited)",
     "submitReview": "Submit Review",
     "reportListing": "Report Listing"
+  },
+  "landlord": {
+    "myListings": "My Listings",
+    "createListing": "Add New Listing",
+    "editListing": "Edit Listing",
+    "approvalState": "Approval Status",
+    "pendingApproval": "Pending Approval",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "contactVisibility": "Contact Visibility",
+    "contactVisibilityNotice": "Choose whether prospective tenants can see your direct contact details.",
+    "fiveImagesMax": "Maximum 5 photos allowed. First photo is featured.",
+    "featuredPhoto": "Featured Photo",
+    "inquiries": "Inbound Inquiries",
+    "visits": "Visit Requests",
+    "accept": "Accept",
+    "reject": "Reject",
+    "markCompleted": "Mark as Completed"
   }
 }
+
