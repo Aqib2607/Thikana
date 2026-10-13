@@ -16,7 +16,10 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
+import { Route as LandlordContactRequestsRouteImport } from './routes/landlord/contact-requests'
 import { Route as LandlordDashboardRouteImport } from './routes/landlord/dashboard'
+import { Route as LandlordMessagesRouteImport } from './routes/landlord/messages'
+import { Route as LandlordVisitsRouteImport } from './routes/landlord/visits'
 import { Route as PropertiesIndexRouteImport } from './routes/properties/index'
 import { Route as PropertiesPropertyIdRouteImport } from './routes/properties/$propertyId'
 import { Route as TenantComparisonRouteImport } from './routes/tenant/comparison'
@@ -25,6 +28,9 @@ import { Route as TenantFavoritesRouteImport } from './routes/tenant/favorites'
 import { Route as TenantMessagesRouteImport } from './routes/tenant/messages'
 import { Route as TenantPreferencesRouteImport } from './routes/tenant/preferences'
 import { Route as TenantVisitsRouteImport } from './routes/tenant/visits'
+import { Route as LandlordPropertiesIndexRouteImport } from './routes/landlord/properties/index'
+import { Route as LandlordPropertiesNewRouteImport } from './routes/landlord/properties/new'
+import { Route as LandlordPropertiesPropertyIdEditRouteImport } from './routes/landlord/properties/$propertyId.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -61,9 +67,24 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/admin/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LandlordContactRequestsRoute = LandlordContactRequestsRouteImport.update({
+  id: '/landlord/contact-requests',
+  path: '/landlord/contact-requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LandlordDashboardRoute = LandlordDashboardRouteImport.update({
   id: '/landlord/dashboard',
   path: '/landlord/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandlordMessagesRoute = LandlordMessagesRouteImport.update({
+  id: '/landlord/messages',
+  path: '/landlord/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandlordVisitsRoute = LandlordVisitsRouteImport.update({
+  id: '/landlord/visits',
+  path: '/landlord/visits',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PropertiesIndexRoute = PropertiesIndexRouteImport.update({
@@ -106,6 +127,22 @@ const TenantVisitsRoute = TenantVisitsRouteImport.update({
   path: '/tenant/visits',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LandlordPropertiesIndexRoute = LandlordPropertiesIndexRouteImport.update({
+  id: '/landlord/properties/',
+  path: '/landlord/properties/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandlordPropertiesNewRoute = LandlordPropertiesNewRouteImport.update({
+  id: '/landlord/properties/new',
+  path: '/landlord/properties/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandlordPropertiesPropertyIdEditRoute =
+  LandlordPropertiesPropertyIdEditRouteImport.update({
+    id: '/landlord/properties/$propertyId/edit',
+    path: '/landlord/properties/$propertyId/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -115,7 +152,10 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/landlord/contact-requests': typeof LandlordContactRequestsRoute
   '/landlord/dashboard': typeof LandlordDashboardRoute
+  '/landlord/messages': typeof LandlordMessagesRoute
+  '/landlord/visits': typeof LandlordVisitsRoute
   '/properties/$propertyId': typeof PropertiesPropertyIdRoute
   '/tenant/comparison': typeof TenantComparisonRoute
   '/tenant/dashboard': typeof TenantDashboardRoute
@@ -124,6 +164,9 @@ export interface FileRoutesByFullPath {
   '/tenant/preferences': typeof TenantPreferencesRoute
   '/tenant/visits': typeof TenantVisitsRoute
   '/properties/': typeof PropertiesIndexRoute
+  '/landlord/properties/new': typeof LandlordPropertiesNewRoute
+  '/landlord/properties/': typeof LandlordPropertiesIndexRoute
+  '/landlord/properties/$propertyId/edit': typeof LandlordPropertiesPropertyIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -133,7 +176,10 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/landlord/contact-requests': typeof LandlordContactRequestsRoute
   '/landlord/dashboard': typeof LandlordDashboardRoute
+  '/landlord/messages': typeof LandlordMessagesRoute
+  '/landlord/visits': typeof LandlordVisitsRoute
   '/properties/$propertyId': typeof PropertiesPropertyIdRoute
   '/tenant/comparison': typeof TenantComparisonRoute
   '/tenant/dashboard': typeof TenantDashboardRoute
@@ -142,6 +188,9 @@ export interface FileRoutesByTo {
   '/tenant/preferences': typeof TenantPreferencesRoute
   '/tenant/visits': typeof TenantVisitsRoute
   '/properties': typeof PropertiesIndexRoute
+  '/landlord/properties/new': typeof LandlordPropertiesNewRoute
+  '/landlord/properties': typeof LandlordPropertiesIndexRoute
+  '/landlord/properties/$propertyId/edit': typeof LandlordPropertiesPropertyIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -152,7 +201,10 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/landlord/contact-requests': typeof LandlordContactRequestsRoute
   '/landlord/dashboard': typeof LandlordDashboardRoute
+  '/landlord/messages': typeof LandlordMessagesRoute
+  '/landlord/visits': typeof LandlordVisitsRoute
   '/properties/$propertyId': typeof PropertiesPropertyIdRoute
   '/tenant/comparison': typeof TenantComparisonRoute
   '/tenant/dashboard': typeof TenantDashboardRoute
@@ -161,6 +213,9 @@ export interface FileRoutesById {
   '/tenant/preferences': typeof TenantPreferencesRoute
   '/tenant/visits': typeof TenantVisitsRoute
   '/properties/': typeof PropertiesIndexRoute
+  '/landlord/properties/new': typeof LandlordPropertiesNewRoute
+  '/landlord/properties/': typeof LandlordPropertiesIndexRoute
+  '/landlord/properties/$propertyId/edit': typeof LandlordPropertiesPropertyIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -172,7 +227,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify-email'
     | '/admin/dashboard'
+    | '/landlord/contact-requests'
     | '/landlord/dashboard'
+    | '/landlord/messages'
+    | '/landlord/visits'
     | '/properties/$propertyId'
     | '/tenant/comparison'
     | '/tenant/dashboard'
@@ -181,6 +239,9 @@ export interface FileRouteTypes {
     | '/tenant/preferences'
     | '/tenant/visits'
     | '/properties/'
+    | '/landlord/properties/new'
+    | '/landlord/properties/'
+    | '/landlord/properties/$propertyId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -190,7 +251,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify-email'
     | '/admin/dashboard'
+    | '/landlord/contact-requests'
     | '/landlord/dashboard'
+    | '/landlord/messages'
+    | '/landlord/visits'
     | '/properties/$propertyId'
     | '/tenant/comparison'
     | '/tenant/dashboard'
@@ -199,6 +263,9 @@ export interface FileRouteTypes {
     | '/tenant/preferences'
     | '/tenant/visits'
     | '/properties'
+    | '/landlord/properties/new'
+    | '/landlord/properties'
+    | '/landlord/properties/$propertyId/edit'
   id:
     | '__root__'
     | '/'
@@ -208,7 +275,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify-email'
     | '/admin/dashboard'
+    | '/landlord/contact-requests'
     | '/landlord/dashboard'
+    | '/landlord/messages'
+    | '/landlord/visits'
     | '/properties/$propertyId'
     | '/tenant/comparison'
     | '/tenant/dashboard'
@@ -217,6 +287,9 @@ export interface FileRouteTypes {
     | '/tenant/preferences'
     | '/tenant/visits'
     | '/properties/'
+    | '/landlord/properties/new'
+    | '/landlord/properties/'
+    | '/landlord/properties/$propertyId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -227,7 +300,10 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
+  LandlordContactRequestsRoute: typeof LandlordContactRequestsRoute
   LandlordDashboardRoute: typeof LandlordDashboardRoute
+  LandlordMessagesRoute: typeof LandlordMessagesRoute
+  LandlordVisitsRoute: typeof LandlordVisitsRoute
   PropertiesPropertyIdRoute: typeof PropertiesPropertyIdRoute
   TenantComparisonRoute: typeof TenantComparisonRoute
   TenantDashboardRoute: typeof TenantDashboardRoute
@@ -236,6 +312,9 @@ export interface RootRouteChildren {
   TenantPreferencesRoute: typeof TenantPreferencesRoute
   TenantVisitsRoute: typeof TenantVisitsRoute
   PropertiesIndexRoute: typeof PropertiesIndexRoute
+  LandlordPropertiesNewRoute: typeof LandlordPropertiesNewRoute
+  LandlordPropertiesIndexRoute: typeof LandlordPropertiesIndexRoute
+  LandlordPropertiesPropertyIdEditRoute: typeof LandlordPropertiesPropertyIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -289,11 +368,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/landlord/contact-requests': {
+      id: '/landlord/contact-requests'
+      path: '/landlord/contact-requests'
+      fullPath: '/landlord/contact-requests'
+      preLoaderRoute: typeof LandlordContactRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/landlord/dashboard': {
       id: '/landlord/dashboard'
       path: '/landlord/dashboard'
       fullPath: '/landlord/dashboard'
       preLoaderRoute: typeof LandlordDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landlord/messages': {
+      id: '/landlord/messages'
+      path: '/landlord/messages'
+      fullPath: '/landlord/messages'
+      preLoaderRoute: typeof LandlordMessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landlord/visits': {
+      id: '/landlord/visits'
+      path: '/landlord/visits'
+      fullPath: '/landlord/visits'
+      preLoaderRoute: typeof LandlordVisitsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/properties/': {
@@ -352,6 +452,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantVisitsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/landlord/properties/': {
+      id: '/landlord/properties/'
+      path: '/landlord/properties'
+      fullPath: '/landlord/properties/'
+      preLoaderRoute: typeof LandlordPropertiesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landlord/properties/new': {
+      id: '/landlord/properties/new'
+      path: '/landlord/properties/new'
+      fullPath: '/landlord/properties/new'
+      preLoaderRoute: typeof LandlordPropertiesNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landlord/properties/$propertyId/edit': {
+      id: '/landlord/properties/$propertyId/edit'
+      path: '/landlord/properties/$propertyId/edit'
+      fullPath: '/landlord/properties/$propertyId/edit'
+      preLoaderRoute: typeof LandlordPropertiesPropertyIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -363,7 +484,10 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   AdminDashboardRoute: AdminDashboardRoute,
+  LandlordContactRequestsRoute: LandlordContactRequestsRoute,
   LandlordDashboardRoute: LandlordDashboardRoute,
+  LandlordMessagesRoute: LandlordMessagesRoute,
+  LandlordVisitsRoute: LandlordVisitsRoute,
   PropertiesPropertyIdRoute: PropertiesPropertyIdRoute,
   TenantComparisonRoute: TenantComparisonRoute,
   TenantDashboardRoute: TenantDashboardRoute,
@@ -372,6 +496,9 @@ const rootRouteChildren: RootRouteChildren = {
   TenantPreferencesRoute: TenantPreferencesRoute,
   TenantVisitsRoute: TenantVisitsRoute,
   PropertiesIndexRoute: PropertiesIndexRoute,
+  LandlordPropertiesNewRoute: LandlordPropertiesNewRoute,
+  LandlordPropertiesIndexRoute: LandlordPropertiesIndexRoute,
+  LandlordPropertiesPropertyIdEditRoute: LandlordPropertiesPropertyIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

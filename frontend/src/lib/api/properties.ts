@@ -21,6 +21,9 @@ export const AVAILABILITY_STATUSES = [
 ] as const;
 export type AvailabilityStatus = (typeof AVAILABILITY_STATUSES)[number];
 
+export const APPROVAL_STATUSES = ["Pending Approval", "Approved", "Rejected"] as const;
+export type ApprovalStatus = (typeof APPROVAL_STATUSES)[number];
+
 export const VERIFICATION_STATES = [
   "Owner Identity Verified",
   "Phone Verified",
@@ -86,6 +89,7 @@ export interface PropertyItem {
   billsIncluded: string[]; // e.g., ["Water", "Trash"]
   availability: AvailabilityStatus;
   availableFrom: string; // ISO date
+  approvalStatus: ApprovalStatus;
 
   // Location Hierarchy (Khulna-prioritized)
   division: string;

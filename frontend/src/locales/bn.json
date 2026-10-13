@@ -158,5 +158,24 @@
     "visitedBadge": "যাচাইকৃত পরিদর্শক (Visited)",
     "submitReview": "রিভিউ জমা দিন",
     "reportListing": "লিস্টিং রিপোর্ট করুন"
+  },
+  "landlord": {
+    "myListings": "আমার লিস্টিং",
+    "createListing": "নতুন বাসা যোগ করুন",
+    "editListing": "বাসার তথ্য সম্পাদনা",
+    "approvalState": "অনুমোদন অবস্থা",
+    "pendingApproval": "অনুমোদনাধীন",
+    "approved": "অনুমোদিত",
+    "rejected": "প্রত্যাখ্যাত",
+    "contactVisibility": "যোগাযোগের গোপনীয়তা",
+    "contactVisibilityNotice": "আপনার যোগাযোগের নম্বর প্রকাশ্যে দৃশ্যমান হবে কি না নির্বাচন করুন।",
+    "fiveImagesMax": "সর্বোচ্চ ৫টি ছবি আপলোড করা যাবে। প্রথম ছবিটি প্রধান ছবি হবে।",
+    "featuredPhoto": "প্রধান ছবি",
+    "inquiries": "ভাড়াটিয়ার অনুরোধ",
+    "visits": "পরিদর্শন শিডিউল",
+    "accept": "অনুমোদন করুন",
+    "reject": "প্রত্যাখ্যান করুন",
+    "markCompleted": "সম্পন্ন হিসেবে চিহ্নিত করুন"
   }
 }
+
