@@ -1,7 +1,10 @@
+import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
+import { mockTenantApi } from "@/lib/api/mock";
+import type { TenantPreferencesData } from "@/lib/api/tenant";
 import {
   Search,
   Sliders,
@@ -27,51 +30,101 @@ export const Route = createFileRoute("/tenant/dashboard")({
 });
 
 function TenantDashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isBn = i18n.language === "bn";
   const { user } = useAuth();
+
+  const [favoritesCount, setFavoritesCount] = useState(0);
+  const [comparisonCount, setComparisonCount] = useState(0);
+  const [visitsCount, setVisitsCount] = useState(0);
+  const [convCount, setConvCount] = useState(0);
+  const [prefs, setPrefs] = useState<TenantPreferencesData | null>(null);
+
+  useEffect(() => {
+    setFavoritesCount(mockTenantApi.getFavoriteIds().length);
+    setComparisonCount(mockTenantApi.getComparisonIds().length);
+    mockTenantApi.getVisits().then((v) => setVisitsCount(v.length));
+    mockTenantApi.getConversations().then((c) => setConvCount(c.length));
+    mockTenantApi.getPreferences().then((p) => setPrefs(p));
+  }, []);
+
+  const stats = [
+    {
+      label: isBn ? "সংরক্ষিত বাসা" : "Saved Listings",
+      value: favoritesCount,
+      href: "/tenant/favorites",
+    },
+    {
+      label: isBn ? "তুলনায় নির্বাচিত" : "Comparing (Max 3)",
+      value: `${comparisonCount}/3`,
+      href: "/tenant/comparison",
+    },
+    {
+      label: isBn ? "নির্ধারিত পরিদর্শন" : "Scheduled Visits",
+      value: visitsCount,
+      href: "/tenant/visits",
+    },
+    {
+      label: isBn ? "বার্তা কথোপকথন" : "Conversations",
+      value: convCount,
+      href: "/tenant/messages",
+    },
+  ];
 
   const cards = [
     {
       title: t("dashboard.myPreferences"),
-      desc: "লোকেশন (৩০%), বাজেট (২৫%), ধরন (১৫%), রুম (১০%), সুবিধা (১৫%), প্রাপ্যতা (৫%) অনুযায়ী ম্যাচিং স্কোর দেখুন।",
+      desc: isBn
+        ? "লোকেশন (৩০%), বাজেট (২৫%), ধরন (১৫%), রুম (১০%), সুবিধা (১৫%), প্রাপ্যতা (৫%) অনুযায়ী ম্যাচিং স্কোর দেখুন।"
+        : "Define your preferred area, budget and amenities to calculate your transparent 6-factor match score.",
       icon: Sliders,
       href: "/tenant/preferences",
-      cta: "পছন্দসমূহ সম্পাদনা করুন",
+      cta: isBn ? "পছন্দসমূহ সম্পাদনা করুন" : "Edit Preferences",
     },
     {
       title: t("dashboard.myFavorites"),
-      desc: "আপনার পছন্দের বাসাগুলো সংরক্ষিত রাখুন এবং দ্রুত দেখুন।",
+      desc: isBn
+        ? "আপনার পছন্দের বাসাগুলো সংরক্ষিত রাখুন এবং দ্রুত দেখুন।"
+        : "Bookmark listings you love and access them quickly across any device.",
       icon: Heart,
       href: "/tenant/favorites",
-      cta: "সংরক্ষিত বাসা দেখুন",
+      cta: isBn ? "সংরক্ষিত বাসা দেখুন" : "View Saved",
     },
     {
       title: t("dashboard.myComparisons"),
-      desc: "একসাথে সর্বোচ্চ ৩টি প্রপার্টির ভাড়া, অগ্রিম, সুবিধা ও অবস্থান পাশাপাশি তুলনা করুন।",
+      desc: isBn
+        ? "একসাথে সর্বোচ্চ ৩টি প্রপার্টির ভাড়া, অগ্রিম, সুবিধা ও অবস্থান পাশাপাশি তুলনা করুন।"
+        : "Inspect up to 3 listings side-by-side across 14 specifications without mobile overflow.",
       icon: Columns3,
       href: "/tenant/comparison",
-      cta: "তুলনা শুরু করুন",
+      cta: isBn ? "তুলনা শুরু করুন" : "Open Comparison",
     },
     {
       title: t("dashboard.myVisits"),
-      desc: "বাড়িওয়ালার সাথে বাসা পরিদর্শনের তারিখ ও সময় নির্ধারণ এবং স্ট্যাটাস ট্র্যাক করুন।",
+      desc: isBn
+        ? "বাড়িওয়ালার সাথে বাসা পরিদর্শনের তারিখ ও সময় নির্ধারণ এবং স্ট্যাটাস ট্র্যাক করুন।"
+        : "Schedule physical room walkthroughs and track pending, accepted, or completed visits.",
       icon: CalendarCheck,
       href: "/tenant/visits",
-      cta: "অনুরোধ তালিকা দেখুন",
+      cta: isBn ? "অনুরোধ তালিকা দেখুন" : "View Schedule",
     },
     {
       title: t("dashboard.myMessages"),
-      desc: "যোগাযোগের অনুমোদনের পর বাড়িওয়ালার সাথে অভ্যন্তরীণ বার্তা আদান-প্রদান করুন।",
+      desc: isBn
+        ? "যোগাযোগের অনুমোদনের পর বাড়িওয়ালার সাথে অভ্যন্তরীণ বার্তা আদান-প্রদান করুন।"
+        : "Direct API-based messaging with verified landlords after contact request approval.",
       icon: MessageSquare,
       href: "/tenant/messages",
-      cta: "ইনবক্স খুলুন",
+      cta: isBn ? "ইনবক্স খুলুন" : "Open Inbox",
     },
     {
       title: t("dashboard.searchProperties"),
-      desc: "খুলনা ও অন্যান্য অঞ্চলের অনুমোদিত ও যাচাইকৃত ভাড়ার বাসা খুঁজুন।",
+      desc: isBn
+        ? "খুলনা ও অন্যান্য অঞ্চলের অনুমোদিত ও যাচাইকৃত ভাড়ার বাসা খুঁজুন।"
+        : "Search Khulna student hubs (KUET Gate, Gallamari, Sonadanga, Boyra) with real exact addresses.",
       icon: Search,
       href: "/properties",
-      cta: "বাসা অনুসন্ধান করুন",
+      cta: isBn ? "বাসা অনুসন্ধান করুন" : "Search Listings",
     },
   ];
 
@@ -83,17 +136,73 @@ function TenantDashboard() {
       activeTab="dashboard"
     >
       {/* Platform notice */}
-      <div className="mb-6 flex items-start gap-3 rounded-xl border border-border bg-surface p-4">
+      <div className="mb-6 flex items-start gap-3 rounded-2xl border border-border bg-surface p-4 shadow-sm">
         <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-foreground" aria-hidden="true" />
-        <div className="text-sm">
-          <p className="font-semibold text-foreground">প্ল্যাটফর্ম যাচাইকরণ নির্দেশিকা</p>
+        <div className="text-xs">
+          <p className="font-semibold text-foreground">
+            {isBn ? "প্ল্যাটফর্ম যাচাইকরণ নির্দেশিকা" : "Platform Simulated Verification Notice"}
+          </p>
           <p className="mt-0.5 text-muted-foreground">
-            ঠিকানায় প্রদর্শিত যাচাইকরণ প্রতীকগুলো প্ল্যাটফর্ম-স্তরের সিমুলেটেড তথ্য যাচাই (মালিক
-            পরিচয়, ফোন ও প্রাপ্যতা)। এগুলো কোনো সরকারি সনদপত্র নয়।
+            {isBn
+              ? "ঠিকানায় প্রদর্শিত যাচাইকরণ প্রতীকগুলো প্ল্যাটফর্ম-স্তরের সিমুলেটেড তথ্য যাচাই (মালিক পরিচয়, ফোন ও প্রাপ্যতা)। এগুলো কোনো সরকারি সনদপত্র নয়।"
+              : "Badges shown on Thikana represent platform-level simulated identity & availability checks, not government certifications."}
           </p>
         </div>
       </div>
 
+      {/* Quick Statistics Bar */}
+      <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {stats.map((s) => (
+          <Link
+            key={s.href}
+            to={s.href}
+            className="rounded-2xl border border-border bg-surface p-4 shadow-sm transition-all hover:border-border-strong hover:shadow-md"
+          >
+            <span className="text-xs font-medium text-muted-foreground">{s.label}</span>
+            <div className="mt-2 text-2xl font-bold text-foreground">{s.value}</div>
+          </Link>
+        ))}
+      </div>
+
+      {/* Preferences Preview Card */}
+      {prefs && (
+        <div className="mb-6 rounded-2xl border border-border bg-secondary/30 p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sliders className="h-4 w-4 text-primary" aria-hidden="true" />
+              <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                {isBn ? "আপনার বর্তমান সক্রিয় পছন্দসমূহ" : "Active Matching Criteria"}
+              </h2>
+            </div>
+            <Link
+              to="/tenant/preferences"
+              className="text-xs font-semibold text-primary hover:underline"
+            >
+              {isBn ? "পরিবর্তন করুন" : "Edit"}
+            </Link>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs">
+            <span className="rounded-lg bg-surface border border-border px-2.5 py-1 text-foreground">
+              {isBn ? "পছন্দের এলাকা: " : "Area: "}
+              <strong>{prefs.preferredArea || (isBn ? "যেকোনো" : "Any")}</strong>
+            </span>
+            <span className="rounded-lg bg-surface border border-border px-2.5 py-1 text-foreground">
+              {isBn ? "বাজেট: " : "Budget: "}
+              <strong>৳{(prefs.maxBudget || 10000).toLocaleString()}</strong>
+            </span>
+            <span className="rounded-lg bg-surface border border-border px-2.5 py-1 text-foreground">
+              {isBn ? "ধরন: " : "Type: "}
+              <strong>{prefs.preferredPropertyType || (isBn ? "যেকোনো" : "Any")}</strong>
+            </span>
+            <span className="rounded-lg bg-surface border border-border px-2.5 py-1 text-foreground">
+              {isBn ? "রুম: " : "Min Rooms: "}
+              <strong>{prefs.minRooms || 1}</strong>
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Grid of Navigation Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => {
           const Icon = c.icon;
@@ -106,13 +215,13 @@ function TenantDashboard() {
                 <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-secondary text-foreground">
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </div>
-                <h2 className="mt-4 text-lg font-semibold">{c.title}</h2>
-                <p className="mt-2 text-sm text-muted-foreground">{c.desc}</p>
+                <h3 className="mt-4 text-base font-semibold">{c.title}</h3>
+                <p className="mt-2 text-xs text-muted-foreground">{c.desc}</p>
               </div>
               <div className="mt-6 pt-4 border-t border-border">
                 <Link
                   to={c.href}
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-foreground hover:text-link"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground hover:text-link"
                 >
                   <span>{c.cta}</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />

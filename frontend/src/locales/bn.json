@@ -147,5 +147,16 @@
   },
   "footer": {
     "note": "একাডেমিক প্রদর্শনী প্রকল্প। যাচাই চিহ্নগুলো প্ল্যাটফর্ম-স্তরের, সরকারি নয়।"
+  },
+  "tenant": {
+    "preferencesTitle": "ভাড়া পছন্দসমূহ",
+    "comparisonTitle": "প্রপার্টি তুলনা",
+    "comparisonMaxNotice": "সর্বোচ্চ ৩টি প্রপার্টি একসাথে তুলনা করা যায়।",
+    "favoritesTitle": "সংরক্ষিত বাসা",
+    "visitsTitle": "নির্ধারিত পরিদর্শন",
+    "messagesTitle": "বার্তা ও ইনবক্স",
+    "visitedBadge": "যাচাইকৃত পরিদর্শক (Visited)",
+    "submitReview": "রিভিউ জমা দিন",
+    "reportListing": "লিস্টিং রিপোর্ট করুন"
   }
 }
