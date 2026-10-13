@@ -15,7 +15,15 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
+import { Route as AdminAuditLogsRouteImport } from './routes/admin/audit-logs'
+import { Route as AdminCommunityRouteImport } from './routes/admin/community'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
+import { Route as AdminPropertiesRouteImport } from './routes/admin/properties'
+import { Route as AdminReportsRouteImport } from './routes/admin/reports'
+import { Route as AdminReviewsRouteImport } from './routes/admin/reviews'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AdminVerificationsRouteImport } from './routes/admin/verifications'
 import { Route as LandlordContactRequestsRouteImport } from './routes/landlord/contact-requests'
 import { Route as LandlordDashboardRouteImport } from './routes/landlord/dashboard'
 import { Route as LandlordMessagesRouteImport } from './routes/landlord/messages'
@@ -28,6 +36,7 @@ import { Route as TenantFavoritesRouteImport } from './routes/tenant/favorites'
 import { Route as TenantMessagesRouteImport } from './routes/tenant/messages'
 import { Route as TenantPreferencesRouteImport } from './routes/tenant/preferences'
 import { Route as TenantVisitsRouteImport } from './routes/tenant/visits'
+import { Route as AdminPropertiesPendingRouteImport } from './routes/admin/properties.pending'
 import { Route as LandlordPropertiesIndexRouteImport } from './routes/landlord/properties/index'
 import { Route as LandlordPropertiesNewRouteImport } from './routes/landlord/properties/new'
 import { Route as LandlordPropertiesPropertyIdEditRouteImport } from './routes/landlord/properties/$propertyId.edit'
@@ -62,9 +71,49 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/admin/analytics',
+  path: '/admin/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAuditLogsRoute = AdminAuditLogsRouteImport.update({
+  id: '/admin/audit-logs',
+  path: '/admin/audit-logs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCommunityRoute = AdminCommunityRouteImport.update({
+  id: '/admin/community',
+  path: '/admin/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/admin/dashboard',
   path: '/admin/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPropertiesRoute = AdminPropertiesRouteImport.update({
+  id: '/admin/properties',
+  path: '/admin/properties',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/admin/reports',
+  path: '/admin/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/admin/reviews',
+  path: '/admin/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminVerificationsRoute = AdminVerificationsRouteImport.update({
+  id: '/admin/verifications',
+  path: '/admin/verifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LandlordContactRequestsRoute = LandlordContactRequestsRouteImport.update({
@@ -127,6 +176,11 @@ const TenantVisitsRoute = TenantVisitsRouteImport.update({
   path: '/tenant/visits',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPropertiesPendingRoute = AdminPropertiesPendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
+  getParentRoute: () => AdminPropertiesRoute,
+} as any)
 const LandlordPropertiesIndexRoute = LandlordPropertiesIndexRouteImport.update({
   id: '/landlord/properties/',
   path: '/landlord/properties/',
@@ -151,7 +205,15 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/audit-logs': typeof AdminAuditLogsRoute
+  '/admin/community': typeof AdminCommunityRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/properties': typeof AdminPropertiesRouteWithChildren
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/verifications': typeof AdminVerificationsRoute
   '/landlord/contact-requests': typeof LandlordContactRequestsRoute
   '/landlord/dashboard': typeof LandlordDashboardRoute
   '/landlord/messages': typeof LandlordMessagesRoute
@@ -164,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/tenant/preferences': typeof TenantPreferencesRoute
   '/tenant/visits': typeof TenantVisitsRoute
   '/properties/': typeof PropertiesIndexRoute
+  '/admin/properties/pending': typeof AdminPropertiesPendingRoute
   '/landlord/properties/new': typeof LandlordPropertiesNewRoute
   '/landlord/properties/': typeof LandlordPropertiesIndexRoute
   '/landlord/properties/$propertyId/edit': typeof LandlordPropertiesPropertyIdEditRoute
@@ -175,7 +238,15 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/audit-logs': typeof AdminAuditLogsRoute
+  '/admin/community': typeof AdminCommunityRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/properties': typeof AdminPropertiesRouteWithChildren
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/verifications': typeof AdminVerificationsRoute
   '/landlord/contact-requests': typeof LandlordContactRequestsRoute
   '/landlord/dashboard': typeof LandlordDashboardRoute
   '/landlord/messages': typeof LandlordMessagesRoute
@@ -188,6 +259,7 @@ export interface FileRoutesByTo {
   '/tenant/preferences': typeof TenantPreferencesRoute
   '/tenant/visits': typeof TenantVisitsRoute
   '/properties': typeof PropertiesIndexRoute
+  '/admin/properties/pending': typeof AdminPropertiesPendingRoute
   '/landlord/properties/new': typeof LandlordPropertiesNewRoute
   '/landlord/properties': typeof LandlordPropertiesIndexRoute
   '/landlord/properties/$propertyId/edit': typeof LandlordPropertiesPropertyIdEditRoute
@@ -200,7 +272,15 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/audit-logs': typeof AdminAuditLogsRoute
+  '/admin/community': typeof AdminCommunityRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/properties': typeof AdminPropertiesRouteWithChildren
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/verifications': typeof AdminVerificationsRoute
   '/landlord/contact-requests': typeof LandlordContactRequestsRoute
   '/landlord/dashboard': typeof LandlordDashboardRoute
   '/landlord/messages': typeof LandlordMessagesRoute
@@ -213,6 +293,7 @@ export interface FileRoutesById {
   '/tenant/preferences': typeof TenantPreferencesRoute
   '/tenant/visits': typeof TenantVisitsRoute
   '/properties/': typeof PropertiesIndexRoute
+  '/admin/properties/pending': typeof AdminPropertiesPendingRoute
   '/landlord/properties/new': typeof LandlordPropertiesNewRoute
   '/landlord/properties/': typeof LandlordPropertiesIndexRoute
   '/landlord/properties/$propertyId/edit': typeof LandlordPropertiesPropertyIdEditRoute
@@ -226,7 +307,15 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/admin/analytics'
+    | '/admin/audit-logs'
+    | '/admin/community'
     | '/admin/dashboard'
+    | '/admin/properties'
+    | '/admin/reports'
+    | '/admin/reviews'
+    | '/admin/users'
+    | '/admin/verifications'
     | '/landlord/contact-requests'
     | '/landlord/dashboard'
     | '/landlord/messages'
@@ -239,6 +328,7 @@ export interface FileRouteTypes {
     | '/tenant/preferences'
     | '/tenant/visits'
     | '/properties/'
+    | '/admin/properties/pending'
     | '/landlord/properties/new'
     | '/landlord/properties/'
     | '/landlord/properties/$propertyId/edit'
@@ -250,7 +340,15 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/admin/analytics'
+    | '/admin/audit-logs'
+    | '/admin/community'
     | '/admin/dashboard'
+    | '/admin/properties'
+    | '/admin/reports'
+    | '/admin/reviews'
+    | '/admin/users'
+    | '/admin/verifications'
     | '/landlord/contact-requests'
     | '/landlord/dashboard'
     | '/landlord/messages'
@@ -263,6 +361,7 @@ export interface FileRouteTypes {
     | '/tenant/preferences'
     | '/tenant/visits'
     | '/properties'
+    | '/admin/properties/pending'
     | '/landlord/properties/new'
     | '/landlord/properties'
     | '/landlord/properties/$propertyId/edit'
@@ -274,7 +373,15 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/admin/analytics'
+    | '/admin/audit-logs'
+    | '/admin/community'
     | '/admin/dashboard'
+    | '/admin/properties'
+    | '/admin/reports'
+    | '/admin/reviews'
+    | '/admin/users'
+    | '/admin/verifications'
     | '/landlord/contact-requests'
     | '/landlord/dashboard'
     | '/landlord/messages'
@@ -287,6 +394,7 @@ export interface FileRouteTypes {
     | '/tenant/preferences'
     | '/tenant/visits'
     | '/properties/'
+    | '/admin/properties/pending'
     | '/landlord/properties/new'
     | '/landlord/properties/'
     | '/landlord/properties/$propertyId/edit'
@@ -299,7 +407,15 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminAuditLogsRoute: typeof AdminAuditLogsRoute
+  AdminCommunityRoute: typeof AdminCommunityRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminPropertiesRoute: typeof AdminPropertiesRouteWithChildren
+  AdminReportsRoute: typeof AdminReportsRoute
+  AdminReviewsRoute: typeof AdminReviewsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminVerificationsRoute: typeof AdminVerificationsRoute
   LandlordContactRequestsRoute: typeof LandlordContactRequestsRoute
   LandlordDashboardRoute: typeof LandlordDashboardRoute
   LandlordMessagesRoute: typeof LandlordMessagesRoute
@@ -361,11 +477,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/audit-logs': {
+      id: '/admin/audit-logs'
+      path: '/admin/audit-logs'
+      fullPath: '/admin/audit-logs'
+      preLoaderRoute: typeof AdminAuditLogsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/community': {
+      id: '/admin/community'
+      path: '/admin/community'
+      fullPath: '/admin/community'
+      preLoaderRoute: typeof AdminCommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/dashboard': {
       id: '/admin/dashboard'
       path: '/admin/dashboard'
       fullPath: '/admin/dashboard'
       preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/properties': {
+      id: '/admin/properties'
+      path: '/admin/properties'
+      fullPath: '/admin/properties'
+      preLoaderRoute: typeof AdminPropertiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/admin/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/reviews': {
+      id: '/admin/reviews'
+      path: '/admin/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/verifications': {
+      id: '/admin/verifications'
+      path: '/admin/verifications'
+      fullPath: '/admin/verifications'
+      preLoaderRoute: typeof AdminVerificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/landlord/contact-requests': {
@@ -452,6 +624,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantVisitsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/properties/pending': {
+      id: '/admin/properties/pending'
+      path: '/pending'
+      fullPath: '/admin/properties/pending'
+      preLoaderRoute: typeof AdminPropertiesPendingRouteImport
+      parentRoute: typeof AdminPropertiesRoute
+    }
     '/landlord/properties/': {
       id: '/landlord/properties/'
       path: '/landlord/properties'
@@ -476,6 +655,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminPropertiesRouteChildren {
+  AdminPropertiesPendingRoute: typeof AdminPropertiesPendingRoute
+}
+
+const AdminPropertiesRouteChildren: AdminPropertiesRouteChildren = {
+  AdminPropertiesPendingRoute: AdminPropertiesPendingRoute,
+}
+
+const AdminPropertiesRouteWithChildren = AdminPropertiesRoute._addFileChildren(
+  AdminPropertiesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
@@ -483,7 +674,15 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminAuditLogsRoute: AdminAuditLogsRoute,
+  AdminCommunityRoute: AdminCommunityRoute,
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminPropertiesRoute: AdminPropertiesRouteWithChildren,
+  AdminReportsRoute: AdminReportsRoute,
+  AdminReviewsRoute: AdminReviewsRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminVerificationsRoute: AdminVerificationsRoute,
   LandlordContactRequestsRoute: LandlordContactRequestsRoute,
   LandlordDashboardRoute: LandlordDashboardRoute,
   LandlordMessagesRoute: LandlordMessagesRoute,

@@ -4,3 +4,4 @@ export * from "./auth";
 export * from "./properties";
 export * from "./tenant";
 export * from "./landlord";
+export * from "./admin";
