@@ -1,0 +1,93 @@
+{
+  "project": "Thikana",
+  "task": "Implement and run Playwright end-to-end tests for the approved core user journeys. Audit the existing test setup first and do not install dependencies or modify files until the user approves the dry-run plan.",
+  "must_read": [
+    "AI.md",
+    "docs/01-prd.md",
+    "docs/04-spec-driven-development.md",
+    "docs/06-implementation-plan.md",
+    "docs/11-e2e-test-your-application.md"
+  ],
+  "workflow": [
+    "Inspect repository, existing tests, scripts, API contracts and test data setup.",
+    "Report existing E2E tooling and commands.",
+    "If Playwright is absent, propose installation and wait for explicit approval.",
+    "Create a phase plan with exact files, test data strategy, risks, rollback and verification.",
+    "Wait for approval before writing.",
+    "Write independent tests that use accessible roles and labels rather than brittle CSS selectors.",
+    "Use isolated test data per test and clean it up safely.",
+    "Run headless tests and capture screenshots/traces only on failure.",
+    "Fix failures only after identifying root causes and getting approval for file changes."
+  ],
+  "journeys": {
+    "tenant": [
+      "Login",
+      "Search/filter/sort",
+      "Open property detail",
+      "View match percentage and breakdown",
+      "Favorite property",
+      "Compare up to three properties",
+      "Verify fourth comparison is rejected",
+      "Send contact request",
+      "Access messaging only after allowed interaction state",
+      "Request visit and inspect statuses",
+      "Submit review as logged-in tenant",
+      "Report property"
+    ],
+    "landlord": [
+      "Login",
+      "Create listing",
+      "Upload five images",
+      "Verify sixth image is rejected",
+      "Verify first image is featured",
+      "Submit listing for approval",
+      "Inspect pending/approved/rejected state",
+      "Respond to contact request",
+      "Respond to visit request",
+      "Update availability"
+    ],
+    "admin": [
+      "Login using provisioned admin",
+      "Approve/reject listing",
+      "Manage simulated verification",
+      "Review report",
+      "Moderate review",
+      "Manage community information",
+      "Inspect audit logs"
+    ]
+  },
+  "negative_cases": [
+    "Invalid login",
+    "Unauthenticated protected route",
+    "Tenant accessing admin route",
+    "Landlord modifying another landlord's property",
+    "Unauthorized message access",
+    "Sixth image upload",
+    "Fourth comparison",
+    "Invalid visit transition",
+    "Invalid form submission",
+    "Network/API failure",
+    "Expired session or unauthenticated API response"
+  ],
+  "rules": [
+    "Test what users see, not implementation details.",
+    "Keep tests independent and order-agnostic.",
+    "Use test fixtures or approved seed data, never real personal information.",
+    "Do not invent API contracts or bypass authorization to make tests pass.",
+    "Separate backend contract failures from frontend rendering failures.",
+    "Run lint, typecheck and build where configured.",
+    "Never modify node_modules, .git, dist or build.",
+    "Maximum 20 files changed per cycle.",
+    "Ask before dependency installation, destructive data operations, migrations or production configuration changes."
+  ],
+  "completion_report": [
+    "Tests added",
+    "Files changed",
+    "Commands run",
+    "Passed/failed/skipped counts",
+    "Screenshots/traces for failures",
+    "Failures fixed and regression coverage",
+    "Uncovered workflows",
+    "Known environment limitations"
+  ]
+}

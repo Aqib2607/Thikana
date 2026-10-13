@@ -1,0 +1,619 @@
+{
+  "project": {
+    "name": "Thikana",
+    "classification": "Academic rental property discovery and management web application",
+    "objective": "Implement and verify the Laravel backend and complete full-stack integration for Thikana, following the approved PRD, specification, UI/UX brief, implementation plan and repository AI.md. This is an academic prototype hosted online, not a production-scale commercial service.",
+    "deployment": {
+      "frontend": "Render",
+      "backend": "Render",
+      "database": "MySQL on Railway"
+    },
+    "primary_language": "Bangla",
+    "secondary_language": "English",
+    "primary_demo_market": "Khulna, Bangladesh"
+  },
+  "must_read": [
+    "AI.md",
+    "docs/01-prd.md",
+    "docs/03-ultra-plan-mode.md",
+    "docs/04-spec-driven-development.md",
+    "docs/05-ui-ux-design-brief.md",
+    "docs/06-implementation-plan.md",
+    "docs/08-connect-your-database.md",
+    "docs/09-find-security-gaps.md",
+    "docs/10-debug-an-error-fast.md",
+    "docs/11-e2e-test-your-application.md",
+    "docs/12-clean-up-dead-code.md",
+    "docs/13-write-clean-git-commits.md",
+    "docs/14-hooks-as-guardrails.md",
+    "docs/15-turn-a-task-into-a-skill.md"
+  ],
+  "authority": {
+    "order": [
+      "approved specification",
+      "docs/01-prd.md",
+      "docs/05-ui-ux-design-brief.md",
+      "docs/06-implementation-plan.md",
+      "AI.md",
+      "approved project proposal"
+    ],
+    "rule": "If the repository, existing frontend prompt, or API requirements conflict with the documents, stop and report the conflict. Do not silently invent contracts or change requirements."
+  },
+  "governance": {
+    "branch": "agent/thikana",
+    "commit_format": "agent: <summary_of_changes>",
+    "mandatory_before_any_write": [
+      "Inspect the entire existing repository, frontend code, backend code, migrations, tests, configuration, and documentation relevant to the task.",
+      "Report current architecture and current-vs-target behavior.",
+      "Identify exact files that would be created or modified.",
+      "Present a dry-run plan, alternatives, tradeoffs, selected approach, risks, rollback plan, dependencies, and verification steps.",
+      "Show the planned diff/file list.",
+      "Wait for explicit user approval of the execution plan before writing files."
+    ],
+    "cycle_limit": "Maximum 20 files modified per implementation cycle.",
+    "never_modify": [
+      "node_modules",
+      ".git",
+      "dist",
+      "build"
+    ],
+    "explicit_confirmation_required_for": [
+      "database migrations or running migrations against shared/deployed database",
+      "dependency installation or removal",
+      "file deletion",
+      "destructive data operations",
+      "production configuration changes",
+      "changing authentication or authorization behavior",
+      "changing approved API contracts",
+      "seeders that overwrite or delete existing data",
+      "deploying or changing a live service"
+    ],
+    "secrets": [
+      "Never hardcode secrets.",
+      "Never commit .env files or real environment values.",
+      "Use environment variables and safe .env.example placeholders.",
+      "Do not print secrets in logs or final reports."
+    ],
+    "execution": "Work one phase at a time. After each phase, show files changed, diff summary, commands executed, test results, unresolved risks and stop for the user's next go-ahead. Do not claim success without command output."
+  },
+  "backend_stack": {
+    "framework": "Laravel REST API",
+    "language": "PHP",
+    "database": "MySQL on Railway",
+    "orm": "Eloquent",
+    "authentication": "Laravel Sanctum",
+    "validation": "Laravel Form Requests",
+    "api_responses": "Use Laravel API Resources or an existing project-consistent response format",
+    "tests": "PHPUnit or Pest, based on what the repository already uses",
+    "hosting": "Render",
+    "frontend": "React + TypeScript on Render"
+  },
+  "scope_boundaries": {
+    "include": [
+      "repository audit",
+      "Laravel API architecture",
+      "database design and migrations",
+      "seeders for academic demonstration data",
+      "authentication and role authorization",
+      "property CRUD and approval",
+      "property image validation and storage",
+      "location hierarchy and amenities",
+      "search, filters, sorting and pagination",
+      "rule-based matching",
+      "favorites and comparison",
+      "contact requests",
+      "API-based internal messaging",
+      "property visit requests",
+      "simulated verification",
+      "reviews",
+      "community information",
+      "property reports",
+      "in-app notifications",
+      "audit logging",
+      "API documentation",
+      "security audit",
+      "backend tests",
+      "frontend API integration",
+      "E2E verification",
+      "deployment preparation",
+      "performance and dead-code review",
+      "guardrails and reusable agent skill if supported"
+    ],
+    "exclude": [
+      "payment gateways",
+      "SMS gateways",
+      "government identity verification",
+      "AI/ML matching",
+      "mobile applications",
+      "advanced routing",
+      "microservices",
+      "Kubernetes",
+      "complex real-time chat",
+      "WebSockets or Redis unless explicitly approved",
+      "production-scale billing",
+      "unapproved external integrations"
+    ]
+  },
+  "repository_audit": {
+    "first_actions": [
+      "Inspect repository tree and Git status.",
+      "Read composer.json, composer.lock, package.json, lockfiles, environment examples, routes, models, migrations, controllers, middleware, tests and deployment configuration.",
+      "Identify whether frontend and backend are in one repository or separate directories.",
+      "Identify actual installed versions and commands. Do not assume versions from documentation.",
+      "Find existing API contracts and compare them with the frontend prompt.",
+      "List missing API contracts and contradictory assumptions.",
+      "Do not install dependencies or modify files during this audit."
+    ],
+    "report": [
+      "current architecture",
+      "existing conventions",
+      "current working commands",
+      "current tests and failures",
+      "security concerns",
+      "missing requirements",
+      "proposed phased plan"
+    ]
+  },
+  "data_model": {
+    "entities": [
+      "roles",
+      "users",
+      "properties",
+      "property_images",
+      "property_locations",
+      "amenities",
+      "property_amenities",
+      "rental_preferences",
+      "favorites",
+      "comparisons",
+      "comparison_items",
+      "contact_requests",
+      "visit_requests",
+      "conversations",
+      "conversation_participants",
+      "messages",
+      "property_verifications",
+      "reviews",
+      "areas",
+      "community_information",
+      "property_reports",
+      "report_reasons",
+      "notifications",
+      "audit_logs"
+    ],
+    "requirements": [
+      "Inspect the proposal's ER diagram and existing repository schema before deciding exact fields.",
+      "Do not silently change entity names or relationships without recording the reason and obtaining approval if behavior changes.",
+      "Use foreign keys and appropriate unique constraints.",
+      "Use indexes for demonstrated hot queries.",
+      "Use database transactions for multi-step operations that must remain consistent.",
+      "Ensure migration order respects foreign-key dependencies.",
+      "Provide rollback logic for each migration.",
+      "Use seeders only for synthetic academic demonstration data.",
+      "Never use real personal data in seed data.",
+      "Do not run migrations on a shared or deployed database without explicit confirmation."
+    ],
+    "important_constraints": {
+      "property_images_maximum": 5,
+      "first_image_is_featured": true,
+      "comparison_maximum": 3,
+      "location_hierarchy": [
+        "Division",
+        "District",
+        "City",
+        "Area",
+        "Address"
+      ],
+      "property_types": [
+        "Apartment / Flat",
+        "House",
+        "Room",
+        "Sublet",
+        "Hostel",
+        "Mess"
+      ],
+      "rental_types": [
+        "Monthly Rental",
+        "Sublet"
+      ],
+      "availability": [
+        "Available",
+        "Reserved",
+        "Rented",
+        "Temporarily Unavailable"
+      ],
+      "matching_weights_percent": {
+        "location": 30,
+        "budget": 25,
+        "property_type": 15,
+        "rooms_and_bathrooms": 10,
+        "amenities": 15,
+        "availability": 5
+      }
+    }
+  },
+  "authentication_and_authorization": {
+    "roles": [
+      "tenant",
+      "landlord",
+      "admin"
+    ],
+    "requirements": [
+      "Use Laravel Sanctum appropriate to the actual frontend/backend origin and deployment arrangement.",
+      "Login accepts email or phone identifier plus mandatory password.",
+      "Tenant and landlord can register through the public registration flow.",
+      "Admin is provisioned through a controlled process and cannot publicly register.",
+      "Use secure password hashing.",
+      "Implement email verification through Laravel's supported flow when mail delivery is configured.",
+      "Do not implement paid SMS/OTP integration.",
+      "Phone verification is simulated/admin-managed for academic scope.",
+      "Enforce authorization on every protected endpoint and specific resource.",
+      "Do not trust frontend route guards as authorization.",
+      "Prevent landlords from reading or changing other landlords' properties or conversations.",
+      "Prevent users from reading other users' notifications, private profiles, visit requests or messages.",
+      "Prevent non-admin users from managing approvals, simulated verification, reports moderation, community data or audit logs.",
+      "Review cookie, CORS, CSRF and Sanctum settings for Render frontend/backend origins."
+    ]
+  },
+  "api_contracts": {
+    "required_groups": [
+      "authentication and profile",
+      "property CRUD",
+      "property approval",
+      "image upload/delete/reorder/featured image",
+      "location and amenities",
+      "search/filter/sort/pagination",
+      "rental preferences and matching",
+      "favorites",
+      "comparison",
+      "contact requests",
+      "conversations and messages",
+      "visit requests",
+      "verification",
+      "reviews",
+      "community information",
+      "property reports",
+      "in-app notifications",
+      "admin dashboard/analytics",
+      "audit logs"
+    ],
+    "for_each_endpoint_document": [
+      "HTTP method and route",
+      "authentication requirement",
+      "role/ownership authorization",
+      "request fields and validation",
+      "success response shape",
+      "error response shape",
+      "status codes",
+      "pagination behavior where applicable",
+      "rate limit where appropriate",
+      "test coverage"
+    ],
+    "rules": [
+      "Use existing approved contracts where available.",
+      "If a contract is missing, propose it and stop for approval before implementing behavior that depends on it.",
+      "Keep response shapes consistent.",
+      "Do not return sensitive fields in public/profile/property responses.",
+      "Use API Resources or existing repository conventions.",
+      "Never return stack traces or internal SQL details to clients."
+    ]
+  },
+  "module_requirements": {
+    "property_management": [
+      "Landlords can create, view, update and deactivate only their own listings.",
+      "Property listing includes title, description, monthly rent, advance, additional charges, property type, rooms, bathrooms, floor, size, furnished status, facilities, availability, location, images and verification information as defined by the approved schema.",
+      "Maximum five images per property.",
+      "First image is featured unless an approved explicit image-reordering behavior defines otherwise.",
+      "Validate file type, size, storage path and ownership.",
+      "Only approved/published listings appear in normal tenant search.",
+      "Admin can approve or reject; rejection reason should be available to the landlord if the approved contract supports it.",
+      "A rejected listing can be corrected and resubmitted according to the approved workflow."
+    ],
+    "search": [
+      "Support location, property type, title and description search.",
+      "Support rent, rooms, bathrooms, amenities, furnished status and availability filters.",
+      "Support relevance, newest, lowest rent and highest rent sorting.",
+      "Support pagination.",
+      "Validate filters and prevent unbounded expensive queries.",
+      "Ensure filters compose correctly."
+    ],
+    "matching": [
+      "Implement deterministic rule-based matching only.",
+      "Use approved weights: location 30%, budget 25%, property type 15%, rooms and bathrooms 10%, amenities 15%, availability 5%.",
+      "Do not use AI or machine learning.",
+      "Document how each category score is calculated, including partial matches and missing preferences.",
+      "Ensure total score is bounded and breakdown adds up to total.",
+      "If the exact scoring sub-rules are not approved in the existing specification, propose them and stop for approval rather than inventing scoring semantics."
+    ],
+    "favorites_and_comparison": [
+      "Require authenticated tenant access.",
+      "Prevent duplicate favorites where appropriate.",
+      "Limit comparison to three properties.",
+      "Comparison includes rent, advance, additional charges, property type, rooms, bathrooms, size, floor, furnished status, amenities, availability, verification status, location and matching score.",
+      "Handle unavailable/deactivated properties consistently."
+    ],
+    "communication": [
+      "Tenant sends a contact request first.",
+      "Messaging becomes available only after the approved interaction state.",
+      "Messaging is API-based for academic scope.",
+      "Do not introduce WebSockets or Redis.",
+      "Only conversation participants can read/send messages.",
+      "Landlord controls whether contact details are public.",
+      "Apply rate limits and validation to contact requests and messages."
+    ],
+    "visits": [
+      "Tenant supplies preferred date/time and optional message if supported by approved contract.",
+      "Statuses: Pending, Accepted, Rejected, Cancelled, Completed.",
+      "Define and enforce valid status transitions.",
+      "Only authorized tenant/landlord/admin actions may change relevant state.",
+      "Generate in-app notifications for relevant state changes."
+    ],
+    "verification": [
+      "Simulated platform verification only.",
+      "States: Owner Identity Verified, Phone Verified, Availability Verified, Documents Verified.",
+      "Admin manages verification.",
+      "Never claim government certification.",
+      "Do not store sensitive identity documents unless explicitly approved."
+    ],
+    "reviews": [
+      "Any logged-in tenant can review a property.",
+      "A completed visit may mark a review as Visited.",
+      "Include overall rating/text and criteria only as defined in approved specification.",
+      "Validate ratings and review length.",
+      "Admin can moderate reviews.",
+      "Do not silently invent detailed review field semantics if the approved API contract is incomplete."
+    ],
+    "community": [
+      "Admin manages area information.",
+      "Fields include transport, waterlogging, internet availability, noise, safety and general information.",
+      "Do not represent subjective community values as official certifications."
+    ],
+    "reports": [
+      "Reasons: Fake listing, Already rented, Incorrect information, Suspicious behavior, Inappropriate content, Other.",
+      "Other requires a description.",
+      "Admin reviews and manages reports.",
+      "Protect reporter data and moderation actions."
+    ],
+    "notifications_and_audit": [
+      "Notifications are in-app only.",
+      "Generate relevant notifications for approval, contact requests, messages, visits, reviews, reports and verification state changes as specified.",
+      "Audit meaningful administrative and sensitive state changes.",
+      "Do not log passwords, tokens, secrets or unnecessary personal data."
+    ]
+  },
+  "security_audit": {
+    "must_check": [
+      "secrets in source/config/Git history",
+      "SQL injection and unsafe query composition",
+      "XSS and unsafe output",
+      "IDOR and object-level authorization",
+      "role and ownership checks",
+      "file upload validation and storage isolation",
+      "mass assignment",
+      "CSRF/CORS/Sanctum configuration",
+      "rate limiting on login, registration, password reset, property creation, uploads, contact requests, messaging and reports",
+      "error response leakage",
+      "logging of sensitive information",
+      "dependency vulnerabilities",
+      "unsafe default admin credentials",
+      "environment configuration"
+    ],
+    "finding_format": [
+      "severity",
+      "file and line",
+      "issue",
+      "reproducible exploit scenario",
+      "recommended fix",
+      "verification test",
+      "residual risk"
+    ],
+    "rule": "Do not claim a security issue is fixed until the fix and regression test have been verified."
+  },
+  "testing": {
+    "backend": [
+      "authentication and role authorization tests",
+      "property CRUD ownership tests",
+      "approval workflow tests",
+      "image limit and featured image tests",
+      "search/filter/sort/pagination tests",
+      "matching calculation tests",
+      "favorites and comparison limit tests",
+      "contact/messaging privacy tests",
+      "visit status transition tests",
+      "verification authorization tests",
+      "review and report validation tests",
+      "notification and audit tests"
+    ],
+    "frontend_integration": [
+      "Connect UI through typed API client.",
+      "Use actual response contracts and preserve loading/empty/error/unauthenticated/forbidden states.",
+      "Do not leave silent mock data in production paths.",
+      "Document API gaps and ask for decisions rather than inventing backend behavior."
+    ],
+    "e2e": [
+      "Tenant registration/login, search, match, compare, favorite, contact, message, visit, review and report.",
+      "Landlord listing creation, five images, approval status, contact response and visit response.",
+      "Admin approval, verification, reports, reviews and community management.",
+      "Negative cases: invalid login, unauthorized property access, sixth image, fourth comparison, unauthorized message access, invalid visit transition and server/network failure."
+    ],
+    "commands": "Discover commands from composer.json, package.json and lockfiles. Do not invent or run unrecognized destructive commands."
+  },
+  "deployment": {
+    "frontend": "Render",
+    "backend": "Render",
+    "database": "Railway MySQL",
+    "requirements": [
+      "Inspect the actual Render service configuration and repository layout before editing deployment files.",
+      "Document all required backend environment variables without values.",
+      "Use Railway MySQL connection variables through environment configuration.",
+      "Configure frontend API base URL via environment variable.",
+      "Configure CORS and Sanctum for actual frontend/backend origins.",
+      "Confirm cookie/session/CSRF behavior for the selected deployment arrangement.",
+      "Use HTTPS in deployed environments.",
+      "Keep APP_DEBUG disabled in production.",
+      "Never commit credentials.",
+      "Do not change live service configuration or run deployed migrations without explicit confirmation.",
+      "Document build/start commands from the actual repository."
+    ]
+  },
+  "observability_and_performance": {
+    "logging": [
+      "Use structured, useful logs.",
+      "Never log secrets, passwords, access tokens or unnecessary personal information.",
+      "Log relevant admin and sensitive state changes through audit logs."
+    ],
+    "performance": [
+      "Use eager loading where appropriate.",
+      "Prevent N+1 queries.",
+      "Index proven search and relationship hot paths.",
+      "Paginate property results, messages and admin tables.",
+      "Validate and bound query parameters.",
+      "Use caching only when it preserves correctness and is justified by the academic workload.",
+      "Do not introduce Redis or advanced infrastructure without approval."
+    ]
+  },
+  "phase_plan": [
+    {
+      "phase": 1,
+      "name": "Repository audit and API gap report",
+      "tasks": [
+        "Inspect repository, stack versions, routes, schema, tests, frontend prompt and deployment setup.",
+        "Map current-vs-target behavior.",
+        "List API contract mismatches and missing decisions.",
+        "Propose 2-3 approaches for major architectural gaps with tradeoffs.",
+        "Present exact file-level dry-run plan and wait for approval."
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Laravel foundation and authentication",
+      "tasks": [
+        "Establish API conventions, validation and error format.",
+        "Implement Sanctum using the deployment-compatible setup.",
+        "Implement tenant/landlord registration, email/phone login identifier, logout, email verification where configured and role authorization.",
+        "Provision admin without public registration.",
+        "Test authentication, CSRF/CORS and cross-role denial."
+      ],
+      "gate": "Stop and report tests before proceeding."
+    },
+    {
+      "phase": 3,
+      "name": "Database schema and property management",
+      "tasks": [
+        "Finalize schema from approved ERD and specification.",
+        "Propose migrations with rollback plan.",
+        "Wait for explicit migration approval.",
+        "Implement models, relationships, Form Requests, API Resources and ownership policies.",
+        "Implement property images with maximum five and first featured.",
+        "Implement locations, amenities, availability and approval."
+      ],
+      "gate": "Do not run shared/deployed migrations without explicit approval."
+    },
+    {
+      "phase": 4,
+      "name": "Search, matching, favorites and comparison",
+      "tasks": [
+        "Implement validated search, filters, sorting and pagination.",
+        "Implement deterministic matching using fixed approved weights.",
+        "If sub-score calculation semantics remain undefined, propose them for approval.",
+        "Implement favorites and three-property comparison.",
+        "Add tests for boundaries, empty results and invalid filters."
+      ],
+      "gate": "Stop and report results."
+    },
+    {
+      "phase": 5,
+      "name": "Contact, messaging and visits",
+      "tasks": [
+        "Implement contact requests and state transitions.",
+        "Implement API-based conversations and messages.",
+        "Enforce participant authorization.",
+        "Implement visit requests and valid status transitions.",
+        "Generate relevant in-app notifications.",
+        "Do not add WebSockets or Redis."
+      ],
+      "gate": "Stop and report privacy/authorization test results."
+    },
+    {
+      "phase": 6,
+      "name": "Verification, reviews, reports and community",
+      "tasks": [
+        "Implement simulated verification.",
+        "Implement reviews and Visited indicator.",
+        "Implement report reasons and Other description.",
+        "Implement admin moderation and community information.",
+        "Implement notifications and audit logs."
+      ],
+      "gate": "Stop and report tests."
+    },
+    {
+      "phase": 7,
+      "name": "Frontend integration",
+      "tasks": [
+        "Compare frontend typed API client to implemented API contracts.",
+        "Integrate one module at a time.",
+        "Remove mock adapters only after real integration is verified.",
+        "Preserve UI loading, empty, error, validation, unauthenticated and forbidden states.",
+        "Resolve CORS, Sanctum, pagination and error-shape mismatches."
+      ],
+      "gate": "List unresolved API gaps and stop."
+    },
+    {
+      "phase": 8,
+      "name": "Security, testing and E2E",
+      "tasks": [
+        "Run backend unit/API tests.",
+        "Run frontend tests.",
+        "Run E2E workflows where configured.",
+        "Audit IDOR, upload handling, rate limits, secrets and dependencies.",
+        "Fix critical findings with regression tests.",
+        "Report remaining issues with severity and effort."
+      ],
+      "gate": "Do not claim production readiness if critical failures remain."
+    },
+    {
+      "phase": 9,
+      "name": "Deployment and final verification",
+      "tasks": [
+        "Prepare Render frontend and backend configuration.",
+        "Prepare Railway MySQL environment configuration.",
+        "Verify environment variable names and origins.",
+        "Run local build/test/security checks.",
+        "Ask before modifying live configuration or running deployed migrations.",
+        "Document manual dashboard steps if credentials or account actions are required."
+      ],
+      "gate": "No live deployment changes without explicit confirmation."
+    },
+    {
+      "phase": 10,
+      "name": "Performance, cleanup and guardrails",
+      "tasks": [
+        "Inspect N+1 queries, pagination and indexes.",
+        "Search before every dead-code deletion.",
+        "Run tests/build after each cleanup batch.",
+        "Propose Git hooks/guardrails compatible with the actual Antigravity setup.",
+        "Create a reusable property-review skill only if the supported skill mechanism exists in the repository/tooling.",
+        "Do not invent hook APIs or skill directory conventions unsupported by the environment."
+      ],
+      "gate": "Report all changes and unresolved items."
+    }
+  ],
+  "required_final_report": [
+    "Architecture actually implemented",
+    "Files changed per phase",
+    "Database migrations and their status",
+    "API endpoints and contracts",
+    "Authentication/authorization behavior",
+    "Tests run with exact results",
+    "Build/lint/typecheck results",
+    "Security findings and fixes",
+    "E2E results and coverage gaps",
+    "Deployment configuration and manual steps",
+    "Environment variables required, names only",
+    "Performance work",
+    "Dead code removed",
+    "Hooks/skills created or why not applicable",
+    "Known limitations",
+    "Explicit statement of what has not been deployed or verified"
+  ]
+}

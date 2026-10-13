@@ -1,0 +1,62 @@
+{
+  "project": "Thikana",
+  "task": "Perform a focused security audit of the implemented academic rental property platform. Audit first, then propose fixes. Do not change files until the user approves the dry-run plan.",
+  "must_read": [
+    "AI.md",
+    "docs/01-prd.md",
+    "docs/04-spec-driven-development.md",
+    "docs/06-implementation-plan.md",
+    "docs/09-find-security-gaps.md"
+  ],
+  "workflow": [
+    "Inspect repository and Git status.",
+    "Inspect authentication, authorization, models, policies, middleware, controllers, Form Requests, API Resources, uploads, logging, CORS, Sanctum, environment examples, routes and tests.",
+    "Search source, config and Git history for secrets without exposing secret values in output.",
+    "Test object-level authorization and IDOR with two tenants and two landlords.",
+    "Test role separation for admin-only operations.",
+    "Inspect upload validation, storage isolation, image limits and featured-image behavior.",
+    "Inspect SQL injection, XSS, mass assignment, path traversal, CSRF, CORS and unsafe redirects.",
+    "Inspect rate limiting on authentication, password reset, uploads, contact requests, messaging and reports.",
+    "Inspect sensitive data in responses, logs and error messages.",
+    "Run repository-supported dependency audits.",
+    "Produce findings with severity, exact file/line, exploit scenario, evidence, fix, regression test and residual risk.",
+    "Propose 2-3 approaches for high-risk fixes and show tradeoffs.",
+    "Present exact files to change, dry-run diff plan, verification commands and rollback plan.",
+    "Stop and wait for approval before applying fixes.",
+    "After approval, fix critical/high findings in small cycles of no more than 20 files, add regression tests, rerun relevant tests and report exact outputs."
+  ],
+  "focus_areas": [
+    "Secrets in code/config/Git history",
+    "Authentication and session handling",
+    "Authorization and IDOR",
+    "Tenant/landlord/admin role separation",
+    "Property ownership",
+    "Conversation participant privacy",
+    "Visit request ownership and state transitions",
+    "File uploads",
+    "Validation and mass assignment",
+    "SQL injection and XSS",
+    "Rate limiting",
+    "CORS/CSRF/Sanctum deployment configuration",
+    "Sensitive logging and error leakage",
+    "Dependency vulnerabilities"
+  ],
+  "constraints": [
+    "Academic scope only. Do not add enterprise infrastructure.",
+    "No payment, SMS, AI/ML, government KYC, WebSockets or Redis.",
+    "Never hardcode secrets or commit .env.",
+    "Never modify node_modules, .git, dist or build.",
+    "Require explicit approval for migrations, deletion, dependency changes, destructive operations and production configuration.",
+    "Do not claim a finding is fixed without a passing regression test."
+  ],
+  "final_report": [
+    "Executive summary",
+    "Findings ordered by severity",
+    "Exact files and lines",
+    "Reproduction evidence",
+    "Fixes applied after approval",
+    "Tests and commands with results",
+    "Remaining risks and estimated effort",
+    "Explicit limitations of the audit"
+  ]
+}
