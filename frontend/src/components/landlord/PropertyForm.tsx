@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { PropertyFormSchema, type PropertyFormData } from "@/lib/api/landlord";
@@ -111,7 +111,7 @@ export function PropertyForm({
     setValue,
     formState: { errors },
   } = useForm<PropertyFormData>({
-    resolver: zodResolver(PropertyFormSchema),
+    resolver: zodResolver(PropertyFormSchema) as unknown as Resolver<PropertyFormData>,
     defaultValues,
   });
 

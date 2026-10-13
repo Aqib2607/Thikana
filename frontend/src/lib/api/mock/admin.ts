@@ -415,8 +415,9 @@ export const mockAdminApi: AdminApi = {
       if (raw) {
         const storedUsers = JSON.parse(raw) as Array<{ id: string; status?: string }>;
         const idx = storedUsers.findIndex((u) => u.id === userId);
-        if (idx >= 0) {
-          storedUsers[idx].status = newStatus;
+        const userToUpdate = idx >= 0 ? storedUsers[idx] : undefined;
+        if (userToUpdate) {
+          userToUpdate.status = newStatus;
           localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(storedUsers));
         }
       }
@@ -647,9 +648,10 @@ export const mockAdminApi: AdminApi = {
     }
 
     for (const p of properties) {
-      if (areaMap[p.area]) {
-        areaMap[p.area].count += 1;
-        areaMap[p.area].totalRent += p.rent;
+      const existing = areaMap[p.area];
+      if (existing) {
+        existing.count += 1;
+        existing.totalRent += p.rent;
       } else {
         areaMap[p.area] = { count: 1, totalRent: p.rent, inquiries: 5 };
       }

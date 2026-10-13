@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@/lib/i18n";
-import type { User } from "@/lib/api/client";
+import type { User } from "@/lib/auth";
 import { mockNotificationApi, SEED_NOTIFICATIONS } from "@/lib/api/mock/notifications";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -66,9 +66,13 @@ describe("Phase 7: Integration, Quality & Notifications Suite", () => {
 
       // Verify date descending
       for (let i = 0; i < items.length - 1; i++) {
-        expect(new Date(items[i].createdAt).getTime()).toBeGreaterThanOrEqual(
-          new Date(items[i + 1].createdAt).getTime(),
-        );
+        const curr = items[i];
+        const next = items[i + 1];
+        if (curr && next) {
+          expect(new Date(curr.createdAt).getTime()).toBeGreaterThanOrEqual(
+            new Date(next.createdAt).getTime(),
+          );
+        }
       }
     });
 

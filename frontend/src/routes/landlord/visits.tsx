@@ -52,7 +52,7 @@ function LandlordVisitsPage() {
     loadVisits();
   }, [loadVisits]);
 
-  const handleUpdateStatus = async (visitId: string, status: VisitStatus) => {
+  const handleUpdateStatus = async (visitId: string, status: Exclude<VisitStatus, "Pending">) => {
     try {
       await mockLandlordApi.updateVisitStatus(visitId, status);
       setActionNotice(

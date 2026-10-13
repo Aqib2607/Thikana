@@ -33,9 +33,9 @@ const SearchParamsSchema = z.object({
   bathrooms: z.number().optional(),
   furnishedStatus: z.any().optional(),
   verifiedOnly: z.boolean().optional(),
-  sortBy: z.enum(["newest", "price_asc", "price_desc", "rating"]).optional(),
-  page: z.number().default(1),
-  view: z.enum(["grid", "map", "split"]).default("grid"),
+  sortBy: z.enum(["newest", "price_asc", "price_desc", "match", "rating"]).optional(),
+  page: z.number().optional(),
+  view: z.enum(["grid", "map", "split"]).optional(),
 });
 
 export const Route = createFileRoute("/properties/")({
@@ -56,7 +56,7 @@ export const Route = createFileRoute("/properties/")({
 function PropertiesDiscoveryPage() {
   const { t, i18n } = useTranslation();
   const searchParams = Route.useSearch();
-  const navigate = useNavigate();
+  const navigate = Route.useNavigate();
   const isBn = i18n.language === "bn";
 
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);

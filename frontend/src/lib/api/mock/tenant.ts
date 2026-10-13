@@ -3,6 +3,7 @@ import type {
   VisitRequestItem,
   ContactRequestItem,
   ConversationItem,
+  MessageItem,
   PropertyReviewItem,
   ListingReportItem,
   VisitStatus,

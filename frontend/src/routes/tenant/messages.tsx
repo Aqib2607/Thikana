@@ -41,8 +41,9 @@ function TenantMessagesPage() {
   useEffect(() => {
     mockTenantApi.getConversations().then((convList) => {
       setConversations(convList);
-      if (convList.length > 0) {
-        setActiveConvId((prev) => prev || convList[0].id);
+      const first = convList[0];
+      if (first) {
+        setActiveConvId((prev) => prev || first.id);
       }
     });
     mockTenantApi.getContactRequests().then((crList) => {

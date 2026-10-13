@@ -89,7 +89,7 @@ export interface PropertyItem {
   billsIncluded: string[]; // e.g., ["Water", "Trash"]
   availability: AvailabilityStatus;
   availableFrom: string; // ISO date
-  approvalStatus: ApprovalStatus;
+  approvalStatus?: ApprovalStatus;
 
   // Location Hierarchy (Khulna-prioritized)
   division: string;
@@ -148,8 +148,8 @@ export const PropertyFilterSchema = z.object({
   verifiedOnly: z.boolean().optional(),
   amenities: z.array(z.string()).optional(),
   sortBy: z.enum(["newest", "price_asc", "price_desc", "match", "rating"]).optional(),
-  page: z.number().default(1),
-  limit: z.number().default(9),
+  page: z.number().optional(),
+  limit: z.number().optional(),
 });
 
 export type PropertyFilter = z.infer<typeof PropertyFilterSchema>;
