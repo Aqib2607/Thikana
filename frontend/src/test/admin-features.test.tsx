@@ -2,16 +2,16 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { mockAdminApi } from "@/lib/api/mock/admin";
 
-import { AdminDashboard } from "@/routes/admin/dashboard";
-import { AdminPropertiesPage } from "@/routes/admin/properties";
-import { AdminPendingPropertiesPage } from "@/routes/admin/properties.pending";
-import { AdminUsersPage } from "@/routes/admin/users";
-import { AdminVerificationsPage } from "@/routes/admin/verifications";
-import { AdminReportsPage } from "@/routes/admin/reports";
-import { AdminReviewsPage } from "@/routes/admin/reviews";
-import { AdminCommunityPage } from "@/routes/admin/community";
-import { AdminAnalyticsPage } from "@/routes/admin/analytics";
-import { AdminAuditLogsPage } from "@/routes/admin/audit-logs";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import { AdminPropertiesPage } from "@/components/admin/AdminPropertiesPage";
+import { AdminPendingPropertiesPage } from "@/components/admin/AdminPendingPropertiesPage";
+import { AdminUsersPage } from "@/components/admin/AdminUsersPage";
+import { AdminVerificationsPage } from "@/components/admin/AdminVerificationsPage";
+import { AdminReportsPage } from "@/components/admin/AdminReportsPage";
+import { AdminReviewsPage } from "@/components/admin/AdminReviewsPage";
+import { AdminCommunityPage } from "@/components/admin/AdminCommunityPage";
+import { AdminAnalyticsPage } from "@/components/admin/AdminAnalyticsPage";
+import { AdminAuditLogsPage } from "@/components/admin/AdminAuditLogsPage";
 
 // Mock router
 vi.mock("@tanstack/react-router", () => ({

@@ -176,7 +176,7 @@ describe("Phase 7: Integration, Quality & Notifications Suite", () => {
 
   describe("TenantReviewsPage Component", () => {
     it("renders TenantReviewsPage with submitted review and visited badge", async () => {
-      const { TenantReviewsPage } = await import("@/routes/tenant/reviews");
+      const { TenantReviewsPage } = await import("@/components/tenant/TenantReviewsPage");
       render(<TenantReviewsPage />);
 
       // Should display heading level 1
