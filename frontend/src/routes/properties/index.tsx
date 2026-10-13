@@ -19,6 +19,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { PropertyCard } from "@/components/property/PropertyCard";
 import { PropertyFilters } from "@/components/property/PropertyFilters";
 import { PropertyMap } from "@/components/property/PropertyMap";
+import { MotionReveal } from "@/components/motion/MotionReveal";
 import { mockProperties } from "@/lib/api/mock/properties";
 import { PropertyFilterSchema, type PropertyFilter } from "@/lib/api/properties";
 
@@ -167,15 +168,15 @@ function PropertiesDiscoveryPage() {
             </div>
 
             {/* Keyword Quick Search Bar */}
-            <form onSubmit={handleSearchSubmit} className="relative w-full sm:w-72">
+            <form onSubmit={handleSearchSubmit} className="relative w-full sm:w-80">
               <input
                 name="q"
                 defaultValue={currentFilters.search || ""}
                 placeholder={isBn ? "এলাকা বা বাসার নাম..." : "Search title or road..."}
-                className="h-10 w-full rounded-lg border border-input bg-surface pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-primary"
+                className="h-11 w-full rounded-full border border-input bg-surface pl-10 pr-4 text-xs text-foreground placeholder:text-muted-foreground shadow-xs focus-visible:outline-2 focus-visible:outline-ring"
               />
               <Search
-                className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground"
+                className="pointer-events-none absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground"
                 aria-hidden="true"
               />
             </form>
@@ -186,13 +187,13 @@ function PropertiesDiscoveryPage() {
       {/* Main Discovery Body */}
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Top Control Bar: Sorting & View Switcher */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-          <div className="flex items-center gap-2">
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-border/80 pb-5">
+          <div className="flex items-center gap-3">
             {/* Mobile Filter Trigger Button */}
             <button
               type="button"
               onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-surface px-3 text-xs font-semibold text-foreground shadow-2xs hover:bg-secondary lg:hidden"
+              className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-surface px-4 text-xs font-semibold text-foreground shadow-xs hover:bg-secondary lg:hidden"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
               <span>{isBn ? "ফিল্টার" : "Filters"}</span>
@@ -200,7 +201,9 @@ function PropertiesDiscoveryPage() {
 
             {/* Sort Dropdown */}
             <label className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="hidden sm:inline">{isBn ? "সাজান:" : "Sort by:"}</span>
+              <span className="hidden sm:inline font-semibold text-foreground">
+                {isBn ? "সাজান:" : "Sort by:"}
+              </span>
               <select
                 value={currentFilters.sortBy || "newest"}
                 onChange={(e) =>
@@ -209,7 +212,7 @@ function PropertiesDiscoveryPage() {
                     sortBy: e.target.value as PropertyFilter["sortBy"],
                   })
                 }
-                className="h-9 rounded-lg border border-input bg-surface px-2.5 text-xs font-medium text-foreground"
+                className="h-10 rounded-full border border-input bg-surface px-4 text-xs font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-ring"
               >
                 <option value="newest">{isBn ? "সর্বশেষ যুক্ত" : "Newest Listings"}</option>
                 <option value="price_asc">
@@ -225,7 +228,7 @@ function PropertiesDiscoveryPage() {
 
           {/* View Mode Toggle (Grid vs Map vs Split) */}
           <div
-            className="flex items-center rounded-lg border border-border bg-surface p-0.5 shadow-2xs"
+            className="flex items-center rounded-full border border-border/80 bg-surface p-1 shadow-xs"
             role="group"
             aria-label="View layout switch"
           >
@@ -234,9 +237,9 @@ function PropertiesDiscoveryPage() {
               onClick={() => setViewMode("grid")}
               aria-pressed={viewMode === "grid"}
               title="Grid View"
-              className={`flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors ${
+              className={`flex h-8 items-center gap-1.5 rounded-full px-4 text-xs font-semibold transition-colors ${
                 viewMode === "grid"
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-primary text-primary-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -249,9 +252,9 @@ function PropertiesDiscoveryPage() {
               onClick={() => setViewMode("map")}
               aria-pressed={viewMode === "map"}
               title="Map View"
-              className={`flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors ${
+              className={`flex h-8 items-center gap-1.5 rounded-full px-4 text-xs font-semibold transition-colors ${
                 viewMode === "map"
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-primary text-primary-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -264,9 +267,9 @@ function PropertiesDiscoveryPage() {
               onClick={() => setViewMode("split")}
               aria-pressed={viewMode === "split"}
               title="Split View"
-              className={`hidden md:flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors ${
+              className={`hidden md:flex h-8 items-center gap-1.5 rounded-full px-4 text-xs font-semibold transition-colors ${
                 viewMode === "split"
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-primary text-primary-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -354,8 +357,10 @@ function PropertiesDiscoveryPage() {
                 {/* 1. Grid Mode */}
                 {viewMode === "grid" && (
                   <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                    {properties.map((prop) => (
-                      <PropertyCard key={prop.id} property={prop} />
+                    {properties.map((prop, idx) => (
+                      <MotionReveal key={prop.id} variant="fadeUp" delay={Math.min(idx * 60, 360)}>
+                        <PropertyCard property={prop} />
+                      </MotionReveal>
                     ))}
                   </div>
                 )}
