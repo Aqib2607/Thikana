@@ -1,0 +1,727 @@
+{
+  "project": {
+    "name": "Thikana",
+    "type": "Academic rental property discovery and management web application",
+    "goal": "Implement the frontend only. Do not implement Laravel backend logic, database schema, migrations, or invented backend endpoints.",
+    "deployment": {
+      "frontend": "Render",
+      "backend": "Render",
+      "mysql": "Railway"
+    },
+    "primary_market": "Bangladesh, with Khulna prioritized for academic demonstration",
+    "languages": {
+      "primary": "Bangla",
+      "secondary": "English"
+    }
+  },
+  "authority": {
+    "read_first": [
+      "AI.md",
+      "docs/01-prd.md",
+      "docs/03-ultra-plan-mode.md",
+      "docs/04-spec-driven-development.md",
+      "docs/05-ui-ux-design-brief.md",
+      "docs/06-implementation-plan.md",
+      "docs/08-connect-your-database.md",
+      "docs/09-find-security-gaps.md",
+      "docs/11-e2e-test-your-application.md",
+      "docs/14-hooks-as-guardrails.md",
+      "docs/references for UI/Reference design.md",
+      "docs/references for UI/Reference skill.md"
+    ],
+    "rule": "If repository reality conflicts with documentation, stop and report the conflict. Do not invent requirements."
+  },
+  "governance": {
+    "branch": "agent/thikana",
+    "commit_format": "agent: <summary_of_changes>",
+    "before_writes": [
+      "Inspect repository and report current state.",
+      "Produce a dry-run plan listing exact files to create or modify.",
+      "Show intended diff/file list.",
+      "Wait for explicit approval of the phase plan before writing."
+    ],
+    "max_files_per_cycle": 20,
+    "never_modify": [
+      "node_modules",
+      ".git",
+      "dist",
+      "build"
+    ],
+    "explicit_confirmation_required_for": [
+      "dependency installation",
+      "file deletion",
+      "database migrations",
+      "destructive data operations",
+      "production configuration changes",
+      "authentication/authorization changes",
+      "API contract changes"
+    ],
+    "secrets": "Never hardcode secrets. Never commit .env files. Use environment variables and safe .env.example values only.",
+    "cycle_rule": "After each phase, report files changed, diff summary, verification results, unresolved issues, and stop for the next go-ahead."
+  },
+  "frontend_stack": {
+    "framework": "React",
+    "language": "TypeScript",
+    "build": "Vite",
+    "styling": "Tailwind CSS",
+    "components": "shadcn/ui",
+    "icons": "Lucide React",
+    "server_state": "TanStack Query",
+    "forms": "React Hook Form + Zod",
+    "localization": "i18next + react-i18next",
+    "maps": "Leaflet + OpenStreetMap-compatible map data",
+    "tests": "Vitest + React Testing Library; Playwright only if already configured or after approval",
+    "routing": "Inspect existing repository. Reuse existing router. If absent, propose the smallest suitable option and wait for approval before installing."
+  },
+  "frontend_only_boundary": {
+    "implement": [
+      "pages, layouts, reusable components, client validation, UI states",
+      "responsive behavior, local UI state, TanStack Query hooks",
+      "typed API client abstraction, accessibility and visual QA",
+      "unit/component tests",
+      "explicitly separated temporary mock adapter only when needed"
+    ],
+    "do_not_implement": [
+      "Laravel controllers/models, database schema/migrations, server authentication or authorization",
+      "invented endpoints or undocumented response shapes",
+      "real email/SMS sending, payments, AI/ML, WebSockets, Redis, government verification"
+    ],
+    "api_contract_rule": "Use existing API contracts if present. Otherwise report contract gaps and isolate a typed adapter. Never guess endpoint names, request/response fields, status codes, or auth assumptions."
+  },
+  "brand_and_visual_direction": {
+    "brand": "Thikana",
+    "logo": "Create a premium, distinctive scalable wordmark/icon concept. Do not imply government affiliation.",
+    "references": [
+      "https://motion-primitives.com/",
+      "https://haikei.app/",
+      "https://www.realtimecolors.com/",
+      "https://21st.dev/"
+    ],
+    "direction": [
+      "premium, modern, trustworthy, Bengali-first, responsive, search-first",
+      "use gradients, SVG blobs/waves, restrained motion and micro-interactions where useful",
+      "do not copy reference designs",
+      "define semantic color tokens and accessible contrast",
+      "support Bangla and English font rendering",
+      "respect reduced-motion preferences",
+      "avoid generic dashboard templates and distracting continuous animation"
+    ]
+  },
+  "routes": {
+    "auth": [
+      "/login",
+      "/register",
+      "/verify-email",
+      "/forgot-password",
+      "/reset-password"
+    ],
+    "shared": [
+      "/",
+      "/profile",
+      "/notifications"
+    ],
+    "tenant": [
+      "/tenant/dashboard",
+      "/properties",
+      "/properties/:propertyId",
+      "/tenant/preferences",
+      "/tenant/favorites",
+      "/tenant/comparison",
+      "/tenant/messages",
+      "/tenant/messages/:conversationId",
+      "/tenant/visits",
+      "/tenant/reviews"
+    ],
+    "landlord": [
+      "/landlord/dashboard",
+      "/landlord/properties",
+      "/landlord/properties/new",
+      "/landlord/properties/:propertyId/edit",
+      "/landlord/contact-requests",
+      "/landlord/messages",
+      "/landlord/messages/:conversationId",
+      "/landlord/visits"
+    ],
+    "admin": [
+      "/admin/dashboard",
+      "/admin/properties/pending",
+      "/admin/properties",
+      "/admin/users",
+      "/admin/verifications",
+      "/admin/reports",
+      "/admin/reviews",
+      "/admin/community",
+      "/admin/analytics",
+      "/admin/audit-logs"
+    ],
+    "access_policy": "Login is required for property search and protected discovery features. A marketing homepage may be public. Client route guards are UX only; backend authorization remains authoritative."
+  },
+  "user_journeys": {
+    "tenant": [
+      "Register with email or phone and password; verify email where configured; log in.",
+      "Search, filter, sort, and switch between list and map.",
+      "View property details, public exact address, availability, verification and community information.",
+      "Save rental preferences and inspect match percentage and breakdown.",
+      "Favorite and compare up to three properties.",
+      "Send contact request; message only after the approved interaction state.",
+      "Request a visit and track Pending, Accepted, Rejected, Cancelled, Completed.",
+      "Submit review as a logged-in tenant; completed visit can show a Visited indicator.",
+      "Report a property."
+    ],
+    "landlord": [
+      "Register/login; create/edit/deactivate own listings.",
+      "Enter structured property data and location hierarchy.",
+      "Upload maximum five images; first image is featured.",
+      "Set amenities and availability; submit for admin approval.",
+      "Manage contact requests, messages, visits and availability.",
+      "Choose whether contact details are publicly displayed."
+    ],
+    "admin": [
+      "Admin-provisioned login; dashboard; approve/reject properties.",
+      "Manage users, simulated verification, reports, reviews and community data.",
+      "View analytics and audit logs."
+    ]
+  },
+  "product_rules": {
+    "roles": [
+      "tenant",
+      "landlord",
+      "admin"
+    ],
+    "property_types": [
+      "Apartment / Flat",
+      "House",
+      "Room",
+      "Sublet",
+      "Hostel",
+      "Mess"
+    ],
+    "rental_types": [
+      "Monthly Rental",
+      "Sublet"
+    ],
+    "images": {
+      "max": 5,
+      "first_is_featured": true,
+      "ui": [
+        "show count",
+        "block sixth selection",
+        "preview/removal",
+        "clearly mark featured",
+        "show upload errors"
+      ]
+    },
+    "location_hierarchy": [
+      "Division",
+      "District",
+      "City",
+      "Area",
+      "Address"
+    ],
+    "exact_address": "Public",
+    "availability": [
+      "Available",
+      "Reserved",
+      "Rented",
+      "Temporarily Unavailable"
+    ],
+    "matching": {
+      "ai_ml": false,
+      "weights_percent": {
+        "location": 30,
+        "budget": 25,
+        "property_type": 15,
+        "rooms_and_bathrooms": 10,
+        "amenities": 15,
+        "availability": 5
+      },
+      "ui": "Show percentage and detailed breakdown. Hide or explain unavailable score if preferences are missing. Prefer backend score when specified in API contract; otherwise report ownership ambiguity rather than implementing competing logic."
+    },
+    "comparison": {
+      "login_required": true,
+      "maximum": 3,
+      "fields": [
+        "rent",
+        "advance",
+        "additional charges",
+        "property type",
+        "rooms",
+        "bathrooms",
+        "size",
+        "floor",
+        "furnished status",
+        "amenities",
+        "availability",
+        "verification status",
+        "location",
+        "matching score"
+      ]
+    },
+    "communication": {
+      "contact_request_before_messaging": true,
+      "messaging": "API-based; no WebSockets or Redis",
+      "public_contact_visibility": "Landlord-controlled"
+    },
+    "visit_statuses": [
+      "Pending",
+      "Accepted",
+      "Rejected",
+      "Cancelled",
+      "Completed"
+    ],
+    "verification": {
+      "simulated": true,
+      "states": [
+        "Owner Identity Verified",
+        "Phone Verified",
+        "Availability Verified",
+        "Documents Verified"
+      ],
+      "label_rule": "Clearly identify as platform-level simulated verification, never government certification."
+    },
+    "reviews": {
+      "eligibility": "Any logged-in tenant",
+      "completed_visit_indicator": true,
+      "criteria": [
+        "Property accuracy",
+        "Landlord behavior",
+        "Location",
+        "Overall experience"
+      ],
+      "rule": "If criteria are not in the existing approved spec/API contract, report the gap rather than inventing the API contract."
+    },
+    "notifications": "In-app only",
+    "community_fields": [
+      "Transport",
+      "Waterlogging",
+      "Internet availability",
+      "Noise",
+      "Safety",
+      "General area information"
+    ],
+    "report_reasons": [
+      "Fake listing",
+      "Already rented",
+      "Incorrect information",
+      "Suspicious behavior",
+      "Inappropriate content",
+      "Other"
+    ],
+    "languages": {
+      "primary": "Bangla",
+      "secondary": "English"
+    }
+  },
+  "forms": [
+    "Use React Hook Form and Zod.",
+    "Provide accessible inline validation and form error summaries where useful.",
+    "Preserve values after server validation errors.",
+    "Prevent duplicate submission while pending.",
+    "Localize validation text.",
+    "Frontend validation improves UX but backend validation is authoritative.",
+    "Do not invent undocumented constraints."
+  ],
+  "state_management": [
+    "TanStack Query for server state.",
+    "Use existing local state tooling if present; avoid a global store without demonstrated need.",
+    "Query keys must include filters, sorting and pagination.",
+    "Invalidate relevant queries after mutations.",
+    "Implement loading, empty, error, retry, success, unauthenticated and forbidden states.",
+    "Keep API calls outside presentational components."
+  ],
+  "api_contract_groups": [
+    "auth and profile",
+    "property CRUD and approval",
+    "search/filter/sort/pagination",
+    "locations and amenities",
+    "preferences and matching",
+    "favorites and comparison",
+    "contact requests and conversations",
+    "messages",
+    "visits",
+    "verification",
+    "reviews",
+    "reports",
+    "community information",
+    "notifications",
+    "admin analytics and audit logs"
+  ],
+  "accessibility": [
+    "Target WCAG 2.2 principles.",
+    "Use semantic landmarks/headings, keyboard-accessible controls and visible focus.",
+    "Label inputs and associate errors programmatically.",
+    "Do not communicate status through color alone.",
+    "Respect reduced motion.",
+    "Provide a list alternative to map-only content.",
+    "Prevent comparison table/dashboard horizontal overflow on mobile.",
+    "Test small mobile, large mobile, tablet, laptop, desktop and wide desktop."
+  ],
+  "performance": [
+    "Lazy-load non-critical routes where appropriate.",
+    "Optimize property images and reserve image aspect ratios.",
+    "Avoid unnecessary dependencies and continuous animation.",
+    "Use query caching appropriately.",
+    "Avoid layout shifts.",
+    "Do not add production-scale infrastructure."
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Repository inspection and UI foundation",
+      "deliverables": [
+        "Repository report and dry-run file plan",
+        "Design tokens, typography and localization foundation",
+        "App shell and routing proposal",
+        "Premium Thikana logo concept"
+      ],
+      "gate": "Stop after plan and wait for approval before writing."
+    },
+    {
+      "phase": 2,
+      "name": "Authentication and role layouts",
+      "deliverables": [
+        "Login, registration, verification and reset screens",
+        "Role-aware navigation",
+        "Tenant, landlord and admin layouts",
+        "Accessible validation states"
+      ],
+      "gate": "Show diff and verification, then stop."
+    },
+    {
+      "phase": 3,
+      "name": "Homepage and property discovery",
+      "deliverables": [
+        "Homepage with search-first hierarchy",
+        "Search, filters and sorting",
+        "List/map results",
+        "Property cards and details",
+        "Community information display"
+      ],
+      "gate": "Show diff and verification, then stop."
+    },
+    {
+      "phase": 4,
+      "name": "Tenant features",
+      "deliverables": [
+        "Preferences and match breakdown",
+        "Favorites and three-property comparison",
+        "Contact request and messaging UI",
+        "Visit requests, reviews and reports"
+      ],
+      "gate": "Show diff and verification, then stop."
+    },
+    {
+      "phase": 5,
+      "name": "Landlord features",
+      "deliverables": [
+        "Landlord dashboard",
+        "Property CRUD screens",
+        "Five-image uploader and featured image behavior",
+        "Approval states, contact/messages/visits",
+        "Public contact visibility setting"
+      ],
+      "gate": "Show diff and verification, then stop."
+    },
+    {
+      "phase": 6,
+      "name": "Admin features",
+      "deliverables": [
+        "Admin dashboard",
+        "Property approval and user management UI",
+        "Simulated verification",
+        "Reports/reviews moderation",
+        "Community management, analytics and audit logs"
+      ],
+      "gate": "Show diff and verification, then stop."
+    },
+    {
+      "phase": 7,
+      "name": "Integration and quality",
+      "deliverables": [
+        "Typed API integration",
+        "Loading/error/empty/forbidden states",
+        "Responsive, accessibility and localization QA",
+        "Unit/component tests, lint, typecheck and build"
+      ],
+      "gate": "Report missing API contracts; never invent them."
+    }
+  ],
+  "verification": {
+    "after_each_phase": [
+      "Run relevant tests.",
+      "Run lint/typecheck if configured.",
+      "Run production build.",
+      "Verify changed screens at desktop and mobile sizes.",
+      "Report changed files and verification results."
+    ],
+    "test_areas": [
+      "auth UI and role navigation",
+      "property validation",
+      "five-image limit",
+      "featured image",
+      "search/filter/sort",
+      "matching display",
+      "three-property comparison boundary",
+      "favorites",
+      "messaging UI",
+      "visit statuses",
+      "verification labels",
+      "review/report forms",
+      "language switching",
+      "loading/empty/error/forbidden states",
+      "keyboard access",
+      "reduced motion"
+    ]
+  },
+  "completion_report": [
+    "Implemented features",
+    "Files created/modified",
+    "API contracts used",
+    "API gaps needing backend decisions",
+    "Mock adapters remaining",
+    "Tests/build results",
+    "Accessibility/responsive checks",
+    "Known limitations",
+    "Recommended next phase"
+  ],
+  "design_system_reference": {
+    "source": "Reference design.md, based on FurnitureOne premium furniture website template at https://furnitureone.framer.ai/",
+    "source_skill": "Reference skill.md, design-system-furnitureone-premium-furniture-website-template",
+    "confidence_note": "The reference source says its inferred surface/audience has low confidence. Reuse its design-system rules and token set, but adapt the information architecture and components to Thikana's rental discovery and role-based workflows. Do not reproduce furniture-specific content or layouts.",
+    "design_principles": [
+      "Consistency over novelty. Reuse existing project patterns before inventing new ones.",
+      "Token-driven design. Every visual decision must reference a named design token.",
+      "Accessibility is a baseline, not an optional enhancement.",
+      "Sentence case for interface copy. Reserve all caps for acronyms.",
+      "The design system is a reference for visual tokens and component quality, not a reason to copy the source website."
+    ],
+    "color_tokens": {
+      "--border-color-primary": {
+        "value": "#787878",
+        "role": "Border"
+      },
+      "--border-color-secondary": {
+        "value": "#C4C4C4",
+        "role": "Border"
+      },
+      "--text-light": {
+        "value": "#FFFFFF",
+        "role": "Text on dark surfaces"
+      },
+      "color-10": {
+        "value": "#EDF1F4",
+        "role": "Background"
+      },
+      "color-7": {
+        "value": "#E8E8E8",
+        "role": "Surface"
+      },
+      "color-8": {
+        "value": "#EDEDED",
+        "role": "Surface"
+      },
+      "color-1": {
+        "value": "#000000",
+        "role": "Primary text"
+      },
+      "color-2": {
+        "value": "#0000EE",
+        "role": "Link/primary text in source palette"
+      },
+      "color-4": {
+        "value": "#999999",
+        "role": "Secondary text"
+      },
+      "color-5": {
+        "value": "#BBBBBB",
+        "role": "Dark background token in source"
+      },
+      "color-9": {
+        "value": "#EDF0F3",
+        "role": "Light surface/text token in source"
+      },
+      "color-11": {
+        "value": "#F5F5F5",
+        "role": "Light surface/text token in source"
+      }
+    },
+    "color_rules": [
+      "Use only the supplied color palette. Do not add new hex colors.",
+      "Expose semantic aliases such as color.background, color.surface, color.text.primary, color.text.secondary, color.text.inverse, color.border.default, color.link, color.state.success, color.state.warning and color.state.error only when each alias maps to an existing approved palette token.",
+      "Do not invent green, amber or red colors for success/warning/error. Use accessible palette combinations, icons, labels and patterns. If the palette cannot meet WCAG 2.2 AA for a required state, stop and report the exact contrast conflict. Do not silently add a color.",
+      "Validate actual foreground/background contrast for text, controls, focus indicators and status elements. Do not assume the reference colors pass contrast.",
+      "The reference has duplicate or ambiguous token names. Preserve source values but use unambiguous semantic aliases in the implementation."
+    ],
+    "typography": {
+      "source_font_stack": [
+        "Inter",
+        "Geist",
+        "Montserrat",
+        "sans-serif",
+        "Times New Roman",
+        "Inter Display"
+      ],
+      "source_scale": {
+        "text-xs": "12px",
+        "text-sm": "14px",
+        "text-base": "16px",
+        "text-lg": "20px",
+        "text-xl": "40px",
+        "text-2xl": "56px"
+      },
+      "weights": [
+        300,
+        400,
+        500,
+        600
+      ],
+      "line_height_values": [
+        "52px",
+        "16.8px",
+        "12px",
+        "72.8px",
+        "22.4px",
+        "32px",
+        "30px",
+        "20.8px",
+        "25.6px",
+        "14.4px",
+        "14px",
+        "24px"
+      ],
+      "rules": [
+        "Use only named typography tokens in components. Avoid arbitrary font sizes, weights or line heights.",
+        "Verify that the font stack renders Bangla correctly. The reference stack does not guarantee Bengali glyph coverage.",
+        "If a Bengali-capable font is not already available, report the gap and request approval before adding a font or external dependency.",
+        "Do not use Times New Roman as the primary UI font unless the repository already requires it."
+      ]
+    },
+    "spacing": {
+      "base_unit": "4px",
+      "tokens": {
+        "space-1": "4px",
+        "space-2": "6px",
+        "space-3": "8px",
+        "space-4": "9px",
+        "space-5": "10px",
+        "space-6": "12px",
+        "space-7": "15px",
+        "space-8": "16px",
+        "space-9": "17px",
+        "space-10": "18px",
+        "space-11": "20px",
+        "space-12": "24px",
+        "space-13": "25px",
+        "space-14": "30px",
+        "space-15": "40px",
+        "space-16": "50px",
+        "space-17": "60px",
+        "space-18": "80px",
+        "space-19": "100px"
+      },
+      "rule": "Use the provided spacing tokens for margin, padding, gap and layout rhythm. Do not introduce arbitrary spacing values."
+    },
+    "radius": {
+      "radius-sm": "3px",
+      "radius-md": "4px",
+      "radius-lg": "8px",
+      "radius-xl": "10px",
+      "radius-full-small": "11px",
+      "radius-6": "20px",
+      "radius-7": "45px",
+      "radius-circle": "50%",
+      "radius-9": "64px",
+      "radius-10": "100px",
+      "radius-11": "150px"
+    },
+    "elevation": {
+      "shadow-sm": "rgb(0, 0, 0) 0px 0px 0px 1px inset",
+      "shadow-md": "rgba(0, 0, 0, 0.17) 0px 0.602187px 1.56569px -1.5px, rgba(0, 0, 0, 0.14) 0px 2.28853px 5.95019px -3px, rgba(0, 0, 0, 0.02) 0px 10px 26px -4.5px"
+    },
+    "motion": {
+      "duration-fast_source_values": [
+        "all",
+        "background, box-shadow",
+        "none"
+      ],
+      "duration-slow": "clip-path 1s cubic-bezier(0.65, 0, 0.2, 1), transform 1.3s cubic-bezier(0.2, 0.7, 0.2, 1)",
+      "rules": [
+        "Use motion sparingly and consistently. Do not use 'all' as an uncontrolled animation declaration.",
+        "Prefer explicit animated properties and reusable motion tokens.",
+        "Respect prefers-reduced-motion.",
+        "Avoid motion that delays searching, navigation, validation or form submission.",
+        "Do not invent new timing values without mapping them to a named motion token or getting approval."
+      ]
+    },
+    "component_inventory_reference": {
+      "buttons": 3,
+      "links": 32,
+      "inputs": 14,
+      "navigation_elements": 4,
+      "lists": 6,
+      "forms": 1,
+      "images": 98,
+      "instruction": "These counts describe the reference source, not Thikana's required component counts. Do not force the same number of components into Thikana."
+    }
+  },
+  "design_system_skill": {
+    "skill_name": "design-system-furnitureone-premium-furniture-website-template",
+    "trigger_when": [
+      "creating a new UI component",
+      "updating or reviewing component styles",
+      "choosing colors, typography, spacing, radii or shadows",
+      "building or reviewing a page",
+      "checking responsive behavior or accessibility"
+    ],
+    "workflow_for_each_component": [
+      "State intent in one sentence, including why the component exists.",
+      "Map every visual choice to named tokens. Do not use raw visual values in component code.",
+      "Define anatomy with named parts and token assignments.",
+      "Define variants and responsive behavior.",
+      "Specify states: default, hover, focus-visible, active, disabled, loading, error and empty where applicable.",
+      "Describe keyboard, pointer and touch interactions, including long content, overflow, truncation and maximum content length.",
+      "Add testable accessibility criteria, including semantic roles, labels, ARIA behavior, live regions and focus management where relevant.",
+      "List at least one concrete anti-pattern and explain why it is wrong.",
+      "Close with a QA checklist and verify the Definition of Done."
+    ],
+    "required_component_documentation_sections_in_order": [
+      "Overview: purpose, when to use, when not to use",
+      "Tokens and foundations",
+      "Anatomy and variants: named parts, variant matrix and responsive behavior",
+      "States and interactions: state table and keyboard/pointer/touch behavior",
+      "Accessibility: ARIA, contrast, focus management and screen reader behavior",
+      "Content guidelines: copy length, tone, capitalization and placeholder rules",
+      "Anti-patterns: explicit misuse examples with reasoning",
+      "QA checklist / Definition of Done"
+    ],
+    "definition_of_done": [
+      "Default state passes a smoke test.",
+      "All relevant states are documented and visually verified.",
+      "All visual values use tokens. No hardcoded hex, pixel, font-size, radius, spacing or shadow values in component styles.",
+      "Keyboard navigation works without a pointer.",
+      "No critical accessibility violations involving contrast, ARIA or focus order.",
+      "The component is tested at the smallest and largest supported breakpoints.",
+      "At least one concrete anti-pattern is documented.",
+      "Purpose, usage, props/API and limitations are documented."
+    ]
+  },
+  "master_execution_instruction": {
+    "role": "You are the senior frontend implementation agent for Thikana. Follow the project requirements and the attached FurnitureOne reference design system and skill as an implementation discipline.",
+    "first_action": "Inspect repository and all required documents. Do not edit files or install dependencies before presenting a dry-run plan and receiving explicit approval.",
+    "design_application": "Apply the supplied design tokens consistently to Thikana's rental search, property cards, detail views, authentication, tenant, landlord and admin interfaces. Use the source as a token/component-quality reference, not as a furniture website to copy.",
+    "design_system_files": [
+      "Create or update a project-level design token file only after including it in the approved dry-run plan.",
+      "Create or update a project-level skill file only after including it in the approved dry-run plan.",
+      "If the repository has an established skills location or design token convention, reuse it.",
+      "Do not create duplicate token systems or duplicate skills."
+    ],
+    "component_documentation": "For substantial shared components, record the required design-system sections in the project’s established documentation location. Do not create unnecessary documentation for trivial one-off markup.",
+    "conflict_handling": [
+      "Project-specific product requirements take precedence over furniture-specific content/layout.",
+      "The provided color, typography, spacing, radius and motion tokens govern styling unless they conflict with WCAG 2.2 AA, Bangla readability or a project requirement.",
+      "If a conflict cannot be solved using existing tokens, stop and request approval. Do not silently add visual values.",
+      "Existing repository architecture and package versions must be inspected before proposing changes."
+    ],
+    "phase_gates": "Execute one phase at a time. After each phase, show changed files, token compliance, component states checked, responsive/accessibility verification and build/test results. Stop for approval before proceeding."
+  }
+}
