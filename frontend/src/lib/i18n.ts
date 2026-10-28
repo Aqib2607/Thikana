@@ -118,7 +118,11 @@ export function translateAdminStat(statKey: string, lang: string = i18n.language
   return statKey;
 }
 
-export function toBnNumber(val: number | string): string {
+export function toBnNumber(val: number | string, lng?: string): string {
+  const targetLng = lng || i18n.language || "en";
+  if (!targetLng.startsWith("bn")) {
+    return val.toString();
+  }
   const bnDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
   return val.toString().replace(/\d/g, (d) => bnDigits[parseInt(d, 10)] ?? d);
 }

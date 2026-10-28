@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import type { PropertyItem } from "@/lib/api/properties";
 import { calculateMatchBreakdown } from "@/lib/api/mock/properties";
+import { translatePropertyType, translateRentalType, translateArea, toBnNumber } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 
 interface PropertyCardProps {
@@ -78,11 +79,7 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
         setIsCompared(false);
       } else {
         if (list.length >= 3) {
-          alert(
-            isBn
-              ? "সর্বোচ্চ ৩টি প্রপার্টি একসাথে তুলনা করা যায়।"
-              : "You can compare up to 3 properties at a time.",
-          );
+          alert(t("tenant.comparisonMaxNotice"));
           return;
         }
         list.push(property.id);
@@ -126,15 +123,15 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
         {/* Top Badges */}
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
           <span className="inline-flex items-center rounded-full bg-foreground/85 px-3 py-1 text-xs font-semibold text-background backdrop-blur-sm">
-            {property.propertyType}
+            {translatePropertyType(property.propertyType, i18n.language)}
           </span>
           {property.verifications.length > 0 && (
             <span
               className="inline-flex items-center gap-1 rounded-full bg-surface/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur-sm shadow-xs"
-              title="Platform Simulated Verification"
+              title={t("properties.simulatedVerification")}
             >
               <ShieldCheck className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-              <span>{isBn ? "ভেরিফাইড" : "Verified"}</span>
+              <span>{t("properties.verified")}</span>
             </span>
           )}
         </div>
@@ -144,8 +141,8 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
           <button
             type="button"
             onClick={toggleCompare}
-            aria-label={isCompared ? "Remove from comparison" : "Add to comparison"}
-            title={isCompared ? "Remove from comparison" : "Compare (max 3)"}
+            aria-label={isCompared ? t("properties.removeCompare") : t("properties.addCompare")}
+            title={isCompared ? t("properties.removeCompare") : t("properties.compareMax3")}
             className={`flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-sm transition-colors ${
               isCompared
                 ? "bg-primary text-primary-foreground"
@@ -157,8 +154,8 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
           <button
             type="button"
             onClick={toggleFavorite}
-            aria-label={isFavorite ? "Remove from favorites" : "Save property"}
-            title={isFavorite ? "Saved" : "Save property"}
+            aria-label={isFavorite ? t("properties.removeFavorite") : t("properties.saveProperty")}
+            title={isFavorite ? t("properties.saved") : t("properties.saveProperty")}
             className={`flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-sm transition-colors ${
               isFavorite
                 ? "bg-destructive text-destructive-foreground"
@@ -171,7 +168,7 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
 
         {/* Photo Count Pill */}
         <div className="absolute bottom-3 right-3 rounded-full bg-foreground/75 px-2.5 py-0.5 text-xs font-medium text-background backdrop-blur-sm">
-          {property.images.length} {isBn ? "ছবি" : "Photos"}
+          {isBn ? toBnNumber(property.images.length) : property.images.length} {isBn ? "ছবি" : "Photos"}
         </div>
 
         {/* Tenant Matching Score Badge */}
@@ -179,7 +176,7 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
           <div className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-sm">
             <Percent className="h-3 w-3" aria-hidden="true" />
             <span>
-              {match.overallPercentage}% {isBn ? "ম্যাচ" : "Match"}
+              {isBn ? toBnNumber(match.overallPercentage) : match.overallPercentage}% {t("properties.match")}
             </span>
           </div>
         )}
@@ -193,10 +190,10 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
             <span className="text-xl font-bold tracking-tight text-foreground md:text-2xl">
               {formatRent(property.rent)}
             </span>
-            <span className="ml-1 text-xs text-muted-foreground">/{isBn ? "মাস" : "month"}</span>
+            <span className="ml-1 text-xs text-muted-foreground">/{t("properties.month")}</span>
           </div>
           <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">
-            {property.rentalType}
+            {translateRentalType(property.rentalType, i18n.language)}
           </span>
         </div>
 
@@ -214,7 +211,7 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
         {/* Location Preview */}
         <p className="mt-1.5 flex items-center gap-1 text-sm text-muted-foreground line-clamp-1">
           <MapPin className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
-          <span>{property.area}, Khulna</span>
+          <span>{translateArea(property.area, i18n.language)}, {t("common.khulna")}</span>
         </p>
 
         {/* Property Specs (Rooms, Baths, Area) */}
@@ -222,19 +219,19 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
           <span className="flex items-center gap-1">
             <Bed className="h-3.5 w-3.5" aria-hidden="true" />
             <span>
-              {property.rooms} {isBn ? "রুম" : "Bed"}
+              {isBn ? toBnNumber(property.rooms) : property.rooms} {t("properties.bedrooms")}
             </span>
           </span>
           <span className="flex items-center gap-1">
             <Bath className="h-3.5 w-3.5" aria-hidden="true" />
             <span>
-              {property.bathrooms} {isBn ? "বাথ" : "Bath"}
+              {isBn ? toBnNumber(property.bathrooms) : property.bathrooms} {t("properties.bathrooms")}
             </span>
           </span>
           <span className="flex items-center gap-1">
             <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
             <span>
-              {property.size} {isBn ? "বর্গফুট" : "sqft"}
+              {isBn ? toBnNumber(property.size) : property.size} {t("properties.size")}
             </span>
           </span>
         </div>
@@ -246,7 +243,7 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
             params={{ propertyId: property.id }}
             className="inline-flex h-11 w-full items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-xs transition-all hover:opacity-90 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-ring"
           >
-            {isBn ? "বিস্তারিত দেখুন ↗" : "View Details ↗"}
+            {t("properties.viewDetails")} ↗
           </Link>
         </div>
       </div>

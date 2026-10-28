@@ -108,7 +108,7 @@ describe("Phase 3: Discovery Accessible Components", () => {
     );
 
     expect(screen.getByText(/৳9,500|৳৯,৫০০/)).toBeInTheDocument();
-    expect(screen.getByText(/KUET Gate \/ Teligati, Khulna/)).toBeInTheDocument();
+    expect(screen.getByText(/KUET Gate \/ Teligati|কুয়েট গেট/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent(
       sampleProp.banglaTitle || sampleProp.title,
     );
@@ -129,7 +129,7 @@ describe("Phase 3: Discovery Accessible Components", () => {
     render(<PropertyMap properties={MOCK_PROPERTIES} />);
 
     // Check accessible alternative exists
-    expect(screen.getByText(/Screen Reader/i)).toBeInTheDocument();
+    expect(screen.getByText(/Screen Reader|অ্যাক্সেসিবল/i)).toBeInTheDocument();
     // Check pin buttons exist
     const pins = screen.getAllByRole("button", { name: /Property:/i });
     expect(pins.length).toBe(MOCK_PROPERTIES.length);
@@ -158,8 +158,8 @@ describe("Phase 3: Discovery Accessible Components", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/30%/)).toBeInTheDocument();
-      expect(screen.getByText(/25%/)).toBeInTheDocument();
+      expect(screen.getByText(/30%|৩০%/)).toBeInTheDocument();
+      expect(screen.getByText(/25%|২৫%/)).toBeInTheDocument();
     });
   });
 });

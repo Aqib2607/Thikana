@@ -8,6 +8,7 @@ import {
   type PropertyFilter,
 } from "@/lib/api/properties";
 import { KHULNA_AREAS, ALL_AMENITIES } from "@/lib/api/mock/properties";
+import { translatePropertyType, translateRentalType, translateFurnished, translateArea, translateAmenity } from "@/lib/i18n";
 
 interface PropertyFiltersProps {
   filters: PropertyFilter;
@@ -86,12 +87,12 @@ export function PropertyFilters({
   return (
     <aside
       className={`rounded-2xl border border-border bg-surface p-5 shadow-xs ${className}`}
-      aria-label="Filter Properties"
+      aria-label={t("properties.filterProperties")}
     >
       <div className="flex items-center justify-between border-b border-border pb-4">
         <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
           <Filter className="h-4 w-4 text-primary" aria-hidden="true" />
-          <span>{isBn ? "ফিল্টারসমূহ" : "Filters"}</span>
+          <span>{t("properties.filters")}</span>
         </h2>
         <button
           type="button"
@@ -99,7 +100,7 @@ export function PropertyFilters({
           className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
-          <span>{isBn ? "রিসেট করুন" : "Reset"}</span>
+          <span>{t("properties.reset")}</span>
         </button>
       </div>
 
@@ -107,7 +108,7 @@ export function PropertyFilters({
         {/* Khulna Area Selector */}
         <div>
           <label htmlFor="filter-area" className="text-xs font-semibold text-foreground">
-            {isBn ? "খুলনা এলাকা" : "Khulna Area"}
+            {t("properties.khulnaArea")}
           </label>
           <select
             id="filter-area"
@@ -117,7 +118,7 @@ export function PropertyFilters({
           >
             {KHULNA_AREAS.map((a) => (
               <option key={a} value={a}>
-                {a}
+                {translateArea(a, i18n.language)}
               </option>
             ))}
           </select>
@@ -126,7 +127,7 @@ export function PropertyFilters({
         {/* Property Type */}
         <div>
           <label htmlFor="filter-type" className="text-xs font-semibold text-foreground">
-            {isBn ? "প্রপার্টির ধরন" : "Property Type"}
+            {t("properties.propertyType")}
           </label>
           <select
             id="filter-type"
@@ -134,10 +135,10 @@ export function PropertyFilters({
             onChange={(e) => handlePropertyTypeChange(e.target.value)}
             className={`mt-1.5 ${field}`}
           >
-            <option value="">{isBn ? "সকল ধরন" : "All Types"}</option>
-            {PROPERTY_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {t}
+            <option value="">{t("properties.allTypes")}</option>
+            {PROPERTY_TYPES.map((pt) => (
+              <option key={pt} value={pt}>
+                {translatePropertyType(pt, i18n.language)}
               </option>
             ))}
           </select>
@@ -146,7 +147,7 @@ export function PropertyFilters({
         {/* Rental Type */}
         <div>
           <label htmlFor="filter-rental-type" className="text-xs font-semibold text-foreground">
-            {isBn ? "ভাড়ার ধরন" : "Rental Type"}
+            {t("properties.rentalType")}
           </label>
           <select
             id="filter-rental-type"
@@ -154,10 +155,10 @@ export function PropertyFilters({
             onChange={(e) => handleRentalTypeChange(e.target.value)}
             className={`mt-1.5 ${field}`}
           >
-            <option value="">{isBn ? "সকল" : "All"}</option>
+            <option value="">{t("properties.allRentalTypes")}</option>
             {RENTAL_TYPES.map((rt) => (
               <option key={rt} value={rt}>
-                {rt}
+                {translateRentalType(rt, i18n.language)}
               </option>
             ))}
           </select>
@@ -166,28 +167,28 @@ export function PropertyFilters({
         {/* Budget Min / Max in BDT */}
         <div>
           <label className="text-xs font-semibold text-foreground">
-            {isBn ? "মাসিক বাজেট (৳)" : "Monthly Budget (৳)"}
+            {t("properties.monthlyBudget")}
           </label>
           <div className="mt-1.5 grid grid-cols-2 gap-2">
             <input
               type="number"
               min={0}
               step={500}
-              placeholder={isBn ? "সর্বনিম্ন" : "Min"}
+              placeholder={t("properties.min")}
               value={filters.minRent !== undefined ? filters.minRent : ""}
               onChange={(e) => handleMinRentChange(e.target.value)}
               className={field}
-              aria-label="Minimum Rent"
+              aria-label={t("properties.minRent")}
             />
             <input
               type="number"
               min={0}
               step={500}
-              placeholder={isBn ? "সর্বোচ্চ" : "Max"}
+              placeholder={t("properties.max")}
               value={filters.maxRent !== undefined ? filters.maxRent : ""}
               onChange={(e) => handleMaxRentChange(e.target.value)}
               className={field}
-              aria-label="Maximum Rent"
+              aria-label={t("properties.maxRent")}
             />
           </div>
         </div>
@@ -195,7 +196,7 @@ export function PropertyFilters({
         {/* Minimum Rooms */}
         <div>
           <label htmlFor="filter-rooms" className="text-xs font-semibold text-foreground">
-            {isBn ? "বেডরুম সংখ্যা" : "Bedrooms"}
+            {t("properties.bedroomsCount")}
           </label>
           <select
             id="filter-rooms"
@@ -203,17 +204,17 @@ export function PropertyFilters({
             onChange={(e) => handleRoomsChange(e.target.value)}
             className={`mt-1.5 ${field}`}
           >
-            <option value="">{isBn ? "যেকোনো" : "Any"}</option>
-            <option value="1">1+ {isBn ? "রুম" : "Room"}</option>
-            <option value="2">2+ {isBn ? "রুম" : "Rooms"}</option>
-            <option value="3">3+ {isBn ? "রুম" : "Rooms"}</option>
+            <option value="">{t("properties.anyRooms")}</option>
+            <option value="1">1+ {t("properties.bedrooms")}</option>
+            <option value="2">2+ {t("properties.bedrooms")}</option>
+            <option value="3">3+ {t("properties.bedrooms")}</option>
           </select>
         </div>
 
         {/* Furnished Status */}
         <div>
           <label htmlFor="filter-furnished" className="text-xs font-semibold text-foreground">
-            {isBn ? "ফার্নিশিং অবস্থা" : "Furnished Status"}
+            {t("properties.furnishedStatus")}
           </label>
           <select
             id="filter-furnished"
@@ -221,10 +222,10 @@ export function PropertyFilters({
             onChange={(e) => handleFurnishedChange(e.target.value)}
             className={`mt-1.5 ${field}`}
           >
-            <option value="">{isBn ? "সকল" : "Any"}</option>
+            <option value="">{t("properties.anyFurnished")}</option>
             {FURNISHED_STATUSES.map((fs) => (
               <option key={fs} value={fs}>
-                {fs}
+                {translateFurnished(fs, i18n.language)}
               </option>
             ))}
           </select>
@@ -239,14 +240,14 @@ export function PropertyFilters({
               onChange={(e) => handleVerifiedToggle(e.target.checked)}
               className="h-4 w-4 rounded-sm border-input text-primary focus:ring-primary"
             />
-            <span>{isBn ? "শুধুমাত্র ভেরিফাইড প্রপার্টি" : "Verified Only"}</span>
+            <span>{t("properties.verifiedOnly")}</span>
           </label>
         </div>
 
         {/* Amenities Checklist */}
         <div>
           <span className="text-xs font-semibold text-foreground">
-            {isBn ? "সুযোগ-সুবিধাসমূহ" : "Key Amenities"}
+            {t("properties.keyAmenities")}
           </span>
           <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto pr-1">
             {ALL_AMENITIES.map((amenity) => {
@@ -262,7 +263,7 @@ export function PropertyFilters({
                     onChange={() => toggleAmenity(amenity)}
                     className="h-3.5 w-3.5 rounded-sm border-input text-primary focus:ring-primary"
                   />
-                  <span>{amenity}</span>
+                  <span>{translateAmenity(amenity, i18n.language)}</span>
                 </label>
               );
             })}

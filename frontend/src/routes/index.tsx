@@ -25,6 +25,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { PropertyCard } from "@/components/property/PropertyCard";
 import { MOCK_PROPERTIES, KHULNA_AREAS } from "@/lib/api/mock/properties";
 import { PROPERTY_TYPES } from "@/lib/api/properties";
+import { translateArea, translatePropertyType, toBnNumber } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { MotionReveal } from "@/components/motion/MotionReveal";
 import { TextReveal } from "@/components/motion/TextReveal";
@@ -242,7 +243,7 @@ function Index() {
             <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface/90 px-4 py-1.5 text-xs font-semibold text-foreground shadow-sm backdrop-blur-sm">
               <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
               <span className="tracking-wide">
-                {isBn ? "খুলনার ভেরিফাইড রেন্টাল প্ল্যাটফর্ম" : "Smart Rental Discovery in Khulna"}
+                {t("home.heroBadge")}
               </span>
             </div>
           </MotionReveal>
@@ -251,7 +252,7 @@ function Index() {
           <div className="mt-6 max-w-4xl">
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.08]">
               <TextReveal className="block text-foreground" delay={80}>
-                {isBn ? "খুলনায় আধুনিক ও নিরাপদ আবাসন" : "CRAFTED FOR MODERN LIVING"}
+                {t("home.heroSub")}
               </TextReveal>
               <TextReveal className="block text-muted-foreground font-medium mt-1" delay={200}>
                 {isBn
@@ -276,14 +277,14 @@ function Index() {
                   to="/properties"
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground shadow-md transition-all hover:opacity-90 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-ring"
                 >
-                  <span>{isBn ? "বাসা খুঁজুন" : "Explore Properties"}</span>
+                  <span>{t("home.exploreProperties")}</span>
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
                 <Link
                   to={user?.role === "landlord" ? "/landlord/dashboard" : "/register"}
                   className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-surface px-8 py-3.5 text-sm font-semibold text-foreground shadow-sm transition-all hover:bg-secondary focus-visible:outline-2 focus-visible:outline-ring"
                 >
-                  <span>{isBn ? "বাড়ি লিস্টিং করুন" : "List Your Home"}</span>
+                  <span>{t("home.listYourHome")}</span>
                 </Link>
               </div>
 
@@ -328,14 +329,14 @@ function Index() {
                 <label className="grid gap-1.5 text-xs font-semibold text-foreground">
                   <span className="flex items-center gap-1.5">
                     <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                    {isBn ? "খুলনা এলাকা" : "Khulna Area"}
+                    {t("properties.khulnaArea")}
                   </span>
                   <select
                     value={selectedArea}
                     onChange={(e) => setSelectedArea(e.target.value)}
                     className="h-11 w-full rounded-full border border-border bg-background px-4 text-xs font-medium text-foreground focus-visible:outline-2 focus-visible:outline-ring"
                   >
-                    <option value="">{isBn ? "সকল এলাকা (All Khulna)" : "All Khulna Areas"}</option>
+                    <option value="">{t("home.allKhulnaAreas")}</option>
                     {KHULNA_AREAS.filter((a) => a !== "All Areas").map((a) => (
                       <option key={a} value={a}>
                         {a}
@@ -347,14 +348,14 @@ function Index() {
                 <label className="grid gap-1.5 text-xs font-semibold text-foreground">
                   <span className="flex items-center gap-1.5">
                     <Home className="h-3.5 w-3.5 text-muted-foreground" />
-                    {isBn ? "প্রপার্টির ধরন" : "Property Type"}
+                    {t("properties.propertyType")}
                   </span>
                   <select
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value)}
                     className="h-11 w-full rounded-full border border-border bg-background px-4 text-xs font-medium text-foreground focus-visible:outline-2 focus-visible:outline-ring"
                   >
-                    <option value="">{isBn ? "সকল ধরন (All Types)" : "All Property Types"}</option>
+                    <option value="">{t("home.allPropertyTypes")}</option>
                     {PROPERTY_TYPES.map((pt) => (
                       <option key={pt} value={pt}>
                         {t(`properties.type.${pt}`, pt.replace("_", " "))}
@@ -366,13 +367,13 @@ function Index() {
                 <label className="grid gap-1.5 text-xs font-semibold text-foreground">
                   <span className="flex items-center gap-1.5">
                     <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground" />
-                    {isBn ? "সর্বোচ্চ বাজেট (৳)" : "Max Budget (৳)"}
+                    {t("properties.monthlyBudget")}
                   </span>
                   <input
                     type="number"
                     min={0}
                     step={500}
-                    placeholder={isBn ? "যেমন: ৮০০০" : "e.g. 8000"}
+                    placeholder={t("home.budgetPlaceholder")}
                     value={maxBudget}
                     onChange={(e) => setMaxBudget(e.target.value)}
                     className="h-11 w-full rounded-full border border-border bg-background px-4 text-xs font-medium text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-ring"
@@ -385,7 +386,7 @@ function Index() {
                     className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-90 focus-visible:outline-2 focus-visible:outline-ring"
                   >
                     <Search className="h-4 w-4" />
-                    <span>{isBn ? "বাসা খুঁজুন" : "Find Homes ↗"}</span>
+                    <span>{t("home.exploreProperties")} ↗</span>
                   </button>
                 </div>
               </form>
@@ -393,7 +394,7 @@ function Index() {
               {/* Quick Campus Zones Pills */}
               <div className="mt-2.5 flex flex-wrap items-center gap-2 border-t border-border/60 pt-2.5 text-xs text-muted-foreground">
                 <span className="font-semibold text-foreground">
-                  {isBn ? "জনপ্রিয় এলাকা:" : "Popular Hubs:"}
+                  {t("home.popularHubs")}
                 </span>
                 {[
                   { name: "KUET Gate / Teligati", label: "KUET Gate" },
@@ -501,7 +502,7 @@ function Index() {
           <MotionReveal variant="fadeUp">
             <div className="max-w-2xl">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                {isBn ? "ক্যাটাগরি অনুসন্ধান" : "01 — 05 CATEGORIES"}
+                {t("home.categoriesEyebrow")}
               </p>
               <h2 className="mt-2 text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
                 {isBn
@@ -554,7 +555,7 @@ function Index() {
                               search={{ propertyType: tab.propertyType }}
                               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90"
                             >
-                              <span>{isBn ? "প্রপার্টি দেখুন" : "Explore Flats"}</span>
+                              <span>{t("home.exploreFlats")}</span>
                               <ArrowUpRight className="h-3 w-3" />
                             </Link>
                           </div>
@@ -608,17 +609,17 @@ function Index() {
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                  {isBn ? "বিশেষ সংগ্রহ" : "COLLECTIONS"}
+                  {t("home.collectionsEyebrow")}
                 </p>
                 <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-                  {isBn ? "জীবনযাত্রার ধরন অনুযায়ী বাসা খুঁজুন" : "Browse by Living Style"}
+                  {t("home.collectionsTitle")}
                 </h2>
               </div>
               <Link
                 to="/properties"
                 className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-4 py-2 text-xs font-semibold text-foreground shadow-2xs hover:bg-secondary transition-all"
               >
-                <span>{isBn ? "সকল প্রপার্টি দেখুন" : "View Complete Directory"}</span>
+                <span>{t("home.viewAllProperties")}</span>
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -711,10 +712,10 @@ function Index() {
             >
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                  {isBn ? "ঠিকানার বৈশিষ্ট্য" : "CURATED SPACES"}
+                  {t("home.featuresEyebrow")}
                 </p>
                 <h2 className="mt-2 text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-[1.12]">
-                  {isBn ? "স্বচ্ছতা ও নিশ্চয়তার মেলবন্ধন" : "Homes Made for Every Moment"}
+                  {t("home.featuresTitle")}
                 </h2>
                 <p className="mt-3 text-sm sm:text-base leading-relaxed text-muted-foreground">
                   {isBn
@@ -730,7 +731,7 @@ function Index() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-foreground">
-                      {isBn ? "১০০% নিশ্চিত ভাড়ার হিসাব" : "100% Upfront Pricing"}
+                      {t("home.featPricing")}
                     </h3>
                     <p className="text-xs text-muted-foreground">
                       {isBn
@@ -746,7 +747,7 @@ function Index() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-foreground">
-                      {isBn ? "সরাসরি ভিজিট ও বুকিং" : "Direct Scheduled Visits"}
+                      {t("home.featVisits")}
                     </h3>
                     <p className="text-xs text-muted-foreground">
                       {isBn
@@ -762,7 +763,7 @@ function Index() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-foreground">
-                      {isBn ? "নিরাপদ অগ্রিম জামানত" : "Verified Security Deposits"}
+                      {t("home.featDeposits")}
                     </h3>
                     <p className="text-xs text-muted-foreground">
                       {isBn
@@ -778,7 +779,7 @@ function Index() {
                   to="/properties"
                   className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 transition-all"
                 >
-                  <span>{isBn ? "ভেরিফাইড বাসা দেখুন" : "Browse Verified Homes"}</span>
+                  <span>{t("home.browseVerifiedHomes")}</span>
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -806,10 +807,10 @@ function Index() {
           <MotionReveal variant="fadeUp">
             <div className="text-center max-w-2xl mx-auto">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                {isBn ? "কমিউনিটি" : "OUR COMMUNITY"}
+                {t("home.communityEyebrow")}
               </p>
               <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-                {isBn ? "ভেরিফাইড বাড়িওয়ালা ও ক্যাম্পাস গাইড" : "Verified Landlords & Local Guides"}
+                {t("home.communityTitle")}
               </h2>
               <p className="mt-3 text-sm text-muted-foreground">
                 {isBn
@@ -882,7 +883,7 @@ function Index() {
           <MotionReveal variant="fadeUp">
             <div className="text-center max-w-2xl mx-auto">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                {isBn ? "ভাড়াটিয়াদের মতামত" : "EXPERIENCES"}
+                {t("home.reviewsEyebrow")}
               </p>
               <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
                 {isBn
@@ -954,10 +955,10 @@ function Index() {
           <MotionReveal variant="fadeUp">
             <div className="text-center">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-400">
-                {isBn ? "সাধারণ জিজ্ঞাসা" : "FREQUENTLY ASKED QUESTIONS"}
+                {t("home.faqEyebrow")}
               </p>
               <h2 className="mt-2 text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
-                {isBn ? "বাসা ভাড়া সংক্রান্ত যাবতীয় প্রশ্নের উত্তর" : "Everything You Need to Know"}
+                {t("home.faqTitle")}
               </h2>
             </div>
           </MotionReveal>
@@ -1010,10 +1011,10 @@ function Index() {
             >
               <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-foreground">
                 <Mail className="h-3.5 w-3.5 text-primary" />
-                {isBn ? "সরাসরি রেন্টাল ইনকোয়ারি" : "Direct Rental Match"}
+                {t("home.inquiryEyebrow")}
               </span>
               <h2 className="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-                {isBn ? "আপনার কাঙ্ক্ষিত বাসার বিবরণ দিন" : "Can't Find What You're Looking For?"}
+                {t("home.inquiryTitle")}
               </h2>
               <p className="mt-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
                 {isBn
@@ -1025,7 +1026,7 @@ function Index() {
                 <div className="mt-6 rounded-2xl bg-emerald-50 border border-emerald-200 p-6 text-center dark:bg-emerald-950 dark:border-emerald-800 animate-fade-in">
                   <CheckCircle2 className="mx-auto h-8 w-8 text-emerald-600 dark:text-emerald-400" />
                   <h4 className="mt-2 text-sm font-bold text-emerald-900 dark:text-emerald-200">
-                    {isBn ? "ইনকোয়ারি সফলভাবে জমা হয়েছে!" : "Inquiry Submitted Successfully!"}
+                    {t("home.inquirySuccess")}
                   </h4>
                   <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-300">
                     {isBn
@@ -1037,12 +1038,12 @@ function Index() {
                 <form onSubmit={handleInquirySubmit} className="mt-6 space-y-4">
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      {isBn ? "আপনার নাম" : "Your Name"}
+                      {t("home.yourName")}
                     </label>
                     <input
                       required
                       type="text"
-                      placeholder={isBn ? "যেমন: তানজিল আহমেদ" : "e.g. Tanzil Ahmed"}
+                      placeholder={t("home.namePlaceholder")}
                       value={inquiryName}
                       onChange={(e) => setInquiryName(e.target.value)}
                       className="h-11 w-full rounded-full border border-border bg-background px-4 text-xs text-foreground focus-visible:outline-2 focus-visible:outline-ring"
@@ -1052,7 +1053,7 @@ function Index() {
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
                       <label className="block text-xs font-semibold text-foreground mb-1">
-                        {isBn ? "মোবাইল নম্বর" : "Mobile Phone"}
+                        {t("home.mobilePhone")}
                       </label>
                       <input
                         required
@@ -1065,7 +1066,7 @@ function Index() {
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-foreground mb-1">
-                        {isBn ? "পছন্দের এলাকা" : "Preferred Area"}
+                        {t("home.preferredArea")}
                       </label>
                       <select
                         value={inquiryArea}
@@ -1083,7 +1084,7 @@ function Index() {
 
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      {isBn ? "সর্বোচ্চ বাজেট (টাকা/মাস)" : "Max Budget (BDT / month)"}
+                      {t("home.maxBudgetLabel")}
                     </label>
                     <input
                       type="number"
@@ -1118,7 +1119,7 @@ function Index() {
                     className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-8 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-90"
                   >
                     <Send className="h-4 w-4" />
-                    <span>{isBn ? "ইনকোয়ারি পাঠান" : "Submit Rental Request ↗"}</span>
+                    <span>{t("home.submitInquiry")}</span>
                   </button>
                 </form>
               )}
@@ -1174,7 +1175,7 @@ function Index() {
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-3xl border border-border/80 bg-secondary/50 p-6 sm:p-8 hover-lift">
                 <div>
                   <h3 className="text-base font-bold text-foreground">
-                    {isBn ? "আপনি কি বাড়িওয়ালা?" : "Are You a Khulna Landlord?"}
+                    {t("home.landlordCtaTitle")}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1">
                     {isBn
@@ -1186,7 +1187,7 @@ function Index() {
                   to={user?.role === "landlord" ? "/landlord/dashboard" : "/register"}
                   className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-xs font-semibold text-primary-foreground shrink-0 hover:opacity-90 transition-opacity shadow-xs"
                 >
-                  <span>{isBn ? "বাড়ি লিস্টিং করুন" : "List Your Home"}</span>
+                  <span>{t("home.listYourHome")}</span>
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
               </div>

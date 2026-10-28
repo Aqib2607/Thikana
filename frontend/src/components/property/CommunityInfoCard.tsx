@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Bus, CloudRain, Wifi, Volume2, ShieldAlert, Info } from "lucide-react";
+import { translateArea } from "@/lib/i18n";
 import type { CommunityInfo } from "@/lib/api/properties";
 
 interface CommunityInfoCardProps {
@@ -14,32 +15,32 @@ export function CommunityInfoCard({ community, areaName }: CommunityInfoCardProp
   const items = [
     {
       icon: Bus,
-      title: isBn ? "যাতায়াত ও ট্রান্সপোর্ট" : "Transport & Connectivity",
+      title: t("community.transportTitle"),
       desc: community.transport,
     },
     {
       icon: CloudRain,
-      title: isBn ? "জলাবদ্ধতা (বর্ষাকালীন অবস্থা)" : "Waterlogging & Drainage",
+      title: t("community.waterloggingTitle"),
       desc: community.waterlogging,
     },
     {
       icon: Wifi,
-      title: isBn ? "ইন্টারনেট ও ব্রডব্যান্ড" : "Internet & ISP Availability",
+      title: t("community.internetTitle"),
       desc: community.internet,
     },
     {
       icon: Volume2,
-      title: isBn ? "শব্দ ও পরিবেশের শান্তি" : "Noise & Study Environment",
+      title: t("community.noiseTitle"),
       desc: community.noise,
     },
     {
       icon: ShieldAlert,
-      title: isBn ? "নিরাপত্তা ও গার্ড ব্যবস্থা" : "Safety & Neighborhood Security",
+      title: t("community.safetyTitle"),
       desc: community.safety,
     },
     {
       icon: Info,
-      title: isBn ? "এলাকার সার্বিক বিবরণ" : "General Area Information",
+      title: t("community.generalTitle"),
       desc: community.general,
     },
   ];
@@ -54,12 +55,10 @@ export function CommunityInfoCard({ community, areaName }: CommunityInfoCardProp
           id="community-info-heading"
           className="text-xl font-bold tracking-tight text-foreground"
         >
-          {isBn ? `${areaName} এলাকার কমিউনিটি তথ্য` : `Community & Neighborhood: ${areaName}`}
+          {t("community.heading", { area: translateArea(areaName, i18n.language) })}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          {isBn
-            ? "শিক্ষার্থী ও নতুন ভাড়াটিয়াদের জন্য খুলনার বাস্তব গ্রাউন্ড রিপোর্ট"
-            : "Ground-level neighborhood intelligence for students & tenants in Khulna"}
+          {t("community.subtitle")}
         </p>
       </div>
 

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { MapPin, Navigation, ExternalLink, ShieldCheck } from "lucide-react";
 import type { PropertyItem } from "@/lib/api/properties";
 import { Link } from "@tanstack/react-router";
+import { translateArea, toBnNumber } from "@/lib/i18n";
 
 interface PropertyMapProps {
   properties: PropertyItem[];
@@ -45,16 +46,16 @@ export function PropertyMap({ properties, selectedId, onSelectProperty }: Proper
   return (
     <div
       className="relative flex flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-xs"
-      aria-label="Khulna Interactive Rental Map"
+      aria-label={t("properties.mapAria")}
     >
       {/* Top Map Bar */}
       <div className="flex items-center justify-between border-b border-border bg-secondary/50 px-4 py-3 text-xs text-muted-foreground">
         <div className="flex items-center gap-1.5 font-medium text-foreground">
           <Navigation className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-          <span>{isBn ? "খুলনা মেকানিকাল ও একাডেমি ম্যাপ" : "Khulna Academic & City Map"}</span>
+          <span>{t("properties.mapTitle")}</span>
         </div>
         <span>
-          {properties.length} {isBn ? "পিন প্রদর্শিত" : "pins plotted"}
+          {toBnNumber(properties.length, i18n.language)} {t("properties.pinsPlotted")}
         </span>
       </div>
 
@@ -86,13 +87,13 @@ export function PropertyMap({ properties, selectedId, onSelectProperty }: Proper
 
         {/* Khulna Key Regional Landmark Watermarks */}
         <div className="pointer-events-none absolute left-6 top-6 rounded-md bg-surface/70 px-2 py-1 text-[11px] font-semibold text-muted-foreground backdrop-blur-xs">
-          KUET / Teligati Zone
+          {translateArea("Teligati", i18n.language)} / KUET
         </div>
         <div className="pointer-events-none absolute bottom-8 left-8 rounded-md bg-surface/70 px-2 py-1 text-[11px] font-semibold text-muted-foreground backdrop-blur-xs">
-          Khulna University / Gallamari
+          {translateArea("Gallamari", i18n.language)} / KU
         </div>
         <div className="pointer-events-none absolute right-8 top-1/2 -translate-y-1/2 rounded-md bg-surface/70 px-2 py-1 text-[11px] font-semibold text-muted-foreground backdrop-blur-xs">
-          Sonadanga R/A & Central
+          {translateArea("Sonadanga", i18n.language)} & Central
         </div>
 
         {/* Plotted Property Pins */}
@@ -106,7 +107,7 @@ export function PropertyMap({ properties, selectedId, onSelectProperty }: Proper
               type="button"
               onClick={() => handleMarkerClick(p)}
               style={{ left: `${x}%`, top: `${y}%` }}
-              aria-label={`Property: ${p.title}, ৳${p.rent}`}
+              aria-label={`Property: ${isBn && p.banglaTitle ? p.banglaTitle : p.title}, ৳${toBnNumber(p.rent, i18n.language)}`}
               aria-pressed={isSelected}
               className={`group absolute -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 focus-visible:outline-2 focus-visible:outline-primary ${
                 isSelected ? "z-20 scale-110" : "z-10 hover:scale-105"
@@ -120,7 +121,7 @@ export function PropertyMap({ properties, selectedId, onSelectProperty }: Proper
                 }`}
               >
                 <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
-                <span>৳{p.rent >= 1000 ? `${(p.rent / 1000).toFixed(1)}k` : p.rent}</span>
+                <span>৳{p.rent >= 1000 ? `${toBnNumber((p.rent / 1000).toFixed(1), i18n.language)}k` : toBnNumber(p.rent, i18n.language)}</span>
               </div>
             </button>
           );
@@ -138,13 +139,13 @@ export function PropertyMap({ properties, selectedId, onSelectProperty }: Proper
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1">
                   <span className="text-xs font-bold text-foreground">
-                    ৳{activeProperty.rent.toLocaleString()}
+                    ৳{toBnNumber(activeProperty.rent.toLocaleString(), i18n.language)}
                   </span>
-                  <span className="text-[11px] text-muted-foreground">/{isBn ? "মাস" : "mo"}</span>
+                  <span className="text-[11px] text-muted-foreground">/{t("properties.month")}</span>
                   {activeProperty.verifications.length > 0 && (
                     <ShieldCheck
                       className="ml-auto h-3.5 w-3.5 text-primary shrink-0"
-                      aria-label="Verified"
+                      aria-label={t("properties.verified")}
                     />
                   )}
                 </div>
@@ -154,14 +155,14 @@ export function PropertyMap({ properties, selectedId, onSelectProperty }: Proper
                     : activeProperty.title}
                 </h4>
                 <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
-                  {activeProperty.area}
+                  {translateArea(activeProperty.area, i18n.language)}
                 </p>
                 <Link
                   to="/properties/$propertyId"
                   params={{ propertyId: activeProperty.id }}
                   className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline"
                 >
-                  <span>{isBn ? "বিস্তারিত দেখুন" : "View Details"}</span>
+                  <span>{t("properties.viewDetails")}</span>
                   <ExternalLink className="h-3 w-3" aria-hidden="true" />
                 </Link>
               </div>
@@ -174,9 +175,7 @@ export function PropertyMap({ properties, selectedId, onSelectProperty }: Proper
       <div className="border-t border-border bg-surface p-4">
         <details className="text-xs text-muted-foreground">
           <summary className="cursor-pointer font-medium text-foreground hover:text-primary">
-            {isBn
-              ? "ম্যাপের অ্যাক্সেসিবল টেক্সট লিস্ট দেখুন (Screen Reader Friendly)"
-              : "View Accessible Text List of Plotted Locations (Screen Reader Alternative)"}
+            {t("properties.mapAccessibilitySummary")}
           </summary>
           <ul className="mt-3 space-y-2 max-h-36 overflow-y-auto">
             {properties.map((p) => (
@@ -185,14 +184,14 @@ export function PropertyMap({ properties, selectedId, onSelectProperty }: Proper
                 className="flex items-center justify-between border-b border-border/40 pb-1"
               >
                 <span>
-                  <strong>{p.area}</strong>: {p.title} (৳{p.rent}/mo)
+                  <strong>{translateArea(p.area, i18n.language)}</strong>: {isBn && p.banglaTitle ? p.banglaTitle : p.title} (৳{toBnNumber(p.rent, i18n.language)}/{t("properties.month")})
                 </span>
                 <Link
                   to="/properties/$propertyId"
                   params={{ propertyId: p.id }}
                   className="font-medium text-primary hover:underline"
                 >
-                  Open
+                  {t("properties.openListing")}
                 </Link>
               </li>
             ))}

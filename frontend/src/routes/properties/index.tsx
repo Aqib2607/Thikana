@@ -22,6 +22,7 @@ import { PropertyMap } from "@/components/property/PropertyMap";
 import { MotionReveal } from "@/components/motion/MotionReveal";
 import { mockProperties } from "@/lib/api/mock/properties";
 import { PropertyFilterSchema, type PropertyFilter } from "@/lib/api/properties";
+import { translateArea, toBnNumber } from "@/lib/i18n";
 
 const SearchParamsSchema = z.object({
   search: z.string().optional(),
@@ -146,12 +147,12 @@ function PropertiesDiscoveryPage() {
             <ol className="flex items-center gap-1.5">
               <li>
                 <Link to="/" className="hover:text-foreground">
-                  {isBn ? "হোম" : "Home"}
+                  {t("common.home")}
                 </Link>
               </li>
               <li>/</li>
               <li className="font-semibold text-foreground">
-                {isBn ? "খুলনার প্রপার্টি তালিকা" : "Properties in Khulna"}
+                {t("properties.exploreTitle")}
               </li>
             </ol>
           </nav>
@@ -159,11 +160,11 @@ function PropertiesDiscoveryPage() {
           <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="max-w-xl">
               <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-                {isBn ? "খুলনায় ভাড়ার বাসা ও মেস সন্ধান" : "Explore Rental Properties in Khulna"}
+                {t("properties.exploreTitle")}
               </h1>
               <p className="mt-1 text-xs text-muted-foreground">
-                {total} {isBn ? "টি প্রপার্টি পাওয়া গেছে" : "verified properties available"}
-                {currentFilters.area ? ` in ${currentFilters.area}` : ""}
+                {toBnNumber(total, i18n.language)} {t("properties.propertiesAvailable")}
+                {currentFilters.area ? ` (${translateArea(currentFilters.area, i18n.language)})` : ""}
               </p>
             </div>
 
@@ -172,7 +173,7 @@ function PropertiesDiscoveryPage() {
               <input
                 name="q"
                 defaultValue={currentFilters.search || ""}
-                placeholder={isBn ? "এলাকা বা বাসার নাম..." : "Search title or road..."}
+                placeholder={t("properties.searchPlaceholder")}
                 className="h-11 w-full rounded-full border border-input bg-surface pl-10 pr-4 text-xs font-medium text-foreground placeholder:text-muted-foreground shadow-xs focus-visible:outline-2 focus-visible:outline-ring"
               />
               <Search
@@ -196,7 +197,7 @@ function PropertiesDiscoveryPage() {
               className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-surface px-4 text-xs font-semibold text-foreground shadow-xs hover:bg-secondary lg:hidden cursor-pointer"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
-              <span>{isBn ? "ফিল্টার" : "Filters"}</span>
+              <span>{t("properties.filters")}</span>
             </button>
           </div>
 
@@ -205,7 +206,7 @@ function PropertiesDiscoveryPage() {
             {/* Sort Dropdown */}
             <label className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className="hidden sm:inline font-semibold text-foreground">
-                {isBn ? "সাজান:" : "Sort by:"}
+                {t("properties.sortBy")}
               </span>
               <select
                 value={currentFilters.sortBy || "newest"}
@@ -217,14 +218,10 @@ function PropertiesDiscoveryPage() {
                 }
                 className="h-10 rounded-full border border-input bg-surface px-4 text-xs font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-ring cursor-pointer"
               >
-                <option value="newest">{isBn ? "সর্বশেষ যুক্ত" : "Newest Listings"}</option>
-                <option value="price_asc">
-                  {isBn ? "ভাড়া: কম থেকে বেশি" : "Rent: Low to High"}
-                </option>
-                <option value="price_desc">
-                  {isBn ? "ভাড়া: বেশি থেকে কম" : "Rent: High to Low"}
-                </option>
-                <option value="rating">{isBn ? "রেটিং অনুযায়ী" : "Highest Rated"}</option>
+                <option value="newest">{t("properties.sortNewest")}</option>
+                <option value="price_asc">{t("properties.sortPriceAsc")}</option>
+                <option value="price_desc">{t("properties.sortPriceDesc")}</option>
+                <option value="rating">{t("properties.sortRating")}</option>
               </select>
             </label>
 
@@ -232,13 +229,13 @@ function PropertiesDiscoveryPage() {
             <div
               className="flex items-center rounded-full border border-border/80 bg-surface p-1 shadow-xs"
               role="group"
-              aria-label="View layout switch"
+              aria-label={t("properties.viewLayoutSwitch")}
             >
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
                 aria-pressed={viewMode === "grid"}
-                title="Grid View"
+                title={t("properties.gridView")}
                 className={`flex h-8 items-center gap-1.5 rounded-full px-3.5 text-xs font-semibold transition-colors cursor-pointer ${
                   viewMode === "grid"
                     ? "bg-primary text-primary-foreground shadow-xs"
@@ -246,14 +243,14 @@ function PropertiesDiscoveryPage() {
                 }`}
               >
                 <LayoutGrid className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="hidden sm:inline">{isBn ? "লিস্ট ভিউ" : "List"}</span>
+                <span className="hidden sm:inline">{t("properties.viewList")}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setViewMode("map")}
                 aria-pressed={viewMode === "map"}
-                title="Map View"
+                title={t("properties.mapView")}
                 className={`flex h-8 items-center gap-1.5 rounded-full px-3.5 text-xs font-semibold transition-colors cursor-pointer ${
                   viewMode === "map"
                     ? "bg-primary text-primary-foreground shadow-xs"
@@ -261,14 +258,14 @@ function PropertiesDiscoveryPage() {
                 }`}
               >
                 <MapIcon className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="hidden sm:inline">{isBn ? "ম্যাপ ভিউ" : "Map"}</span>
+                <span className="hidden sm:inline">{t("properties.viewMap")}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setViewMode("split")}
                 aria-pressed={viewMode === "split"}
-                title="Split View"
+                title={t("properties.splitView")}
                 className={`hidden md:flex h-8 items-center gap-1.5 rounded-full px-3.5 text-xs font-semibold transition-colors cursor-pointer ${
                   viewMode === "split"
                     ? "bg-primary text-primary-foreground shadow-xs"
@@ -276,7 +273,7 @@ function PropertiesDiscoveryPage() {
                 }`}
               >
                 <Columns2 className="h-3.5 w-3.5" aria-hidden="true" />
-                <span>{isBn ? "স্প্লিট ভিউ" : "Split"}</span>
+                <span>{t("properties.viewSplit")}</span>
               </button>
             </div>
           </div>
@@ -314,19 +311,17 @@ function PropertiesDiscoveryPage() {
               <div className="rounded-2xl border border-destructive bg-surface p-8 text-center">
                 <AlertCircle className="mx-auto h-10 w-10 text-destructive" aria-hidden="true" />
                 <h3 className="mt-3 text-lg font-bold text-foreground">
-                  {isBn ? "প্রপার্টি লোড করা যায়নি" : "Failed to load properties"}
+                  {t("properties.loadError")}
                 </h3>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {isBn
-                    ? "নেটওয়ার্ক কানেকশন পরীক্ষা করুন এবং পুনরায় চেষ্টা করুন।"
-                    : "Please check your network and retry."}
+                  {t("properties.loadErrorDesc")}
                 </p>
                 <button
                   type="button"
                   onClick={() => refetch()}
                   className="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-primary px-6 text-xs font-semibold text-primary-foreground shadow-sm hover:opacity-90 cursor-pointer"
                 >
-                  {isBn ? "পুনরায় চেষ্টা করুন" : "Retry"}
+                  {t("common.retry")}
                 </button>
               </div>
             )}
@@ -336,12 +331,10 @@ function PropertiesDiscoveryPage() {
               <div className="rounded-2xl border border-border bg-surface p-12 text-center">
                 <Home className="mx-auto h-12 w-12 text-muted-foreground" aria-hidden="true" />
                 <h3 className="mt-4 text-lg font-bold text-foreground">
-                  {isBn ? "কোনো প্রপার্টি পাওয়া যায়নি" : "No properties matched your criteria"}
+                  {t("properties.noPropertiesFound")}
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {isBn
-                    ? "অনুগ্রহ করে আপনার ফিল্টার বা বাজেটের সীমা পরিবর্তন করে পুনরায় চেষ্টা করুন।"
-                    : "Try adjusting your budget, location, or clearing some amenity filters."}
+                  {t("properties.noPropertiesFoundDesc")}
                 </p>
                 <button
                   type="button"
@@ -349,7 +342,7 @@ function PropertiesDiscoveryPage() {
                   className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-primary px-6 text-xs font-semibold text-primary-foreground shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
                 >
                   <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                  <span>{isBn ? "ফিল্টার রিসেট করুন" : "Clear All Filters"}</span>
+                  <span>{t("properties.resetFilters")}</span>
                 </button>
               </div>
             )}
@@ -405,13 +398,11 @@ function PropertiesDiscoveryPage() {
                       className="inline-flex h-10 items-center gap-1.5 rounded-full border border-border bg-surface px-4 text-xs font-semibold text-foreground transition-colors hover:bg-secondary disabled:opacity-50 cursor-pointer"
                     >
                       <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-                      <span>{isBn ? "পূর্ববর্তী" : "Previous"}</span>
+                      <span>{t("common.previous")}</span>
                     </button>
 
                     <span className="text-xs text-muted-foreground">
-                      {isBn
-                        ? `পৃষ্ঠা ${currentPage} এর ${totalPages}`
-                        : `Page ${currentPage} of ${totalPages}`}
+                      {t("common.pageOf", { current: toBnNumber(currentPage, i18n.language), total: toBnNumber(totalPages, i18n.language) })}
                     </span>
 
                     <button
@@ -420,7 +411,7 @@ function PropertiesDiscoveryPage() {
                       onClick={() => updateFilters({ ...currentFilters, page: currentPage + 1 })}
                       className="inline-flex h-10 items-center gap-1.5 rounded-full border border-border bg-surface px-4 text-xs font-semibold text-foreground transition-colors hover:bg-secondary disabled:opacity-50 cursor-pointer"
                     >
-                      <span>{isBn ? "পরবর্তী" : "Next"}</span>
+                      <span>{t("common.next")}</span>
                       <ChevronRight className="h-4 w-4" aria-hidden="true" />
                     </button>
                   </div>

@@ -35,6 +35,7 @@ import { ReviewFormModal } from "@/components/tenant/ReviewFormModal";
 import { ReportPropertyModal } from "@/components/tenant/ReportPropertyModal";
 import { mockTenantApi } from "@/lib/api/mock";
 import { mockProperties, calculateMatchBreakdown } from "@/lib/api/mock/properties";
+import { translatePropertyType, translateRentalType, translateAvailability, translateArea, translateBill, translateAmenity, translateVerification, toBnNumber } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/properties/$propertyId")({
@@ -120,11 +121,7 @@ function PropertyDetailsPage() {
         setIsCompared(false);
       } else {
         if (list.length >= 3) {
-          alert(
-            isBn
-              ? "সর্বোচ্চ ৩টি প্রপার্টি একসাথে তুলনা করা যায়।"
-              : "You can compare up to 3 properties at a time.",
-          );
+          alert(t("properties.compareMax3"));
           return;
         }
         list.push(propertyId);
@@ -153,19 +150,17 @@ function PropertyDetailsPage() {
         <div className="mx-auto max-w-lg px-4 py-24 text-center">
           <AlertTriangle className="mx-auto h-12 w-12 text-destructive" aria-hidden="true" />
           <h1 className="mt-4 text-2xl font-bold text-foreground">
-            {isBn ? "প্রপার্টি খুঁজে পাওয়া যায়নি" : "Property Not Found"}
+            {t("properties.propertyNotFound")}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {isBn
-              ? "এই প্রপার্টিটি হয়তো মুছে ফেলা হয়েছে বা লিঙ্কটি ভুল।"
-              : "The listing may have been rented or removed by the landlord."}
+            {t("properties.propertyNotFoundDesc")}
           </p>
           <Link
             to="/properties"
             className="mt-6 inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-5 text-xs font-semibold text-primary-foreground"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-            <span>{isBn ? "সকল প্রপার্টিতে ফিরে যান" : "Back to All Listings"}</span>
+            <span>{t("properties.backToAllListings")}</span>
           </Link>
         </div>
       </AppShell>
@@ -187,14 +182,14 @@ function PropertyDetailsPage() {
             className="flex items-center gap-1.5 text-xs text-muted-foreground"
           >
             <Link to="/" className="hover:text-foreground">
-              {isBn ? "হোম" : "Home"}
+              {t("common.home")}
             </Link>
             <span>/</span>
             <Link to="/properties" className="hover:text-foreground">
-              {isBn ? "প্রপার্টি তালিকা" : "Properties"}
+              {t("properties.title")}
             </Link>
             <span>/</span>
-            <span className="truncate font-semibold text-foreground">{property.area}</span>
+            <span className="truncate font-semibold text-foreground">{translateArea(property.area, i18n.language)}</span>
           </nav>
         </div>
       </div>
@@ -205,12 +200,12 @@ function PropertyDetailsPage() {
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2 mb-2.5">
               <span className="rounded-full bg-foreground px-3 py-1 text-xs font-semibold text-background">
-                {property.propertyType}
+                {translatePropertyType(property.propertyType, i18n.language)}
               </span>
               {property.rentalType &&
                 property.rentalType.toLowerCase() !== property.propertyType.toLowerCase() && (
                   <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-foreground">
-                    {property.rentalType}
+                    {translateRentalType(property.rentalType, i18n.language)}
                   </span>
                 )}
               <span
@@ -220,7 +215,7 @@ function PropertyDetailsPage() {
                     : "bg-secondary text-muted-foreground"
                 }`}
               >
-                {property.availability}
+                {translateAvailability(property.availability, i18n.language)}
               </span>
             </div>
 
@@ -232,7 +227,7 @@ function PropertyDetailsPage() {
             <p className="mt-2 flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
               <MapPin className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
               <span>
-                <strong>{isBn ? "সরাসরি ঠিকানা:" : "Exact Address:"}</strong>{" "}
+                <strong>{t("properties.exactAddress")}</strong>{" "}
                 {property.exactAddress}
               </span>
             </p>
@@ -252,12 +247,8 @@ function PropertyDetailsPage() {
               <Scale className="h-4 w-4" aria-hidden="true" />
               <span>
                 {isCompared
-                  ? isBn
-                    ? "তুলনায় যুক্ত"
-                    : "Comparing"
-                  : isBn
-                    ? "তুলনা করুন"
-                    : "Compare"}
+                  ? t("properties.comparing")
+                  : t("properties.compare")}
               </span>
             </button>
 
@@ -271,7 +262,7 @@ function PropertyDetailsPage() {
               }`}
             >
               <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} aria-hidden="true" />
-              <span>{isFavorite ? (isBn ? "সেভড" : "Saved") : isBn ? "পছন্দ" : "Save"}</span>
+              <span>{isFavorite ? t("properties.saved") : t("properties.saveProperty")}</span>
             </button>
           </div>
         </div>
@@ -293,9 +284,9 @@ function PropertyDetailsPage() {
                 </span>
                 <div>
                   <span className="block text-xs text-muted-foreground">
-                    {isBn ? "বেডরুম" : "Bedrooms"}
+                    {t("properties.bedrooms")}
                   </span>
-                  <span className="text-sm font-bold text-foreground">{property.rooms}</span>
+                  <span className="text-sm font-bold text-foreground">{toBnNumber(property.rooms, i18n.language)}</span>
                 </div>
               </div>
 
@@ -305,9 +296,9 @@ function PropertyDetailsPage() {
                 </span>
                 <div>
                   <span className="block text-xs text-muted-foreground">
-                    {isBn ? "বাথরুম" : "Bathrooms"}
+                    {t("properties.bathrooms")}
                   </span>
-                  <span className="text-sm font-bold text-foreground">{property.bathrooms}</span>
+                  <span className="text-sm font-bold text-foreground">{toBnNumber(property.bathrooms, i18n.language)}</span>
                 </div>
               </div>
 
@@ -317,9 +308,9 @@ function PropertyDetailsPage() {
                 </span>
                 <div>
                   <span className="block text-xs text-muted-foreground">
-                    {isBn ? "আয়তন" : "Size"}
+                    {t("properties.size")}
                   </span>
-                  <span className="text-sm font-bold text-foreground">{property.size} sqft</span>
+                  <span className="text-sm font-bold text-foreground">{toBnNumber(property.size, i18n.language)} {t("properties.sqft")}</span>
                 </div>
               </div>
 
@@ -329,9 +320,9 @@ function PropertyDetailsPage() {
                 </span>
                 <div>
                   <span className="block text-xs text-muted-foreground">
-                    {isBn ? "ফ্লোর" : "Floor"}
+                    {t("properties.floor")}
                   </span>
-                  <span className="text-sm font-bold text-foreground">{property.floor}</span>
+                  <span className="text-sm font-bold text-foreground">{toBnNumber(property.floor, i18n.language)}</span>
                 </div>
               </div>
             </div>
@@ -339,40 +330,40 @@ function PropertyDetailsPage() {
             {/* Financial Details (Advance, Bills, Utility) */}
             <div className="rounded-2xl border border-border bg-surface p-6 shadow-xs">
               <h2 className="text-lg font-bold text-foreground">
-                {isBn ? "ভাড়া ও আর্থিক শর্তাবলী" : "Financial Terms & Deposits"}
+                {t("properties.financialTerms")}
               </h2>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 <div className="rounded-xl border border-border/80 bg-secondary/30 p-3">
                   <span className="block text-xs text-muted-foreground">
-                    {isBn ? "মাসিক ভাড়া" : "Monthly Rent"}
+                    {t("properties.monthlyRent")}
                   </span>
                   <span className="mt-0.5 block text-lg sm:text-xl font-bold text-foreground">
-                    ৳{property.rent.toLocaleString()}
+                    ৳{toBnNumber(property.rent.toLocaleString(), i18n.language)}
                   </span>
                 </div>
 
                 <div className="rounded-xl border border-border/80 bg-secondary/30 p-3">
                   <span className="block text-xs text-muted-foreground">
-                    {isBn ? "অগ্রিম / জামানত" : "Advance Deposit"}
+                    {t("properties.advanceDeposit")}
                   </span>
                   <span className="mt-0.5 block text-lg sm:text-xl font-bold text-foreground">
-                    ৳{property.advance.toLocaleString()}
+                    ৳{toBnNumber(property.advance.toLocaleString(), i18n.language)}
                   </span>
                 </div>
 
                 <div className="rounded-xl border border-border/80 bg-secondary/30 p-3">
                   <span className="block text-xs text-muted-foreground">
-                    {isBn ? "সার্ভিস ও ইউটিলিটি" : "Additional Service"}
+                    {t("properties.additionalService")}
                   </span>
                   <span className="mt-0.5 block text-lg sm:text-xl font-bold text-foreground">
-                    ৳{property.additionalCharges.toLocaleString()}
+                    ৳{toBnNumber(property.additionalCharges.toLocaleString(), i18n.language)}
                   </span>
                 </div>
               </div>
 
               <div className="mt-4 border-t border-border pt-3">
                 <span className="text-xs font-semibold text-foreground">
-                  {isBn ? "ভাড়ার সাথে অন্তর্ভুক্ত বিল:" : "Bills Included in Rent:"}
+                  {t("properties.billsIncludedInRent")}
                 </span>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {property.billsIncluded.map((bill) => (
@@ -381,7 +372,7 @@ function PropertyDetailsPage() {
                       className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
                     >
                       <CheckCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                      <span>{bill}</span>
+                      <span>{translateBill(bill, i18n.language)}</span>
                     </span>
                   ))}
                 </div>
@@ -391,7 +382,7 @@ function PropertyDetailsPage() {
             {/* Amenities Grid */}
             <div className="rounded-2xl border border-border bg-surface p-6 shadow-xs">
               <h2 className="text-lg font-bold text-foreground">
-                {isBn ? "উপলব্ধ সুযোগ-সুবিধাসমূহ" : "Available Amenities"}
+                {t("properties.availableAmenities")}
               </h2>
               <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
                 {property.amenities.map((amenity) => (
@@ -400,7 +391,7 @@ function PropertyDetailsPage() {
                     className="flex items-center gap-2 rounded-lg border border-border/60 bg-secondary/20 p-2.5 text-xs font-medium text-foreground"
                   >
                     <CheckCircle className="h-4 w-4 text-primary shrink-0" aria-hidden="true" />
-                    <span>{amenity}</span>
+                    <span>{translateAmenity(amenity, i18n.language)}</span>
                   </div>
                 ))}
               </div>
@@ -411,15 +402,11 @@ function PropertyDetailsPage() {
               <div className="flex items-center gap-2">
                 <ShieldCheck className="h-5 w-5 text-primary shrink-0" aria-hidden="true" />
                 <h2 className="text-base font-bold text-foreground">
-                  {isBn
-                    ? "ঠিকানা ভেরিফিকেশন রিপোর্ট (সিমুলেটেড)"
-                    : "Platform Simulated Verifications"}
+                  {t("properties.simulatedReportTitle")}
                 </h2>
               </div>
               <p className="mt-1.5 text-xs font-medium text-foreground/85 leading-relaxed">
-                {isBn
-                  ? "সতর্কতা: এটি ঠিকানা প্ল্যাটফর্মের অভ্যন্তরীণ সিমুলেটেড ডেটা, সরকারি প্রত্যয়ন নয়।"
-                  : "Note: These represent platform-level simulated identity checks, not government certifications."}
+                {t("properties.simulatedReportDisclaimer")}
               </p>
               <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
                 {property.verifications.map((v) => (
@@ -428,7 +415,7 @@ function PropertyDetailsPage() {
                     className="flex items-center gap-2 rounded-lg bg-surface border border-border/80 px-3 py-2 text-xs font-semibold text-foreground shadow-2xs"
                   >
                     <CheckCircle className="h-4 w-4 text-primary shrink-0" aria-hidden="true" />
-                    <span>{v}</span>
+                    <span>{translateVerification(v, i18n.language)}</span>
                   </div>
                 ))}
               </div>
@@ -448,14 +435,14 @@ function PropertyDetailsPage() {
               <div className="flex items-baseline justify-between border-b border-border pb-4">
                 <div>
                   <span className="text-2xl font-black text-foreground md:text-3xl">
-                    ৳{property.rent.toLocaleString()}
+                    ৳{toBnNumber(property.rent.toLocaleString(), i18n.language)}
                   </span>
                   <span className="ml-1 text-xs text-muted-foreground">
-                    /{isBn ? "মাস" : "month"}
+                    /{t("properties.month")}
                   </span>
                 </div>
                 <span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-foreground">
-                  {property.availability}
+                  {translateAvailability(property.availability, i18n.language)}
                 </span>
               </div>
 
@@ -465,9 +452,7 @@ function PropertyDetailsPage() {
                   <div className="rounded-xl border border-primary/30 bg-primary/10 p-3.5 text-center text-xs font-medium text-primary">
                     <CheckCircle className="mx-auto mb-1 h-5 w-5" aria-hidden="true" />
                     <span>
-                      {isBn
-                        ? "ভিজিট রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে (Pending)"
-                        : "Visit Request Submitted (Pending)"}
+                      {t("properties.visitRequestSubmitted")}
                     </span>
                   </div>
                 ) : (
@@ -476,9 +461,7 @@ function PropertyDetailsPage() {
                     onClick={() => {
                       if (!user) {
                         alert(
-                          isBn
-                            ? "ভিজিট রিকোয়েস্ট পাঠাতে দয়া করে লগইন করুন।"
-                            : "Please log in to request a visit.",
+                          t("properties.loginToScheduleVisit"),
                         );
                         return;
                       }
@@ -487,14 +470,14 @@ function PropertyDetailsPage() {
                     className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-90 active:scale-[0.99]"
                   >
                     <CalendarCheck className="h-4 w-4" aria-hidden="true" />
-                    <span>{isBn ? "সরাসরি ভিজিটের আবেদন" : "Schedule a Visit ↗"}</span>
+                    <span>{t("properties.scheduleVisitBtn")}</span>
                   </button>
                 )}
 
                 {contactRequested ? (
                   <div className="rounded-xl border border-primary/30 bg-primary/10 p-3.5 text-center text-xs font-medium text-primary">
                     <CheckCircle className="mx-auto mb-1 h-5 w-5" aria-hidden="true" />
-                    <span>{isBn ? "যোগাযোগের আবেদন পাঠানো হয়েছে" : "Contact Request Sent"}</span>
+                    <span>{t("properties.contactRequestSent")}</span>
                   </div>
                 ) : (
                   <button
@@ -503,9 +486,7 @@ function PropertyDetailsPage() {
                     onClick={async () => {
                       if (!user) {
                         alert(
-                          isBn
-                            ? "মালিককে মেসেজ করতে দয়া করে লগইন করুন।"
-                            : "Please log in to send a contact request.",
+                          t("properties.loginToSendContact"),
                         );
                         return;
                       }
@@ -525,12 +506,8 @@ function PropertyDetailsPage() {
                     <MessageSquare className="h-4 w-4" aria-hidden="true" />
                     <span>
                       {contactSubmitting
-                        ? isBn
-                          ? "পাঠানো হচ্ছে..."
-                          : "Sending..."
-                        : isBn
-                          ? "যোগাযোগের আবেদন (Contact Request)"
-                          : "Send Contact Request"}
+                        ? t("properties.sending")
+                        : t("properties.sendContactRequest")}
                     </span>
                   </button>
                 )}
@@ -540,7 +517,7 @@ function PropertyDetailsPage() {
                     type="button"
                     onClick={() => {
                       if (!user) {
-                        alert(isBn ? "রিভিউ দিতে লগইন করুন।" : "Please log in to write a review.");
+                        alert(t("properties.loginToWriteReview"));
                         return;
                       }
                       setReviewModalOpen(true);
@@ -548,7 +525,7 @@ function PropertyDetailsPage() {
                     className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-surface text-xs font-semibold text-foreground hover:bg-secondary transition-colors"
                   >
                     <Star className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
-                    <span>{isBn ? "রিভিউ লিখুন" : "Write Review"}</span>
+                    <span>{t("properties.writeReview")}</span>
                   </button>
 
                   <button
@@ -556,7 +533,7 @@ function PropertyDetailsPage() {
                     onClick={() => {
                       if (!user) {
                         alert(
-                          isBn ? "রিপোর্ট করতে লগইন করুন।" : "Please log in to report listing.",
+                          t("properties.loginToReport"),
                         );
                         return;
                       }
@@ -565,7 +542,7 @@ function PropertyDetailsPage() {
                     className="flex h-9 items-center justify-center gap-1.5 rounded-full border border-border bg-surface px-3.5 text-xs font-semibold text-destructive hover:bg-destructive/10 transition-colors"
                   >
                     <Flag className="h-3.5 w-3.5" aria-hidden="true" />
-                    <span>{isBn ? "রিপোর্ট" : "Report"}</span>
+                    <span>{t("properties.reportListing")}</span>
                   </button>
                 </div>
               </div>
@@ -573,7 +550,7 @@ function PropertyDetailsPage() {
               {/* Landlord Profile & Privacy Setting */}
               <div className="mt-8 border-t border-border pt-6">
                 <span className="text-xs font-semibold text-foreground">
-                  {isBn ? "বাড়ির মালিকের তথ্য" : "Landlord Overview"}
+                  {t("properties.landlordOverview")}
                 </span>
                 <div className="mt-3 flex items-center gap-3">
                   <img
@@ -584,9 +561,7 @@ function PropertyDetailsPage() {
                   <div>
                     <h4 className="text-sm font-bold text-foreground">{property.landlord.name}</h4>
                     <span className="text-xs text-muted-foreground">
-                      {isBn
-                        ? `সদস্য: ${property.landlord.memberSince}`
-                        : `Member since: ${property.landlord.memberSince}`}
+                      {t("properties.memberSince", { date: toBnNumber(property.landlord.memberSince, i18n.language) })}
                     </span>
                   </div>
                 </div>
@@ -624,9 +599,7 @@ function PropertyDetailsPage() {
                         aria-hidden="true"
                       />
                       <span>
-                        {isBn
-                          ? "মালিক সরাসরি নম্বর গোপন রেখেছেন। যোগাযোগের আবেদন অনুমোদন হলে মেসেজিং আনলক হবে।"
-                          : "Contact details hidden by landlord. Messaging unlocks upon contact request approval."}
+                        {t("properties.contactDetailsHiddenNotice")}
                       </span>
                     </div>
                   )}
