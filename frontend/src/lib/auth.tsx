@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { mockAuth, type User } from "@/lib/api/mock/auth";
+import { authApi, type User } from "@/lib/api/auth";
 import type { Role } from "@/lib/api/client";
 
 export type { User };
@@ -33,14 +33,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Session is read after hydration (localStorage is browser-only).
   useEffect(() => {
-    mockAuth.session().then((u) => {
+    authApi.session().then((u) => {
       setUser(u);
       setReady(true);
     });
   }, []);
 
   const logout = useCallback(async () => {
-    await mockAuth.logout();
+    await authApi.logout();
     setUser(null);
   }, []);
   const value = useMemo(() => ({ user, ready, setUser, logout }), [user, ready, logout]);

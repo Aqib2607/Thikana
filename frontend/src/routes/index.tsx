@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import {
   Search,
   Sparkles,
@@ -23,7 +24,7 @@ import {
 import { AppShell } from "@/components/layout/AppShell";
 import { PropertyCard } from "@/components/property/PropertyCard";
 import { MOCK_PROPERTIES, KHULNA_AREAS } from "@/lib/api/mock/properties";
-import { PROPERTY_TYPES } from "@/lib/api/properties";
+import { propertyApi, PROPERTY_TYPES } from "@/lib/api/properties";
 import { translateArea, translatePropertyType, toBnNumber } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { MotionReveal } from "@/components/motion/MotionReveal";
@@ -214,7 +215,14 @@ function Index() {
   };
 
   const currentTab = SHOWCASE_TABS[activeTab];
-  const featuredListings = MOCK_PROPERTIES.slice(0, 4);
+  const { data: featuredData } = useQuery({
+    queryKey: ["featuredProperties"],
+    queryFn: () => propertyApi.list({ limit: 4, sortBy: "rating" }),
+  });
+  const featuredListings =
+    featuredData?.data && featuredData.data.length > 0
+      ? featuredData.data
+      : MOCK_PROPERTIES.slice(0, 4);
 
   return (
     <AppShell>

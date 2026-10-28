@@ -3,6 +3,8 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { PropertyImageUploader } from "@/components/landlord/PropertyImageUploader";
 import { PropertyForm } from "@/components/landlord/PropertyForm";
 import { mockLandlordApi } from "@/lib/api/mock/landlord";
+import { landlordApi, realLandlordApi } from "@/lib/api/landlord";
+import { http } from "@/lib/api/http";
 import type { PropertyFormData } from "@/lib/api/landlord";
 
 describe("Phase 5: Landlord Features Suite", () => {
@@ -212,6 +214,109 @@ describe("Phase 5: Landlord Features Suite", () => {
       expect(stats.approvedListings).toBeGreaterThanOrEqual(0);
       expect(stats.activeVisits).toBeGreaterThanOrEqual(0);
       expect(stats.pendingContactRequests).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe("Cycle 5B: Live Landlord API Contract Suite", () => {
+    it("fetches landlord properties via /landlord/properties", async () => {
+      const getSpy = vi.spyOn(http, "get").mockResolvedValueOnce({
+        data: [{ id: "prop-101", title: "Test Listing", approvalStatus: "Approved" }],
+      });
+
+      const res = await realLandlordApi.getMyProperties();
+      expect(getSpy).toHaveBeenCalledWith("/landlord/properties");
+      expect(res).toHaveLength(1);
+      expect(res[0].id).toBe("prop-101");
+    });
+
+    it("creates property and posts payload to /landlord/properties", async () => {
+      const postSpy = vi.spyOn(http, "post").mockResolvedValueOnce({
+        data: { id: "prop-102", title: "New Live Listing", approvalStatus: "Pending Approval" },
+      });
+
+      const payload: PropertyFormData = {
+        title: "Brand New Flat in Boyra",
+        propertyType: "Apartment / Flat",
+        rentalType: "Monthly Rental",
+        rent: 12000,
+        advance: 20000,
+        additionalCharges: 1000,
+        billsIncluded: ["Water Supply"],
+        availability: "Available",
+        availableFrom: "2026-11-01",
+        division: "Khulna",
+        district: "Khulna",
+        city: "Khulna",
+        area: "Boyra",
+        exactAddress: "Road 3, House 10, Boyra",
+        lat: 22.8456,
+        lng: 89.5403,
+        size: 900,
+        rooms: 2,
+        bathrooms: 2,
+        balconies: 1,
+        floor: "2nd Floor",
+        furnishedStatus: "Unfurnished",
+        preferredTenant: "Family Only",
+        images: ["https://example.com/photo1.jpg"],
+        amenities: ["High-Speed WiFi"],
+        publicContactVisible: true,
+        community: {
+          transport: "Close to road",
+          waterlogging: "None",
+          internet: "Active",
+          noise: "Low",
+          safety: "Secure",
+          general: "Good",
+        },
+      };
+
+      const res = await realLandlordApi.createProperty("u-landlord", payload);
+      expect(postSpy).toHaveBeenCalledWith(
+        "/landlord/properties",
+        expect.objectContaining({
+          title: "Brand New Flat in Boyra",
+          area: "Boyra",
+          publicContactVisible: true,
+        }),
+      );
+      expect(res.id).toBe("prop-102");
+    });
+
+    it("updates property availability and contact visibility via PATCH", async () => {
+      const patchSpy = vi.spyOn(http, "patch").mockResolvedValue({
+        data: { id: "prop-103", availability: "Reserved", landlord: { publicContactVisible: true } },
+      });
+
+      await realLandlordApi.updateAvailability("prop-103", "Reserved");
+      expect(patchSpy).toHaveBeenCalledWith("/landlord/properties/prop-103/availability", {
+        availability: "Reserved",
+      });
+
+      await realLandlordApi.toggleContactVisibility("prop-103", true);
+      expect(patchSpy).toHaveBeenCalledWith("/landlord/properties/prop-103/contact-visibility", {
+        publicContactVisible: true,
+      });
+    });
+
+    it("dispatches image reordering to /landlord/properties/{id}/images/reorder", async () => {
+      const putSpy = vi.spyOn(http, "put").mockResolvedValueOnce({
+        status: 200,
+        message: "Images reordered successfully.",
+      });
+
+      const res = await realLandlordApi.reorderImages!("prop-103", [3, 1, 2]);
+      expect(putSpy).toHaveBeenCalledWith("/landlord/properties/prop-103/images/reorder", {
+        imageIds: [3, 1, 2],
+      });
+      expect(res.status).toBe(200);
+    });
+
+    it("landlordApi delegates seamlessly under default configuration", async () => {
+      const props = await landlordApi.getMyProperties("u-landlord");
+      expect(props.length).toBeGreaterThan(0);
+      const stats = await landlordApi.getStats("u-landlord");
+      expect(stats.totalListings).toBeGreaterThan(0);
     });
   });
 });

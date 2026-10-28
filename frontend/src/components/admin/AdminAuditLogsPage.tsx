@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
-import { mockAdminApi } from "@/lib/api/mock/admin";
+import { adminApi } from "@/lib/api/admin";
 import { toBnNumber } from "@/lib/i18n";
 import type { AuditLogItem } from "@/lib/api/admin";
 import { ScrollText, Search, ShieldCheck, Clock, X } from "lucide-react";
@@ -17,7 +17,7 @@ export function AdminAuditLogsPage() {
 
   useEffect(() => {
     let mounted = true;
-    mockAdminApi.getAuditLogs().then((data) => {
+    adminApi.getAuditLogs().then((data) => {
       if (mounted) {
         setLogs(data);
         setLoading(false);

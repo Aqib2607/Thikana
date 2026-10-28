@@ -15,6 +15,8 @@ interface PropertyFiltersProps {
   onChange: (next: PropertyFilter) => void;
   onReset: () => void;
   className?: string;
+  availableAreas?: string[];
+  availableAmenities?: string[];
 }
 
 export function PropertyFilters({
@@ -22,9 +24,18 @@ export function PropertyFilters({
   onChange,
   onReset,
   className = "",
+  availableAreas,
+  availableAmenities,
 }: PropertyFiltersProps) {
   const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
+
+  const areasList =
+    availableAreas && availableAreas.length > 0
+      ? ["All Areas", ...availableAreas.filter((a) => a !== "All Areas")]
+      : KHULNA_AREAS;
+  const amenitiesList =
+    availableAmenities && availableAmenities.length > 0 ? availableAmenities : ALL_AMENITIES;
 
   const handleAreaChange = (val: string) => {
     onChange({ ...filters, area: val === "All Areas" ? undefined : val, page: 1 });
@@ -116,7 +127,7 @@ export function PropertyFilters({
             onChange={(e) => handleAreaChange(e.target.value)}
             className={`mt-1.5 ${field}`}
           >
-            {KHULNA_AREAS.map((a) => (
+            {areasList.map((a) => (
               <option key={a} value={a}>
                 {translateArea(a, i18n.language)}
               </option>
@@ -250,7 +261,7 @@ export function PropertyFilters({
             {t("properties.keyAmenities")}
           </span>
           <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto pr-1">
-            {ALL_AMENITIES.map((amenity) => {
+            {amenitiesList.map((amenity) => {
               const checked = filters.amenities?.includes(amenity) || false;
               return (
                 <label

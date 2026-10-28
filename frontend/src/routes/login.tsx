@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useTranslation } from "react-i18next";
 import { AuthCard, Field, FormAlert, SubmitButton } from "@/components/auth/AuthCard";
-import { mockAuth } from "@/lib/api/mock/auth";
+import { authApi } from "@/lib/api/auth";
 import { useAuth, ROLE_HOME } from "@/lib/auth";
 import { KeyRound, ShieldCheck, UserCheck } from "lucide-react";
 
@@ -48,7 +48,7 @@ function LoginPage() {
   const onSubmit = async (values: LoginValues) => {
     setServerError(null);
     try {
-      const user = await mockAuth.login(values.identifier, values.password);
+      const user = await authApi.login(values.identifier, values.password);
       setUser(user);
       navigate({ to: ROLE_HOME[user.role] });
     } catch (err: unknown) {

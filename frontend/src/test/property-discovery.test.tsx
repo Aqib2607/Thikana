@@ -5,6 +5,10 @@ import {
   MOCK_PROPERTIES,
   calculateMatchBreakdown,
 } from "@/lib/api/mock/properties";
+import { propertyApi, realPropertyApi } from "@/lib/api/properties";
+import { authApi } from "@/lib/api/auth";
+import { getAuthToken, setAuthToken, httpRequest, TOKEN_STORAGE_KEY } from "@/lib/api/http";
+import { USE_MOCK } from "@/lib/api/client";
 import { PropertyCard } from "@/components/property/PropertyCard";
 import { CommunityInfoCard } from "@/components/property/CommunityInfoCard";
 import { PropertyMap } from "@/components/property/PropertyMap";
@@ -161,5 +165,107 @@ describe("Phase 3: Discovery Accessible Components", () => {
       expect(screen.getByText(/30%|৩০%/)).toBeInTheDocument();
       expect(screen.getByText(/25%|২৫%/)).toBeInTheDocument();
     });
+  });
+});
+
+
+describe("Phase 5A: HTTP Client, Adapter Switching & Property Discovery Contracts", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("selects mock adapters when VITE_API_BASE_URL is unset", () => {
+    expect(USE_MOCK).toBe(true);
+    expect(authApi).toBeDefined();
+    expect(propertyApi).toBeDefined();
+  });
+
+  it("manages bearer token in localStorage securely", () => {
+    expect(getAuthToken()).toBeNull();
+    setAuthToken("1|test_token_sample");
+    expect(getAuthToken()).toBe("1|test_token_sample");
+    expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBe("1|test_token_sample");
+
+    setAuthToken(null);
+    expect(getAuthToken()).toBeNull();
+    expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull();
+  });
+
+  it("normalizes API error responses correctly in httpRequest", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 422,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({
+        status: 422,
+        message: "auth.errors.invalid",
+        fieldErrors: { email: ["The email field is required."] },
+      }),
+    });
+    global.fetch = mockFetch;
+
+    await expect(httpRequest("/test-endpoint")).rejects.toMatchObject({
+      status: 422,
+      message: "auth.errors.invalid",
+      fieldErrors: { email: ["The email field is required."] },
+    });
+  });
+
+  it("clears bearer token on 401 unauthenticated response", async () => {
+    setAuthToken("expired_token");
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({
+        status: 401,
+        message: "auth.errors.unauthenticated",
+      }),
+    });
+    global.fetch = mockFetch;
+
+    await expect(httpRequest("/auth/me")).rejects.toMatchObject({
+      status: 401,
+    });
+    expect(getAuthToken()).toBeNull();
+  });
+
+  it("formats property query parameters correctly in realPropertyApi", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 10,
+        totalPages: 0,
+        areas: [],
+      }),
+    });
+    global.fetch = mockFetch;
+
+    await realPropertyApi.list({
+      search: "boyra flat",
+      area: "Boyra",
+      minRent: 5000,
+      maxRent: 15000,
+      rooms: 2,
+      page: 2,
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining("search=boyra+flat"),
+      expect.anything()
+    );
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining("area=Boyra"),
+      expect.anything()
+    );
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining("page=2"),
+      expect.anything()
+    );
   });
 });

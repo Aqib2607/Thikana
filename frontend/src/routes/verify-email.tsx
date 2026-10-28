@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useTranslation } from "react-i18next";
 import { AuthCard, Field, FormAlert, SubmitButton } from "@/components/auth/AuthCard";
-import { mockAuth, MOCK_CODE } from "@/lib/api/mock/auth";
+import { authApi, MOCK_CODE } from "@/lib/api/auth";
 import { useAuth, ROLE_HOME } from "@/lib/auth";
 import { CheckCircle2, RefreshCw } from "lucide-react";
 
@@ -45,7 +45,7 @@ function VerifyEmailPage() {
   const onSubmit = async (values: VerifyValues) => {
     setServerError(null);
     try {
-      const updated = await mockAuth.verifyEmail(values.code);
+      const updated = await authApi.verifyEmail(values.code);
       setUser(updated);
       navigate({ to: ROLE_HOME[updated.role] });
     } catch (err: unknown) {
@@ -55,7 +55,7 @@ function VerifyEmailPage() {
   };
 
   const handleResend = async () => {
-    await mockAuth.resendCode();
+    await authApi.resendCode();
     setResendSuccess(true);
     setTimeout(() => setResendSuccess(false), 4000);
   };

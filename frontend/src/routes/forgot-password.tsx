@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useTranslation } from "react-i18next";
 import { AuthCard, Field, FormAlert, SubmitButton } from "@/components/auth/AuthCard";
-import { mockAuth } from "@/lib/api/mock/auth";
+import { authApi } from "@/lib/api/auth";
 import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/forgot-password")({
@@ -42,7 +42,7 @@ function ForgotPasswordPage() {
   const onSubmit = async (values: ForgotValues) => {
     setServerError(null);
     try {
-      await mockAuth.forgotPassword(values.email);
+      await authApi.forgotPassword(values.email);
       navigate({ to: "/reset-password" });
     } catch (err: unknown) {
       const e = err as { message?: string };

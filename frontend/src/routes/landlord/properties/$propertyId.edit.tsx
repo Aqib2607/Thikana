@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
-import { mockLandlordApi } from "@/lib/api/mock/landlord";
+import { landlordApi } from "@/lib/api/landlord";
 import { PropertyForm } from "@/components/landlord/PropertyForm";
 import type { PropertyItem } from "@/lib/api/properties";
 import type { PropertyFormData } from "@/lib/api/landlord";
@@ -30,7 +30,7 @@ function EditPropertyPage() {
 
   useEffect(() => {
     let active = true;
-    mockLandlordApi.getPropertyById(propertyId).then((data) => {
+    landlordApi.getPropertyById(propertyId).then((data) => {
       if (active) {
         setProperty(data);
         setLoading(false);
@@ -42,7 +42,7 @@ function EditPropertyPage() {
   }, [propertyId]);
 
   const handleUpdate = async (data: PropertyFormData) => {
-    await mockLandlordApi.updateProperty(propertyId, data);
+    await landlordApi.updateProperty(propertyId, data);
     navigate({ to: "/landlord/properties" });
   };
 

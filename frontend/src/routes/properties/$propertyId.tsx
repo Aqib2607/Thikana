@@ -34,7 +34,8 @@ import { VisitRequestModal } from "@/components/tenant/VisitRequestModal";
 import { ReviewFormModal } from "@/components/tenant/ReviewFormModal";
 import { ReportPropertyModal } from "@/components/tenant/ReportPropertyModal";
 import { mockTenantApi } from "@/lib/api/mock";
-import { mockProperties, calculateMatchBreakdown } from "@/lib/api/mock/properties";
+import { propertyApi } from "@/lib/api/properties";
+import { calculateMatchBreakdown } from "@/lib/api/mock/properties";
 import { translatePropertyType, translateRentalType, translateAvailability, translateArea, translateBill, translateAmenity, translateVerification, toBnNumber } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 
@@ -71,7 +72,7 @@ function PropertyDetailsPage() {
     isError,
   } = useQuery({
     queryKey: ["property", propertyId],
-    queryFn: () => mockProperties.getById(propertyId),
+    queryFn: () => propertyApi.getById(propertyId),
   });
 
   const [isFavorite, setIsFavorite] = useState(() => {

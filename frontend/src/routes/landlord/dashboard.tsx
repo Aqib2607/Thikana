@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
-import { mockLandlordApi } from "@/lib/api/mock/landlord";
+import { landlordApi } from "@/lib/api/landlord";
 import { toBnNumber } from "@/lib/i18n";
 import type { LandlordStats } from "@/lib/api/landlord";
 import {
@@ -47,7 +47,7 @@ function LandlordDashboard() {
   useEffect(() => {
     let active = true;
     if (user) {
-      mockLandlordApi.getStats(user.id).then((data) => {
+      landlordApi.getStats(user.id).then((data) => {
         if (active) {
           setStats(data);
           setLoading(false);

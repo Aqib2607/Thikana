@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { http } from "./http";
+import { USE_MOCK } from "./client";
+import { mockLandlordApi } from "./mock/landlord";
 import {
   PROPERTY_TYPES,
   RENTAL_TYPES,
@@ -50,7 +53,7 @@ export const PropertyFormSchema = z.object({
 
   // Specs
   size: z.number().min(50, "Size must be at least 50 sq ft / সাইজ অন্তত ৫০ বর্গফুট হতে হবে"),
-  rooms: z.number().min(1, "At least 1 room / অন্তত ১টি রুম আবশ্যক"),
+  rooms: z.number().min(1, "At least 1 room / অন্তত ১টি room আবশ্যক"),
   bathrooms: z.number().min(1, "At least 1 bathroom / অন্তত ১টি বাথরুম আবশ্যক"),
   balconies: z.number().min(0, "Balconies cannot be negative").default(0),
   floor: z.string().min(1, "Floor level is required / তলার বিবরণ আবশ্যক"),
@@ -102,19 +105,30 @@ export interface LandlordStats {
 }
 
 export interface LandlordApi {
-  getMyProperties(landlordId: string): Promise<PropertyItem[]>;
+  getMyProperties(landlordId?: string): Promise<PropertyItem[]>;
   getPropertyById(id: string): Promise<PropertyItem | null>;
   createProperty(
     landlordId: string,
     data: PropertyFormData,
-    landlordProfile: { name: string; phone?: string; email?: string },
+    landlordProfile?: { name: string; phone?: string; email?: string },
   ): Promise<PropertyItem>;
   updateProperty(id: string, data: Partial<PropertyFormData>): Promise<PropertyItem>;
   updateAvailability(id: string, availability: AvailabilityStatus): Promise<PropertyItem>;
   toggleContactVisibility(id: string, visible: boolean): Promise<PropertyItem>;
   deactivateProperty(id: string): Promise<PropertyItem>;
   deleteProperty(id: string): Promise<void>;
-  getStats(landlordId: string): Promise<LandlordStats>;
+  getStats(landlordId?: string): Promise<LandlordStats>;
+
+  // Dedicated Image Management
+  uploadImage?(
+    propertyId: string,
+    image: File | string,
+  ): Promise<{ id: string; imageUrl: string; isFeatured: boolean; displayOrder: number }>;
+  deleteImage?(propertyId: string, imageId: string | number): Promise<void>;
+  reorderImages?(
+    propertyId: string,
+    imageIds: number[],
+  ): Promise<{ status: number; message: string }>;
 
   // Inbound Requests & Visits
   getContactRequests(landlordId: string): Promise<ContactRequestItem[]>;
@@ -138,3 +152,190 @@ export interface LandlordApi {
     text: string,
   ): Promise<MessageItem>;
 }
+
+export const realLandlordApi: LandlordApi = {
+  async getMyProperties(_landlordId?: string): Promise<PropertyItem[]> {
+    const res = await http.get<{ data: PropertyItem[] }>("/landlord/properties");
+    return res.data;
+  },
+
+  async getPropertyById(id: string): Promise<PropertyItem | null> {
+    try {
+      const res = await http.get<{ data: PropertyItem }>(
+        `/landlord/properties/${encodeURIComponent(id)}`,
+      );
+      return res.data;
+    } catch (err: any) {
+      if (err?.status === 404) return null;
+      throw err;
+    }
+  },
+
+  async createProperty(
+    _landlordId: string,
+    data: PropertyFormData,
+    _landlordProfile?: { name: string; phone?: string; email?: string },
+  ): Promise<PropertyItem> {
+    const payload = {
+      title: data.title,
+      banglaTitle: data.banglaTitle,
+      propertyType: data.propertyType,
+      rentalType: data.rentalType,
+      rent: data.rent,
+      advance: data.advance,
+      additionalCharges: data.additionalCharges,
+      billsIncluded: data.billsIncluded,
+      availability: data.availability,
+      availableFrom: data.availableFrom,
+      division: data.division,
+      district: data.district,
+      city: data.city,
+      area: data.area,
+      exactAddress: data.exactAddress,
+      lat: data.lat,
+      lng: data.lng,
+      size: data.size,
+      rooms: data.rooms,
+      bathrooms: data.bathrooms,
+      balconies: data.balconies,
+      floor: data.floor,
+      totalFloors: data.totalFloors,
+      furnishedStatus: data.furnishedStatus,
+      preferredTenant: data.preferredTenant,
+      images: data.images,
+      featuredImage: data.featuredImage || data.images?.[0],
+      amenities: data.amenities,
+      publicContactVisible: data.publicContactVisible,
+      community: data.community,
+    };
+    const res = await http.post<{ data: PropertyItem }>("/landlord/properties", payload);
+    return res.data;
+  },
+
+  async updateProperty(id: string, data: Partial<PropertyFormData>): Promise<PropertyItem> {
+    const res = await http.put<{ data: PropertyItem }>(
+      `/landlord/properties/${encodeURIComponent(id)}`,
+      data,
+    );
+    return res.data;
+  },
+
+  async updateAvailability(id: string, availability: AvailabilityStatus): Promise<PropertyItem> {
+    const res = await http.patch<{ data: PropertyItem }>(
+      `/landlord/properties/${encodeURIComponent(id)}/availability`,
+      { availability },
+    );
+    return res.data;
+  },
+
+  async toggleContactVisibility(id: string, visible: boolean): Promise<PropertyItem> {
+    const res = await http.patch<{ data: PropertyItem }>(
+      `/landlord/properties/${encodeURIComponent(id)}/contact-visibility`,
+      { publicContactVisible: visible },
+    );
+    return res.data;
+  },
+
+  async deactivateProperty(id: string): Promise<PropertyItem> {
+    return this.updateAvailability(id, "Temporarily Unavailable");
+  },
+
+  async deleteProperty(id: string): Promise<void> {
+    await http.delete(`/landlord/properties/${encodeURIComponent(id)}`);
+  },
+
+  async getStats(_landlordId?: string): Promise<LandlordStats> {
+    const res = await http.get<{ data: LandlordStats }>("/landlord/stats");
+    return res.data;
+  },
+
+  async uploadImage(
+    propertyId: string,
+    image: File | string,
+  ): Promise<{ id: string; imageUrl: string; isFeatured: boolean; displayOrder: number }> {
+    let body: FormData | { imageUrl: string };
+    if (image instanceof File) {
+      const fd = new FormData();
+      fd.append("image", image);
+      body = fd;
+    } else {
+      body = { imageUrl: image };
+    }
+
+    const res = await http.post<{
+      data: { id: string; imageUrl: string; isFeatured: boolean; displayOrder: number };
+    }>(`/landlord/properties/${encodeURIComponent(propertyId)}/images`, body);
+    return res.data;
+  },
+
+  async deleteImage(propertyId: string, imageId: string | number): Promise<void> {
+    await http.delete(
+      `/landlord/properties/${encodeURIComponent(propertyId)}/images/${encodeURIComponent(String(imageId))}`,
+    );
+  },
+
+  async reorderImages(
+    propertyId: string,
+    imageIds: number[],
+  ): Promise<{ status: number; message: string }> {
+    return http.put<{ status: number; message: string }>(
+      `/landlord/properties/${encodeURIComponent(propertyId)}/images/reorder`,
+      { imageIds },
+    );
+  },
+
+  // Inbound Contact Requests (Live Integration)
+  async getContactRequests(_landlordId?: string): Promise<ContactRequestItem[]> {
+    const res = await http.get<{ data: ContactRequestItem[] }>("/landlord/contact-requests");
+    return res.data;
+  },
+  async updateContactRequestStatus(
+    requestId: string,
+    status: "Accepted" | "Rejected",
+  ): Promise<ContactRequestItem> {
+    const res = await http.patch<{ data: ContactRequestItem }>(
+      `/landlord/contact-requests/${encodeURIComponent(requestId)}/status`,
+      { status: status.toLowerCase() },
+    );
+    return res.data;
+  },
+
+  // Inbound Visit Requests (Live Integration)
+  async getVisits(_landlordId?: string): Promise<VisitRequestItem[]> {
+    const res = await http.get<{ data: VisitRequestItem[] }>("/landlord/visits");
+    return res.data;
+  },
+  async updateVisitStatus(
+    visitId: string,
+    status: "Accepted" | "Rejected" | "Completed" | "Cancelled",
+  ): Promise<VisitRequestItem> {
+    const res = await http.patch<{ data: VisitRequestItem }>(
+      `/landlord/visits/${encodeURIComponent(visitId)}/status`,
+      { status: status.toLowerCase() },
+    );
+    return res.data;
+  },
+
+  // Messaging delegated to mock
+  getConversations: (id) => mockLandlordApi.getConversations(id),
+  sendMessage: (cId, sId, sName, text) => mockLandlordApi.sendMessage(cId, sId, sName, text),
+};
+
+const mockLandlordWithImages: LandlordApi = {
+  ...mockLandlordApi,
+  async uploadImage(_propertyId: string, image: File | string) {
+    const url = typeof image === "string" ? image : URL.createObjectURL(image);
+    return {
+      id: `img-${Date.now()}`,
+      imageUrl: url,
+      isFeatured: false,
+      displayOrder: 1,
+    };
+  },
+  async deleteImage() {},
+  async reorderImages() {
+    return { status: 200, message: "Images reordered successfully." };
+  },
+};
+
+export const landlordApi: LandlordApi = USE_MOCK ? mockLandlordWithImages : realLandlordApi;

@@ -14,4 +14,6 @@ export interface ApiError {
 }
 
 export const API_BASE_URL = import.meta.env["VITE_API_BASE_URL"] as string | undefined;
-export const USE_MOCK = !API_BASE_URL;
+export const USE_MOCK =
+  import.meta.env["VITE_USE_MOCK"] === "true" ||
+  (import.meta.env["VITE_USE_MOCK"] !== "false" && !API_BASE_URL);

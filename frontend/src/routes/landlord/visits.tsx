@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
-import { mockLandlordApi } from "@/lib/api/mock/landlord";
+import { landlordApi } from "@/lib/api/landlord";
 import { toBnNumber } from "@/lib/i18n";
 import type { VisitRequestItem, VisitStatus } from "@/lib/api/tenant";
 import {
@@ -41,8 +41,10 @@ function LandlordVisitsPage() {
   const loadVisits = useCallback(async () => {
     if (!user) return;
     try {
-      const data = await mockLandlordApi.getVisits(user.id);
+      const data = await landlordApi.getVisits(user.id);
       setVisits(data);
+    } catch {
+      // In live or mock mode, keep visits resilient
     } finally {
       setLoading(false);
     }
@@ -54,7 +56,7 @@ function LandlordVisitsPage() {
 
   const handleUpdateStatus = async (visitId: string, status: Exclude<VisitStatus, "Pending">) => {
     try {
-      await mockLandlordApi.updateVisitStatus(visitId, status);
+      await landlordApi.updateVisitStatus(visitId, status);
       setActionNotice(
         status === "Accepted"
           ? t("landlord.visitAcceptedMsg")
@@ -65,8 +67,9 @@ function LandlordVisitsPage() {
               : t("landlord.visitCancelledMsg"),
       );
       loadVisits();
-    } catch {
-      // Ignore
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : null;
+      alert(msg || (i18n.language === "bn" ? "স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে।" : "Failed to update visit status."));
     }
   };
 
@@ -257,25 +260,16 @@ function LandlordVisitsPage() {
                   )}
 
                   {isAccepted && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleUpdateStatus(v.id, "Cancelled")}
-                        className="rounded-xl border border-border bg-surface px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-muted transition-all"
-                      >
-                        {t("landlord.cancelVisit")}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleUpdateStatus(v.id, "Completed")}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 transition-all"
-                      >
-                        <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>
-                          {t("landlord.markVisitCompleted")}
-                        </span>
-                      </button>
-                    </>
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateStatus(v.id, "Completed")}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 transition-all"
+                    >
+                      <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                      <span>
+                        {t("landlord.markVisitCompleted")}
+                      </span>
+                    </button>
                   )}
                 </div>
               </article>

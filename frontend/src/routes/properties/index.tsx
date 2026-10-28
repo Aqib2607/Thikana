@@ -20,7 +20,7 @@ import { PropertyCard } from "@/components/property/PropertyCard";
 import { PropertyFilters } from "@/components/property/PropertyFilters";
 import { PropertyMap } from "@/components/property/PropertyMap";
 import { MotionReveal } from "@/components/motion/MotionReveal";
-import { mockProperties } from "@/lib/api/mock/properties";
+import { propertyApi } from "@/lib/api/properties";
 import { PropertyFilterSchema, type PropertyFilter } from "@/lib/api/properties";
 import { translateArea, toBnNumber } from "@/lib/i18n";
 
@@ -89,7 +89,7 @@ function PropertiesDiscoveryPage() {
   // TanStack Query for property discovery server state
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["properties", currentFilters],
-    queryFn: () => mockProperties.list(currentFilters),
+    queryFn: () => propertyApi.list(currentFilters),
   });
 
   const updateFilters = (next: PropertyFilter) => {
@@ -289,6 +289,7 @@ function PropertiesDiscoveryPage() {
               filters={currentFilters}
               onChange={updateFilters}
               onReset={handleResetFilters}
+              availableAreas={data?.areas}
             />
           </div>
 

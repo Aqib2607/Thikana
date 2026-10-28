@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
-import { mockAdminApi } from "@/lib/api/mock/admin";
+import { adminApi } from "@/lib/api/admin";
 import {
   toBnNumber,
   translatePropertyType,
@@ -37,7 +37,7 @@ export function AdminPendingPropertiesPage() {
   const loadPending = async () => {
     setLoading(true);
     try {
-      const all = await mockAdminApi.getProperties("Pending Approval");
+      const all = await adminApi.getProperties("Pending Approval");
       setPendingList(all);
     } finally {
       setLoading(false);
@@ -52,7 +52,7 @@ export function AdminPendingPropertiesPage() {
     if (!user) return;
     setProcessingId(p.id);
     try {
-      await mockAdminApi.approveProperty(p.id, user.id, user.name || "Admin");
+      await adminApi.approveProperty(p.id, user.id, user.name || "Admin");
       setPendingList((prev) => prev.filter((item) => item.id !== p.id));
       setNotice(`'${p.title}' — ${t("landlord.approved")}`);
       setTimeout(() => setNotice(null), 4000);
@@ -65,7 +65,7 @@ export function AdminPendingPropertiesPage() {
     if (!user || !rejectingItem) return;
     setProcessingId(rejectingItem.id);
     try {
-      await mockAdminApi.rejectProperty(
+      await adminApi.rejectProperty(
         rejectingItem.id,
         rejectReason.trim() || "Policy mismatch or unverified details.",
         user.id,

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
-import { mockAdminApi } from "@/lib/api/mock/admin";
+import { adminApi } from "@/lib/api/admin";
 import {
   toBnNumber,
   translatePropertyType,
@@ -41,7 +41,7 @@ export function AdminPropertiesPage() {
   const loadProperties = async () => {
     setLoading(true);
     try {
-      const data = await mockAdminApi.getProperties();
+      const data = await adminApi.getProperties();
       setProperties(data);
     } finally {
       setLoading(false);
@@ -56,7 +56,7 @@ export function AdminPropertiesPage() {
     if (!user) return;
     setSubmittingAction(true);
     try {
-      const updated = await mockAdminApi.approveProperty(
+      const updated = await adminApi.approveProperty(
         property.id,
         user.id,
         user.name || "Admin",
@@ -76,7 +76,7 @@ export function AdminPropertiesPage() {
     if (!user || !rejectingProperty) return;
     setSubmittingAction(true);
     try {
-      const updated = await mockAdminApi.rejectProperty(
+      const updated = await adminApi.rejectProperty(
         rejectingProperty.id,
         rejectReason.trim() || "Policy mismatch or unverified details.",
         user.id,

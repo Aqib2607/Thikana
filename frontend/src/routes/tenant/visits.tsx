@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
-import { mockTenantApi } from "@/lib/api/mock";
-import { VISIT_STATUSES, type VisitRequestItem, type VisitStatus } from "@/lib/api/tenant";
+import { tenantApi, VISIT_STATUSES, type VisitRequestItem, type VisitStatus } from "@/lib/api/tenant";
 import { translateArea, toBnNumber } from "@/lib/i18n";
 import {
   Calendar,
@@ -38,8 +37,12 @@ function TenantVisitsPage() {
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
   const loadVisits = async () => {
-    const list = await mockTenantApi.getVisits();
-    setVisits(list);
+    try {
+      const list = await tenantApi.getVisits();
+      setVisits(list);
+    } catch {
+      // In live or mock mode, keep visits resilient
+    }
   };
 
   useEffect(() => {
@@ -56,12 +59,17 @@ function TenantVisitsPage() {
     ) {
       return;
     }
-    await mockTenantApi.cancelVisit(visitId);
-    setActionSuccess(
-      t("tenant.visitCancelledSuccess"),
-    );
-    loadVisits();
-    setTimeout(() => setActionSuccess(null), 3000);
+    try {
+      await tenantApi.cancelVisit(visitId);
+      setActionSuccess(
+        t("tenant.visitCancelledSuccess"),
+      );
+      loadVisits();
+      setTimeout(() => setActionSuccess(null), 3000);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : null;
+      alert(msg || (isBn ? "অনুরোধ বাতিল করতে সমস্যা হয়েছে।" : "Failed to cancel visit request."));
+    }
   };
 
   const filteredVisits = visits.filter((v) => {
@@ -168,7 +176,9 @@ function TenantVisitsPage() {
       ) : (
         <div className="space-y-4">
           {filteredVisits.map((visit) => {
-            const canCancel = visit.status === "Pending" || visit.status === "Accepted";
+            const isFutureDate = new Date(visit.visitDate + "T00:00:00") > new Date(new Date().toDateString());
+            const canCancel = (visit.status === "Pending" || visit.status === "Accepted") && isFutureDate;
+
             return (
               <div
                 key={visit.id}

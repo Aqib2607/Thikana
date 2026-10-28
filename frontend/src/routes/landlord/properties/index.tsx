@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
-import { mockLandlordApi } from "@/lib/api/mock/landlord";
+import { landlordApi } from "@/lib/api/landlord";
 import { toBnNumber, translateAvailability } from "@/lib/i18n";
 import type { PropertyItem, AvailabilityStatus } from "@/lib/api/properties";
 import {
@@ -42,7 +42,7 @@ function LandlordPropertiesPage() {
   const loadProperties = useCallback(async () => {
     if (!user) return;
     try {
-      const data = await mockLandlordApi.getMyProperties(user.id);
+      const data = await landlordApi.getMyProperties(user.id);
       setProperties(data);
     } finally {
       setLoading(false);
@@ -55,7 +55,7 @@ function LandlordPropertiesPage() {
 
   const handleAvailabilityChange = async (id: string, newStatus: AvailabilityStatus) => {
     try {
-      await mockLandlordApi.updateAvailability(id, newStatus);
+      await landlordApi.updateAvailability(id, newStatus);
       setActionMessage(t("landlord.statusUpdated"));
       loadProperties();
     } catch {
@@ -65,7 +65,7 @@ function LandlordPropertiesPage() {
 
   const handleToggleContactVisibility = async (id: string, currentVisible: boolean) => {
     try {
-      await mockLandlordApi.toggleContactVisibility(id, !currentVisible);
+      await landlordApi.toggleContactVisibility(id, !currentVisible);
       setActionMessage(
         !currentVisible
           ? t("landlord.visibilityPublicMsg")
@@ -82,7 +82,7 @@ function LandlordPropertiesPage() {
       return;
     }
     try {
-      await mockLandlordApi.deleteProperty(id);
+      await landlordApi.deleteProperty(id);
       setActionMessage(t("landlord.listingDeleted"));
       loadProperties();
     } catch {

@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { mockAdminApi } from "@/lib/api/mock/admin";
+import { adminApi, realAdminApi } from "@/lib/api/admin";
+import { http } from "@/lib/api/http";
 
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminPropertiesPage } from "@/components/admin/AdminPropertiesPage";
@@ -250,6 +252,98 @@ describe("Phase 6: Admin Features & Mock API", () => {
         screen.getByText(/অপরিবর্তনীয় প্রশাসনিক রেকর্ড \(Immutable Audit Trail\)/i),
       ).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /সকল রেকর্ড/i })).toBeInTheDocument();
+    });
+  });
+
+  describe("Cycle 5B: Live Admin API Contract Suite", () => {
+    it("fetches dashboard stats via /admin/dashboard/stats", async () => {
+      const getSpy = vi.spyOn(http, "get").mockResolvedValueOnce({
+        data: {
+          pendingProperties: 3,
+          approvedProperties: 10,
+          totalProperties: 13,
+          totalUsers: 25,
+          tenantUsers: 20,
+          landlordUsers: 5,
+          pendingReports: 0,
+          totalReviews: 0,
+          auditLogsCount: 42,
+        },
+      });
+
+      const res = await realAdminApi.getDashboardStats();
+      expect(getSpy).toHaveBeenCalledWith("/admin/dashboard/stats");
+      expect(res.pendingProperties).toBe(3);
+      expect(res.auditLogsCount).toBe(42);
+    });
+
+    it("approves property listing via POST /admin/properties/{id}/approve", async () => {
+      const postSpy = vi.spyOn(http, "post").mockResolvedValueOnce({
+        data: { id: "prop-201", title: "Khulna Flat", approvalStatus: "Approved" },
+      });
+
+      const res = await realAdminApi.approveProperty("prop-201");
+      expect(postSpy).toHaveBeenCalledWith("/admin/properties/prop-201/approve");
+      expect(res.approvalStatus).toBe("Approved");
+    });
+
+    it("rejects property listing via POST /admin/properties/{id}/reject with reason", async () => {
+      const postSpy = vi.spyOn(http, "post").mockResolvedValueOnce({
+        data: { id: "prop-202", title: "Khulna Flat", approvalStatus: "Rejected" },
+      });
+
+      const res = await realAdminApi.rejectProperty("prop-202", "Invalid ownership document");
+      expect(postSpy).toHaveBeenCalledWith("/admin/properties/prop-202/reject", {
+        reason: "Invalid ownership document",
+      });
+      expect(res.approvalStatus).toBe("Rejected");
+    });
+
+    it("updates verifications via PUT /admin/properties/{id}/verifications", async () => {
+      const putSpy = vi.spyOn(http, "put").mockResolvedValueOnce({
+        data: {
+          id: "prop-203",
+          verifications: ["Owner Identity Verified", "Phone Verified"],
+        },
+      });
+
+      const res = await realAdminApi.updatePropertyVerifications("prop-203", [
+        "Owner Identity Verified",
+        "Phone Verified",
+      ]);
+      expect(putSpy).toHaveBeenCalledWith("/admin/properties/prop-203/verifications", {
+        verifications: ["Owner Identity Verified", "Phone Verified"],
+      });
+      expect(res.verifications).toContain("Owner Identity Verified");
+    });
+
+    it("fetches audit logs via GET /admin/audit-logs", async () => {
+      const getSpy = vi.spyOn(http, "get").mockResolvedValueOnce({
+        data: [
+          {
+            id: "log-1",
+            actorId: "1",
+            actorName: "System Admin",
+            action: "PROPERTY_APPROVED",
+            targetType: "property",
+            targetId: "prop-201",
+            details: "Listing approved.",
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      });
+
+      const res = await realAdminApi.getAuditLogs();
+      expect(getSpy).toHaveBeenCalledWith("/admin/audit-logs?per_page=100");
+      expect(res).toHaveLength(1);
+      expect(res[0].action).toBe("PROPERTY_APPROVED");
+    });
+
+    it("adminApi delegates seamlessly under default configuration", async () => {
+      const stats = await adminApi.getDashboardStats();
+      expect(stats.totalProperties).toBeGreaterThan(0);
+      const logs = await adminApi.getAuditLogs();
+      expect(logs.length).toBeGreaterThan(0);
     });
   });
 });

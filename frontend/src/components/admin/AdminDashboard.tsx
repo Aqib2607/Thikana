@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
-import { mockAdminApi } from "@/lib/api/mock/admin";
+import { adminApi } from "@/lib/api/admin";
 import { toBnNumber } from "@/lib/i18n";
 import type { AdminStats } from "@/lib/api/admin";
 import {
@@ -28,7 +28,7 @@ export function AdminDashboard() {
 
   useEffect(() => {
     let mounted = true;
-    mockAdminApi.getDashboardStats().then((data) => {
+    adminApi.getDashboardStats().then((data) => {
       if (mounted) {
         setStats(data);
         setLoading(false);

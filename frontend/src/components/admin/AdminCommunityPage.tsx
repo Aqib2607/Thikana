@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
-import { mockAdminApi } from "@/lib/api/mock/admin";
+import { adminApi } from "@/lib/api/admin";
 import { translateArea } from "@/lib/i18n";
 import type { CommunityInfo } from "@/lib/api/properties";
 import { KHULNA_AREAS } from "@/lib/api/mock/properties";
@@ -39,7 +39,7 @@ export function AdminCommunityPage() {
 
   useEffect(() => {
     let mounted = true;
-    mockAdminApi.getCommunityData().then((data) => {
+    adminApi.getCommunityData().then((data) => {
       if (mounted) {
         setCommunityMap(data);
         if (data[selectedArea]) {
@@ -62,7 +62,7 @@ export function AdminCommunityPage() {
     if (!user) return;
     setSaving(true);
     try {
-      await mockAdminApi.updateCommunityData(selectedArea, formData, user.id, user.name || "Admin");
+      await adminApi.updateCommunityData(selectedArea, formData, user.id, user.name || "Admin");
       setCommunityMap((prev) => ({ ...prev, [selectedArea]: formData }));
       setNotice(`'${selectedArea}' — ${t("admin.saveChangesBtn")}`);
       setTimeout(() => setNotice(null), 4000);

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
-import { mockAdminApi } from "@/lib/api/mock/admin";
+import { adminApi } from "@/lib/api/admin";
 import { toBnNumber } from "@/lib/i18n";
 import {
   type PropertyItem,
@@ -23,7 +23,7 @@ export function AdminVerificationsPage() {
   const loadProperties = async () => {
     setLoading(true);
     try {
-      const data = await mockAdminApi.getProperties();
+      const data = await adminApi.getProperties();
       setProperties(data);
     } finally {
       setLoading(false);
@@ -43,7 +43,7 @@ export function AdminVerificationsPage() {
 
     setUpdatingId(`${prop.id}-${verif}`);
     try {
-      const updated = await mockAdminApi.updatePropertyVerifications(
+      const updated = await adminApi.updatePropertyVerifications(
         prop.id,
         nextVerifs,
         user.id,

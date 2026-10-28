@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
-import { mockLandlordApi } from "@/lib/api/mock/landlord";
+import { landlordApi } from "@/lib/api/landlord";
 import { PropertyForm } from "@/components/landlord/PropertyForm";
 import type { PropertyFormData } from "@/lib/api/landlord";
 
@@ -27,7 +27,7 @@ function CreatePropertyPage() {
 
   const handleCreate = async (data: PropertyFormData) => {
     if (!user) return;
-    await mockLandlordApi.createProperty(user.id, data, {
+    await landlordApi.createProperty(user.id, data, {
       name: user.name,
       phone: user.phone,
       email: user.email,

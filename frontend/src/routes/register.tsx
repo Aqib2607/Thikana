@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useTranslation } from "react-i18next";
 import { AuthCard, Field, FormAlert, SubmitButton } from "@/components/auth/AuthCard";
-import { mockAuth } from "@/lib/api/mock/auth";
+import { authApi } from "@/lib/api/auth";
 import { useAuth } from "@/lib/auth";
 import type { Role } from "@/lib/api/client";
 import { Home, Building } from "lucide-react";
@@ -29,7 +29,7 @@ const registerSchema = z
     email: z.string().email({ message: "auth.errors.invalidEmail" }),
     phone: z.string().regex(/^01[3-9]\d{8}$/, { message: "auth.errors.invalidPhone" }),
     role: z.enum(["tenant", "landlord"] as const),
-    password: z.string().min(6, { message: "auth.errors.passwordMin" }),
+    password: z.string().min(8, { message: "auth.errors.passwordMin8" }),
     confirmPassword: z.string().min(1, { message: "auth.errors.required" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -40,7 +40,7 @@ const registerSchema = z
 type RegisterValues = z.infer<typeof registerSchema>;
 
 function RegisterPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { setUser } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -68,7 +68,7 @@ function RegisterPage() {
   const onSubmit = async (values: RegisterValues) => {
     setServerError(null);
     try {
-      const user = await mockAuth.register({
+      const user = await authApi.register({
         name: values.name,
         email: values.email,
         phone: values.phone,
@@ -173,7 +173,16 @@ function RegisterPage() {
           type="password"
           placeholder="••••••••"
           autoComplete="new-password"
-          error={errors.password?.message ? t(errors.password.message) : undefined}
+          error={
+            errors.password?.message
+              ? t(
+                  errors.password.message,
+                  i18n.language === "en"
+                    ? "Password must be at least 8 characters."
+                    : "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।",
+                )
+              : undefined
+          }
           {...register("password")}
         />
 

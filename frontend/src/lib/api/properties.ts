@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { http } from "./http";
+import { USE_MOCK } from "./client";
+import { mockProperties, KHULNA_AREAS, ALL_AMENITIES } from "./mock/properties";
 
 export const PROPERTY_TYPES = [
   "Apartment / Flat",
@@ -164,3 +167,78 @@ export interface PropertyListResponse {
 }
 
 export type Property = PropertyItem;
+
+export interface PropertyApi {
+  list(filter?: PropertyFilter): Promise<PropertyListResponse>;
+  getById(idOrSlug: string): Promise<PropertyItem | null>;
+  getAreas(): Promise<string[]>;
+  getAmenities(): Promise<string[]>;
+}
+
+export const realPropertyApi: PropertyApi = {
+  async list(filter?: PropertyFilter): Promise<PropertyListResponse> {
+    const params = new URLSearchParams();
+    if (filter) {
+      if (filter.search) params.set("search", filter.search);
+      if (filter.area && filter.area !== "All Areas") params.set("area", filter.area);
+      if (filter.propertyType) params.set("propertyType", filter.propertyType);
+      if (filter.rentalType) params.set("rentalType", filter.rentalType);
+      if (filter.minRent !== undefined) params.set("minRent", String(filter.minRent));
+      if (filter.maxRent !== undefined) params.set("maxRent", String(filter.maxRent));
+      if (filter.rooms !== undefined) params.set("rooms", String(filter.rooms));
+      if (filter.bathrooms !== undefined) params.set("bathrooms", String(filter.bathrooms));
+      if (filter.furnishedStatus) params.set("furnishedStatus", filter.furnishedStatus);
+      if (filter.availability) params.set("availability", filter.availability);
+      if (filter.verifiedOnly) params.set("verifiedOnly", "true");
+      if (filter.amenities && filter.amenities.length > 0) {
+        filter.amenities.forEach((a) => params.append("amenities[]", a));
+      }
+      if (filter.sortBy) params.set("sortBy", filter.sortBy);
+      if (filter.page) params.set("page", String(filter.page));
+      if (filter.limit) params.set("limit", String(filter.limit));
+    }
+    const query = params.toString();
+    const endpoint = query ? `/properties?${query}` : "/properties";
+    return http.get<PropertyListResponse>(endpoint);
+  },
+
+  async getById(idOrSlug: string): Promise<PropertyItem | null> {
+    try {
+      const res = await http.get<{ data: PropertyItem }>(`/properties/${encodeURIComponent(idOrSlug)}`);
+      return res.data;
+    } catch (err: any) {
+      if (err?.status === 404) return null;
+      throw err;
+    }
+  },
+
+  async getAreas(): Promise<string[]> {
+    const res = await http.get<{ data: string[] }>("/properties/areas");
+    return res.data;
+  },
+
+  async getAmenities(): Promise<string[]> {
+    const res = await http.get<{
+      data: Array<{ name: string; bangla_name?: string; icon?: string } | string>;
+    }>("/properties/amenities");
+    if (!res || !Array.isArray(res.data)) {
+      return [];
+    }
+
+    return res.data
+      .map((item) => (typeof item === "string" ? item : item?.name))
+      .filter((name): name is string => typeof name === "string" && name.length > 0);
+  },
+};
+
+const mockPropertyApi: PropertyApi = {
+  ...mockProperties,
+  async getAreas(): Promise<string[]> {
+    return KHULNA_AREAS.filter((a) => a !== "All Areas");
+  },
+  async getAmenities(): Promise<string[]> {
+    return [...ALL_AMENITIES];
+  },
+};
+
+export const propertyApi: PropertyApi = USE_MOCK ? mockPropertyApi : realPropertyApi;

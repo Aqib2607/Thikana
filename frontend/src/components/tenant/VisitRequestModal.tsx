@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { mockTenantApi } from "@/lib/api/mock";
+import { tenantApi } from "@/lib/api/tenant";
 import type { PropertyItem } from "@/lib/api/properties";
 import { X, Calendar, Clock, MessageSquare, CheckCircle, AlertCircle } from "lucide-react";
 
@@ -12,9 +12,9 @@ interface VisitRequestModalProps {
 }
 
 const TIME_SLOTS = [
-  "Morning (10:00 AM - 12:00 PM)",
-  "Afternoon (02:00 PM - 04:00 PM)",
-  "Evening (04:00 PM - 06:00 PM)",
+  { value: "morning", label: "Morning (09:00 AM - 12:00 PM)", labelBn: "সকাল (০৯:০০ - ১২:০০)" },
+  { value: "afternoon", label: "Afternoon (12:00 PM - 04:00 PM)", labelBn: "দুপুর (১২:০০ - ০৪:০০)" },
+  { value: "evening", label: "Evening (04:00 PM - 07:00 PM)", labelBn: "সন্ধ্যা (০৪:০০ - ০৭:০০)" },
 ];
 
 export const VisitRequestModal: React.FC<VisitRequestModalProps> = ({
@@ -32,7 +32,7 @@ export const VisitRequestModal: React.FC<VisitRequestModalProps> = ({
   const minDateStr = tomorrow.toISOString().split("T")[0];
 
   const [date, setDate] = useState(minDateStr);
-  const [slot, setSlot] = useState(TIME_SLOTS[0]);
+  const [slot, setSlot] = useState(TIME_SLOTS[0].value);
   const [note, setNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +60,7 @@ export const VisitRequestModal: React.FC<VisitRequestModalProps> = ({
     setIsSubmitting(true);
     setError(null);
     try {
-      await mockTenantApi.createVisit({
+      await tenantApi.createVisit({
         propertyId: property.id,
         visitDate: date,
         visitTimeSlot: slot,
@@ -164,9 +164,9 @@ export const VisitRequestModal: React.FC<VisitRequestModalProps> = ({
               <div className="space-y-2">
                 {TIME_SLOTS.map((s) => (
                   <label
-                    key={s}
+                    key={s.value}
                     className={`flex items-center gap-2.5 rounded-xl border p-2.5 text-xs cursor-pointer transition-colors ${
-                      slot === s
+                      slot === s.value
                         ? "border-primary bg-primary/10 text-primary font-semibold"
                         : "border-border bg-surface text-muted-foreground hover:bg-secondary"
                     }`}
@@ -174,19 +174,19 @@ export const VisitRequestModal: React.FC<VisitRequestModalProps> = ({
                     <input
                       type="radio"
                       name="timeSlot"
-                      value={s}
-                      checked={slot === s}
-                      onChange={() => setSlot(s)}
+                      value={s.value}
+                      checked={slot === s.value}
+                      onChange={() => setSlot(s.value)}
                       className="sr-only"
                     />
                     <div
                       className={`h-4 w-4 rounded-full border flex items-center justify-center ${
-                        slot === s ? "border-primary" : "border-border"
+                        slot === s.value ? "border-primary" : "border-border"
                       }`}
                     >
-                      {slot === s && <div className="h-2 w-2 rounded-full bg-primary" />}
+                      {slot === s.value && <div className="h-2 w-2 rounded-full bg-primary" />}
                     </div>
-                    <span>{s}</span>
+                    <span>{isBn ? s.labelBn : s.label}</span>
                   </label>
                 ))}
               </div>

@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toBnNumber } from "@/lib/i18n";
-import { Star, Trash2, Plus, AlertCircle, Image as ImageIcon, Sparkles } from "lucide-react";
+import { landlordApi } from "@/lib/api/landlord";
+import { Star, Trash2, Plus, AlertCircle, Image as ImageIcon, Sparkles, Upload } from "lucide-react";
 
 interface PropertyImageUploaderProps {
   images: string[];
   onChange: (images: string[]) => void;
   error?: string;
+  propertyId?: string;
 }
 
 // Curated academic student room & apartment image presets for convenience
@@ -33,11 +35,17 @@ const PRESET_PHOTOS = [
   },
 ];
 
-export function PropertyImageUploader({ images, onChange, error }: PropertyImageUploaderProps) {
+export function PropertyImageUploader({
+  images,
+  onChange,
+  error,
+  propertyId,
+}: PropertyImageUploaderProps) {
   const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
   const [inputUrl, setInputUrl] = useState("");
   const [limitWarning, setLimitWarning] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleAddImage = (urlToAdd: string) => {
     setLimitWarning(null);
@@ -60,6 +68,43 @@ export function PropertyImageUploader({ images, onChange, error }: PropertyImage
 
     onChange([...images, trimmed]);
     setInputUrl("");
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLimitWarning(null);
+
+    if (images.length >= 5) {
+      setLimitWarning(
+        isBn
+          ? "সর্বোচ্চ ৫টি ছবি যোগ করা যাবে। নতুন ছবি যোগ করতে আগের ছবি মুছে ফেলুন।"
+          : "Maximum 5 photos allowed. Please remove an existing photo to add a new one.",
+      );
+      return;
+    }
+
+    setUploading(true);
+    try {
+      if (propertyId && landlordApi.uploadImage) {
+        const uploaded = await landlordApi.uploadImage(propertyId, file);
+        onChange([...images, uploaded.imageUrl]);
+      } else {
+        const reader = new FileReader();
+        reader.onload = (uploadEvent) => {
+          const result = uploadEvent.target?.result as string;
+          if (result) {
+            onChange([...images, result]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    } catch (err: any) {
+      setLimitWarning(err?.message || (isBn ? "ছবি আপলোড ব্যর্থ হয়েছে" : "Failed to upload photo"));
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
   };
 
   const handleRemoveImage = (indexToRemove: number) => {
@@ -184,7 +229,7 @@ export function PropertyImageUploader({ images, onChange, error }: PropertyImage
         )}
       </div>
 
-      {/* URL input controls */}
+      {/* Input controls: URL and file upload */}
       <div className="flex flex-col sm:flex-row gap-2">
         <input
           type="url"
@@ -202,17 +247,29 @@ export function PropertyImageUploader({ images, onChange, error }: PropertyImage
               handleAddImage(inputUrl);
             }
           }}
-          disabled={images.length >= 5}
+          disabled={images.length >= 5 || uploading}
         />
         <button
           type="button"
           onClick={() => handleAddImage(inputUrl)}
-          disabled={!inputUrl.trim() || images.length >= 5}
+          disabled={!inputUrl.trim() || images.length >= 5 || uploading}
           className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-95 disabled:opacity-50 transition-all"
         >
           <Plus className="h-4 w-4" aria-hidden="true" />
           <span>{isBn ? "ছবি যোগ করুন" : "Add Photo"}</span>
         </button>
+
+        <label className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted cursor-pointer transition-all disabled:opacity-50">
+          <Upload className="h-4 w-4" aria-hidden="true" />
+          <span>{uploading ? (isBn ? "আপলোড হচ্ছে..." : "Uploading...") : isBn ? "ফাইল আপলোড" : "Upload File"}</span>
+          <input
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            disabled={images.length >= 5 || uploading}
+            onChange={handleFileUpload}
+          />
+        </label>
       </div>
 
       {/* Quick Academic Preset Photos */}
@@ -231,7 +288,7 @@ export function PropertyImageUploader({ images, onChange, error }: PropertyImage
                 <button
                   key={p.url}
                   type="button"
-                  disabled={alreadyAdded || images.length >= 5}
+                  disabled={alreadyAdded || images.length >= 5 || uploading}
                   onClick={() => handleAddImage(p.url)}
                   className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
                     alreadyAdded
