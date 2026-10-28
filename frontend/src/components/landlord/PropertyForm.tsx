@@ -12,6 +12,16 @@ import {
   type PropertyItem,
 } from "@/lib/api/properties";
 import { KHULNA_AREAS, ALL_AMENITIES } from "@/lib/api/mock/properties";
+import {
+  translatePropertyType,
+  translateRentalType,
+  translateAvailability,
+  translateArea,
+  translateFurnished,
+  translateTenantPreference,
+  translateAmenity,
+  translateBill,
+} from "@/lib/i18n";
 import { PropertyImageUploader } from "./PropertyImageUploader";
 import {
   Building2,
@@ -48,7 +58,6 @@ export function PropertyForm({
   isEditing = false,
 }: PropertyFormProps) {
   const { t, i18n } = useTranslation();
-  const isBn = i18n.language === "bn";
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -123,14 +132,13 @@ export function PropertyForm({
     setSubmitting(true);
     setSubmitError(null);
     try {
-      // Ensure featuredImage is set to the first image if empty
       const payload: PropertyFormData = {
         ...data,
         featuredImage: data.images[0],
       };
       await onSubmit(payload);
     } catch (err: unknown) {
-      setSubmitError(err instanceof Error ? err.message : "Failed to save property listing");
+      setSubmitError(err instanceof Error ? err.message : t("landlord.failedSave"));
     } finally {
       setSubmitting(false);
     }
@@ -155,10 +163,10 @@ export function PropertyForm({
           </div>
           <div>
             <h3 className="text-base font-bold text-foreground">
-              {isBn ? "মৌলিক বিবরণ ও ধরন" : "Basic Information & Type"}
+              {t("landlord.basicInfoTitle")}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {isBn ? "বাসার সাধারণ পরিচিতি ও ধরন নির্বাচন করুন" : "Set listing title and category"}
+              {t("landlord.basicInfoDesc")}
             </p>
           </div>
         </div>
@@ -166,13 +174,13 @@ export function PropertyForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "বাসার শিরোনাম (ইংরেজি)" : "Listing Title (English)"}
+              {t("landlord.titleLabel")}
               <span className="text-destructive ml-1">*</span>
             </label>
             <input
               type="text"
               {...register("title")}
-              placeholder="e.g. Spacious 2-Bed Flat Near KUET Main Gate"
+              placeholder={t("landlord.titlePlaceholder")}
               className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
             {errors.title && (
@@ -182,19 +190,19 @@ export function PropertyForm({
 
           <div className="sm:col-span-2">
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "বাসার শিরোনাম (বাংলা - ঐচ্ছিক)" : "Listing Title (Bangla - Optional)"}
+              {t("landlord.banglaTitleLabel")}
             </label>
             <input
               type="text"
               {...register("banglaTitle")}
-              placeholder="যেমন: কুয়েট মেইন গেটের কাছে শান্ত ২ রুমের ফ্ল্যাট"
+              placeholder={t("landlord.banglaTitlePlaceholder")}
               className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "প্রপার্টির ধরন" : "Property Type"}
+              {t("landlord.propertyTypeLabel")}
               <span className="text-destructive ml-1">*</span>
             </label>
             <select
@@ -203,7 +211,7 @@ export function PropertyForm({
             >
               {PROPERTY_TYPES.map((pt) => (
                 <option key={pt} value={pt}>
-                  {pt}
+                  {translatePropertyType(pt, i18n.language)}
                 </option>
               ))}
             </select>
@@ -211,7 +219,7 @@ export function PropertyForm({
 
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "ভাড়ার ধরন" : "Rental Type"}
+              {t("landlord.rentalTypeLabel")}
               <span className="text-destructive ml-1">*</span>
             </label>
             <select
@@ -220,7 +228,7 @@ export function PropertyForm({
             >
               {RENTAL_TYPES.map((rt) => (
                 <option key={rt} value={rt}>
-                  {rt}
+                  {translateRentalType(rt, i18n.language)}
                 </option>
               ))}
             </select>
@@ -228,7 +236,7 @@ export function PropertyForm({
 
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "প্রাপ্যতা স্ট্যাটাস" : "Availability Status"}
+              {t("landlord.availabilityLabel")}
             </label>
             <select
               {...register("availability")}
@@ -236,7 +244,7 @@ export function PropertyForm({
             >
               {AVAILABILITY_STATUSES.map((st) => (
                 <option key={st} value={st}>
-                  {st}
+                  {translateAvailability(st, i18n.language)}
                 </option>
               ))}
             </select>
@@ -244,7 +252,7 @@ export function PropertyForm({
 
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "কোন তারিখ থেকে খালি" : "Available From"}
+              {t("landlord.availableFromLabel")}
               <span className="text-destructive ml-1">*</span>
             </label>
             <input
@@ -267,12 +275,10 @@ export function PropertyForm({
           </div>
           <div>
             <h3 className="text-base font-bold text-foreground">
-              {isBn ? "অবস্থান কাঠামো (খুলনা)" : "Location Hierarchy (Khulna)"}
+              {t("landlord.locationTitle")}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {isBn
-                ? "খুলনার সুনির্দিষ্ট এলাকা এবং সঠিক ঠিকানা প্রদান করুন।"
-                : "Select designated Khulna academic zone and exact address."}
+              {t("landlord.locationDesc")}
             </p>
           </div>
         </div>
@@ -280,7 +286,7 @@ export function PropertyForm({
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
             <label className="block text-xs font-semibold uppercase text-muted-foreground">
-              {isBn ? "বিভাগ" : "Division"}
+              {t("landlord.divisionLabel")}
             </label>
             <input
               type="text"
@@ -292,7 +298,7 @@ export function PropertyForm({
 
           <div>
             <label className="block text-xs font-semibold uppercase text-muted-foreground">
-              {isBn ? "জেলা" : "District"}
+              {t("landlord.districtLabel")}
             </label>
             <input
               type="text"
@@ -304,7 +310,7 @@ export function PropertyForm({
 
           <div>
             <label className="block text-xs font-semibold uppercase text-muted-foreground">
-              {isBn ? "শহর" : "City"}
+              {t("landlord.cityLabel")}
             </label>
             <input
               type="text"
@@ -316,7 +322,7 @@ export function PropertyForm({
 
           <div className="sm:col-span-3">
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "এলাকা নির্বাচন করুন" : "Select Area in Khulna"}
+              {t("landlord.areaSelectLabel")}
               <span className="text-destructive ml-1">*</span>
             </label>
             <select
@@ -325,7 +331,7 @@ export function PropertyForm({
             >
               {KHULNA_AREAS.filter((a) => a !== "All Areas").map((area) => (
                 <option key={area} value={area}>
-                  {area}
+                  {translateArea(area, i18n.language)}
                 </option>
               ))}
             </select>
@@ -335,18 +341,18 @@ export function PropertyForm({
           <div className="sm:col-span-3">
             <div className="flex items-center justify-between">
               <label className="block text-sm font-semibold text-foreground">
-                {isBn ? "পূর্ণ ও সঠিক ঠিকানা (জনসম্মুখে উন্মুক্ত)" : "Exact Public Address"}
+                {t("landlord.exactAddressLabel")}
                 <span className="text-destructive ml-1">*</span>
               </label>
               <span className="text-xs text-muted-foreground flex items-center gap-1">
                 <Info className="h-3.5 w-3.5" aria-hidden="true" />
-                {isBn ? "ঠিকানা সবার জন্য দৃশ্যমান হবে" : "Address is publicly displayed"}
+                {t("landlord.exactAddressNotice")}
               </span>
             </div>
             <textarea
               rows={2}
               {...register("exactAddress")}
-              placeholder="e.g. Holding #42, Teacher's Colony Road, Teligati, Fulbarigate, Khulna-9203"
+              placeholder={t("landlord.exactAddressPlaceholder")}
               className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
             {errors.exactAddress && (
@@ -364,12 +370,10 @@ export function PropertyForm({
           </div>
           <div>
             <h3 className="text-base font-bold text-foreground">
-              {isBn ? "ভাড়া ও খরচের হিসাব (টাকা)" : "Rent & Pricing (BDT)"}
+              {t("landlord.pricingTitle")}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {isBn
-                ? "মাসিক ভাড়া, অগ্রিম এবং অন্তর্ভুক্ত বিলসমূহ"
-                : "Monthly rent, advance, and bills included"}
+              {t("landlord.pricingDesc")}
             </p>
           </div>
         </div>
@@ -377,7 +381,7 @@ export function PropertyForm({
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "মাসিক ভাড়া (৳)" : "Monthly Rent (৳)"}
+              {t("landlord.rentLabel")}
               <span className="text-destructive ml-1">*</span>
             </label>
             <input
@@ -390,7 +394,7 @@ export function PropertyForm({
 
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "অগ্রিম জামানত (৳)" : "Advance Deposit (৳)"}
+              {t("landlord.advanceLabel")}
             </label>
             <input
               type="number"
@@ -404,7 +408,7 @@ export function PropertyForm({
 
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "অতিরিক্ত সার্ভিস চার্জ (৳)" : "Additional Charges (৳)"}
+              {t("landlord.chargesLabel")}
             </label>
             <input
               type="number"
@@ -418,7 +422,7 @@ export function PropertyForm({
 
           <div className="sm:col-span-3 mt-2">
             <label className="block text-xs font-semibold text-muted-foreground uppercase mb-2">
-              {isBn ? "ভাড়ার মধ্যে অন্তর্ভুক্ত বিলসমূহ:" : "Bills Included in Rent:"}
+              {t("landlord.billsIncludedLabel")}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {BILLS_OPTIONS.map((bill) => {
@@ -447,7 +451,7 @@ export function PropertyForm({
                       }}
                       className="rounded border-border text-primary focus:ring-primary h-4 w-4"
                     />
-                    <span>{bill}</span>
+                    <span>{translateBill(bill, i18n.language)}</span>
                   </label>
                 );
               })}
@@ -464,12 +468,10 @@ export function PropertyForm({
           </div>
           <div>
             <h3 className="text-base font-bold text-foreground">
-              {isBn ? "বাসার স্পেসিফিকেশন ও পছন্দ" : "Specifications & Preference"}
+              {t("landlord.specsTitle")}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {isBn
-                ? "রুম, সাইজ এবং পছন্দনীয় ভাড়াটিয়ার ধরন"
-                : "Rooms, size, floor, and tenant preference"}
+              {t("landlord.specsDesc")}
             </p>
           </div>
         </div>
@@ -477,7 +479,7 @@ export function PropertyForm({
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "আয়তন (বর্গফুট)" : "Size (sq ft)"}
+              {t("landlord.sizeLabel")}
               <span className="text-destructive ml-1">*</span>
             </label>
             <input
@@ -490,7 +492,7 @@ export function PropertyForm({
 
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "বেডরুম সংখ্যা" : "Bedrooms"}
+              {t("landlord.roomsLabel")}
               <span className="text-destructive ml-1">*</span>
             </label>
             <input
@@ -505,7 +507,7 @@ export function PropertyForm({
 
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "বাথরুম সংখ্যা" : "Bathrooms"}
+              {t("landlord.bathroomsLabel")}
               <span className="text-destructive ml-1">*</span>
             </label>
             <input
@@ -520,7 +522,7 @@ export function PropertyForm({
 
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "বারান্দা সংখ্যা" : "Balconies"}
+              {t("landlord.balconiesLabel")}
             </label>
             <input
               type="number"
@@ -531,13 +533,13 @@ export function PropertyForm({
 
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "কত তলা (Floor)" : "Floor Level"}
+              {t("landlord.floorLabel")}
               <span className="text-destructive ml-1">*</span>
             </label>
             <input
               type="text"
               {...register("floor")}
-              placeholder="e.g. 3rd Floor"
+              placeholder={t("landlord.floorPlaceholder")}
               className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
             {errors.floor && (
@@ -547,7 +549,7 @@ export function PropertyForm({
 
           <div>
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "ফার্নিচার অবস্থা" : "Furnished Status"}
+              {t("landlord.furnishedStatusLabel")}
             </label>
             <select
               {...register("furnishedStatus")}
@@ -555,7 +557,7 @@ export function PropertyForm({
             >
               {FURNISHED_STATUSES.map((fs) => (
                 <option key={fs} value={fs}>
-                  {fs}
+                  {translateFurnished(fs, i18n.language)}
                 </option>
               ))}
             </select>
@@ -563,7 +565,7 @@ export function PropertyForm({
 
           <div className="sm:col-span-3">
             <label className="block text-sm font-semibold text-foreground">
-              {isBn ? "পছন্দনীয় ভাড়াটিয়া" : "Preferred Tenant"}
+              {t("landlord.preferredTenantLabel")}
             </label>
             <select
               {...register("preferredTenant")}
@@ -571,7 +573,7 @@ export function PropertyForm({
             >
               {TENANT_PREFERENCES.map((tp) => (
                 <option key={tp} value={tp}>
-                  {tp}
+                  {translateTenantPreference(tp, i18n.language)}
                 </option>
               ))}
             </select>
@@ -602,12 +604,10 @@ export function PropertyForm({
           </div>
           <div>
             <h3 className="text-base font-bold text-foreground">
-              {isBn ? "সুবিধাসমূহ (Amenities)" : "Amenities"}
+              {t("landlord.amenitiesTitle")}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {isBn
-                ? "ভাড়াটিয়ারা এই সুযোগ-সুবিধাগুলোর ভিত্তিতে ফিল্টার ও ম্যাচিং দেখতে পাবেন"
-                : "Select amenities available for match calculation and filters"}
+              {t("landlord.amenitiesDesc")}
             </p>
           </div>
         </div>
@@ -639,14 +639,14 @@ export function PropertyForm({
                   }}
                   className="rounded border-border text-primary focus:ring-primary h-4 w-4"
                 />
-                <span>{amenity}</span>
+                <span>{translateAmenity(amenity, i18n.language)}</span>
               </label>
             );
           })}
         </div>
       </section>
 
-      {/* 7. Public Contact Visibility Setting (Master Prompt Requirement) */}
+      {/* 7. Public Contact Visibility Setting */}
       <section className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
         <div className="flex items-center gap-2.5 mb-4 border-b border-border pb-4">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -654,12 +654,10 @@ export function PropertyForm({
           </div>
           <div>
             <h3 className="text-base font-bold text-foreground">
-              {isBn ? "যোগাযোগের গোপনীয়তা নিয়ন্ত্রণ" : "Public Contact Visibility"}
+              {t("landlord.contactPrivacyTitle")}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {isBn
-                ? "আপনার যোগাযোগের বিবরণ জনসম্মুখে দেখানো হবে কি না তা নির্ধারণ করুন"
-                : "Choose whether your direct contact details are publicly visible"}
+              {t("landlord.contactPrivacyDesc")}
             </p>
           </div>
         </div>
@@ -673,24 +671,18 @@ export function PropertyForm({
           />
           <label htmlFor="publicContactVisibleToggle" className="cursor-pointer text-sm">
             <span className="font-semibold text-foreground">
-              {isBn
-                ? "আমার মোবাইল নম্বর ও ইমেইল প্রপার্টি পেজে প্রকাশ্যে প্রদর্শন করুন"
-                : "Display my phone number and email publicly on this property page"}
+              {t("landlord.contactPrivacyCheckbox")}
             </span>
             <p className="mt-1 text-xs text-muted-foreground">
               {publicContactVisible
-                ? isBn
-                  ? "সতর্কতা: যেকোনো লগইন করা ব্যবহারকারী সরাসরি আপনার ফোন নম্বরে কল করতে পারবেন।"
-                  : "Notice: Any logged-in tenant will be able to see and call your phone number directly."
-                : isBn
-                  ? "সুরক্ষিত মোড: ভাড়াটিয়াদের আপনার সাথে কথা বলতে প্রথমে 'যোগাযোগের অনুরোধ' (Contact Request) পাঠাতে হবে। আপনি অনুমোদন করলে তবেই বার্তা পাঠানো যাবে।"
-                  : "Protected Mode: Tenants must submit a Contact Request first. Messaging will only unlock after you approve."}
+                ? t("landlord.contactPrivacyPublicNotice")
+                : t("landlord.contactPrivacyProtectedNotice")}
             </p>
           </label>
         </div>
       </section>
 
-      {/* 8. Community Information (6 Dimensions) */}
+      {/* 8. Community Information */}
       <section className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
         <div className="flex items-center gap-2.5 mb-5 border-b border-border pb-4">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -698,12 +690,10 @@ export function PropertyForm({
           </div>
           <div>
             <h3 className="text-base font-bold text-foreground">
-              {isBn ? "কমিউনিটি ও এলাকাভিত্তিক তথ্য" : "Community & Neighborhood Information"}
+              {t("landlord.communityTitle")}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {isBn
-                ? "যাতায়াত, জলাবদ্ধতা, ইন্টারনেট, শব্দ ও নিরাপত্তার তথ্য"
-                : "Transport, waterlogging, internet, noise, safety, and area notes"}
+              {t("landlord.communityDesc")}
             </p>
           </div>
         </div>
@@ -711,72 +701,72 @@ export function PropertyForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="block text-xs font-semibold text-foreground">
-              {isBn ? "যাতায়াত সুবিধা (Transport)" : "Transport / Commute"}
+              {t("landlord.transportLabel")}
             </label>
             <input
               type="text"
               {...register("community.transport")}
-              placeholder="e.g. 4 mins walk to KUET Main Gate, easybikes available"
+              placeholder={t("landlord.transportPlaceholder")}
               className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-foreground">
-              {isBn ? "জলাবদ্ধতা সংক্রান্ত তথ্য (Waterlogging)" : "Waterlogging Condition"}
+              {t("landlord.waterloggingLabel")}
             </label>
             <input
               type="text"
               {...register("community.waterlogging")}
-              placeholder="e.g. Road is elevated; zero waterlogging history"
+              placeholder={t("landlord.waterloggingPlaceholder")}
               className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-foreground">
-              {isBn ? "ইন্টারনেট প্রাপ্যতা (Internet)" : "Internet Availability"}
+              {t("landlord.internetLabel")}
             </label>
             <input
               type="text"
               {...register("community.internet")}
-              placeholder="e.g. Carnival & AmberIT optical fibers active"
+              placeholder={t("landlord.internetPlaceholder")}
               className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-foreground">
-              {isBn ? "শব্দ ও পরিবেশ (Noise)" : "Noise & Environment"}
+              {t("landlord.noiseLabel")}
             </label>
             <input
               type="text"
               {...register("community.noise")}
-              placeholder="e.g. Quiet academic residential zone"
+              placeholder={t("landlord.noisePlaceholder")}
               className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-foreground">
-              {isBn ? "নিরাপত্তা ব্যবস্থা (Safety)" : "Security & Safety"}
+              {t("landlord.safetyLabel")}
             </label>
             <input
               type="text"
               {...register("community.safety")}
-              placeholder="e.g. CCTV surveillance, night guard from 8 PM - 6 AM"
+              placeholder={t("landlord.safetyPlaceholder")}
               className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-foreground">
-              {isBn ? "সাধারণ এলাকা পরিচিতি (General)" : "General Area Info"}
+              {t("landlord.generalLabel")}
             </label>
             <input
               type="text"
               {...register("community.general")}
-              placeholder="e.g. Pharmacy, stationery, grocery within 100 meters"
+              placeholder={t("landlord.generalPlaceholder")}
               className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
@@ -790,7 +780,7 @@ export function PropertyForm({
           onClick={onCancel}
           className="rounded-xl border border-border bg-surface px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-muted transition-all"
         >
-          {isBn ? "বাতিল করুন" : "Cancel"}
+          {t("landlord.cancel")}
         </button>
         <button
           type="submit"
@@ -803,13 +793,7 @@ export function PropertyForm({
             <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
           )}
           <span>
-            {isEditing
-              ? isBn
-                ? "পরিবর্তন সংরক্ষণ করুন"
-                : "Save Changes"
-              : isBn
-                ? "অনুমোদনের জন্য জমা দিন (Pending Approval)"
-                : "Submit for Approval"}
+            {isEditing ? t("landlord.saveChanges") : t("landlord.submitPending")}
           </span>
         </button>
       </div>

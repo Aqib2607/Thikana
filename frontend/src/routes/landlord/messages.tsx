@@ -4,15 +4,14 @@ import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
 import { mockLandlordApi } from "@/lib/api/mock/landlord";
+import { toBnNumber } from "@/lib/i18n";
 import type { ConversationItem } from "@/lib/api/tenant";
 import {
   MessageSquare,
   Send,
   User,
   Building2,
-  Clock,
   CheckCircle2,
-  AlertCircle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/landlord/messages")({
@@ -29,8 +28,7 @@ export const Route = createFileRoute("/landlord/messages")({
 });
 
 function LandlordMessagesPage() {
-  const { i18n } = useTranslation();
-  const isBn = i18n.language === "bn";
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
 
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
@@ -84,31 +82,25 @@ function LandlordMessagesPage() {
   return (
     <RoleLayout
       requiredRole="landlord"
-      title={isBn ? "বার্তা ও চ্যাট ইনবক্স" : "Messages & Inquiries"}
-      subtitle={
-        isBn
-          ? "অনুমোদিত ভাড়াটিয়াদের সাথে প্রপার্টি সংক্রান্ত সরাসরি বার্তা বিনিময়"
-          : "Direct platform communication with approved prospective tenants"
-      }
+      title={t("landlord.messagesTitle")}
+      subtitle={t("landlord.messagesSubtitle")}
       activeTab="messages"
     >
       {loading ? (
         <div className="rounded-2xl border border-border bg-surface p-12 text-center">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           <p className="mt-3 text-sm text-muted-foreground">
-            {isBn ? "ইনবক্স লোড হচ্ছে..." : "Loading messages..."}
+            {t("landlord.loadingMessages")}
           </p>
         </div>
       ) : conversations.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
           <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground opacity-40" />
           <h3 className="mt-4 text-base font-bold text-foreground">
-            {isBn ? "কোনো সক্রিয় বার্তা নেই" : "No active conversations"}
+            {t("landlord.noConversationsTitle")}
           </h3>
           <p className="mt-1 text-sm text-muted-foreground max-w-md mx-auto">
-            {isBn
-              ? "ভাড়াটিয়াদের যোগাযোগের অনুরোধ গ্রহণ করলে স্বয়ংক্রিয়ভাবে তাদের সাথে মেসেজিং সক্রিয় হবে।"
-              : "When you accept inbound tenant contact requests, conversations will automatically appear here."}
+            {t("landlord.noConversationsDesc")}
           </p>
         </div>
       ) : (
@@ -117,10 +109,10 @@ function LandlordMessagesPage() {
           <div className="border-b md:border-b-0 md:border-r border-border p-4 space-y-2 overflow-y-auto max-h-[600px]">
             <div className="flex items-center justify-between mb-3 px-2">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                {isBn ? "কথোপকথন তালিকা" : "Conversations"}
+                {t("landlord.conversationsHeader")}
               </span>
               <span className="text-xs rounded-full bg-secondary px-2 py-0.5 font-semibold text-foreground">
-                {conversations.length}
+                {toBnNumber(conversations.length, i18n.language)}
               </span>
             </div>
 
@@ -173,7 +165,7 @@ function LandlordMessagesPage() {
                     <h3 className="font-bold text-foreground text-base flex items-center gap-2">
                       <span>{activeConversation.tenantName}</span>
                       <span className="rounded-md bg-secondary px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                        {isBn ? "ভাড়াটিয়া" : "Tenant"}
+                        {t("landlord.tenantRoleBadge")}
                       </span>
                     </h3>
                     <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
@@ -183,7 +175,7 @@ function LandlordMessagesPage() {
                   </div>
                   <div className="flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">
                     <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                    <span>{isBn ? "অনুমোদিত চ্যাট" : "Verified Chat"}</span>
+                    <span>{t("landlord.verifiedChatBadge")}</span>
                   </div>
                 </div>
 
@@ -207,9 +199,7 @@ function LandlordMessagesPage() {
                         </div>
                         <span className="text-[10px] text-muted-foreground mt-1 px-1">
                           {isLandlord
-                            ? isBn
-                              ? "আপনি (বাড়িওয়ালা)"
-                              : "You (Landlord)"
+                            ? t("landlord.youLandlord")
                             : msg.senderName}{" "}
                           •{" "}
                           {new Date(msg.createdAt).toLocaleTimeString([], {
@@ -232,11 +222,7 @@ function LandlordMessagesPage() {
                     type="text"
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    placeholder={
-                      isBn
-                        ? "ভাড়াটিয়াকে উত্তর লিখুন..."
-                        : "Type your reply to prospective tenant..."
-                    }
+                    placeholder={t("landlord.replyPlaceholder")}
                     className="flex-1 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                     disabled={sending}
                   />
@@ -246,7 +232,7 @@ function LandlordMessagesPage() {
                     className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow hover:opacity-95 disabled:opacity-50 transition-all"
                   >
                     <Send className="h-4 w-4" aria-hidden="true" />
-                    <span>{isBn ? "পাঠান" : "Send"}</span>
+                    <span>{t("landlord.sendBtn")}</span>
                   </button>
                 </form>
               </>
@@ -254,9 +240,7 @@ function LandlordMessagesPage() {
               <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-8">
                 <MessageSquare className="h-10 w-10 opacity-40 mb-2" />
                 <p className="text-sm">
-                  {isBn
-                    ? "বাম পাশের তালিকা থেকে কথোপকথন নির্বাচন করুন।"
-                    : "Select a conversation from the left to view messages."}
+                  {t("landlord.selectConversation")}
                 </p>
               </div>
             )}

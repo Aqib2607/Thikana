@@ -99,6 +99,16 @@ export function translateVerification(v: string, lang: string = i18n.language): 
   return v;
 }
 
+export function translateTenantPreference(tp?: string, lang: string = i18n.language): string {
+  if (!tp) return "";
+  const key = `tenantPreferences.${normalizeKey(tp)}`;
+  if (i18n.exists(key, { lng: lang })) {
+    return i18n.t(key, { lng: lang });
+  }
+  warnUnmapped("tenantPreferences", tp, lang);
+  return tp;
+}
+
 export function translateBill(b: string, lang: string = i18n.language): string {
   if (!b) return "";
   const key = `bills.${normalizeKey(b)}`;

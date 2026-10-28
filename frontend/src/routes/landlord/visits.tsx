@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
 import { mockLandlordApi } from "@/lib/api/mock/landlord";
+import { toBnNumber } from "@/lib/i18n";
 import type { VisitRequestItem, VisitStatus } from "@/lib/api/tenant";
 import {
   CalendarCheck,
@@ -29,8 +30,7 @@ export const Route = createFileRoute("/landlord/visits")({
 });
 
 function LandlordVisitsPage() {
-  const { i18n } = useTranslation();
-  const isBn = i18n.language === "bn";
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
 
   const [visits, setVisits] = useState<VisitRequestItem[]>([]);
@@ -57,20 +57,12 @@ function LandlordVisitsPage() {
       await mockLandlordApi.updateVisitStatus(visitId, status);
       setActionNotice(
         status === "Accepted"
-          ? isBn
-            ? "পরিদর্শন অনুরোধ গ্রহণ করা হয়েছে।"
-            : "Visit request accepted."
+          ? t("landlord.visitAcceptedMsg")
           : status === "Completed"
-            ? isBn
-              ? "পরিদর্শন সম্পন্ন হিসেবে চিহ্নিত করা হয়েছে (ভাড়াটিয়ার রিভিউতে 'পরিদর্শিত' ব্যাজ যুক্ত হবে)।"
-              : "Visit marked as completed (unlocks verified review badge for tenant)."
+            ? t("landlord.visitCompletedMsg")
             : status === "Rejected"
-              ? isBn
-                ? "পরিদর্শন অনুরোধ প্রত্যাখ্যান করা হয়েছে।"
-                : "Visit request rejected."
-              : isBn
-                ? "পরিদর্শন বাতিল করা হয়েছে।"
-                : "Visit cancelled.",
+              ? t("landlord.visitRejectedMsg")
+              : t("landlord.visitCancelledMsg"),
       );
       loadVisits();
     } catch {
@@ -86,12 +78,8 @@ function LandlordVisitsPage() {
   return (
     <RoleLayout
       requiredRole="landlord"
-      title={isBn ? "বাসা পরিদর্শনের শিডিউল" : "Property Visit Schedule"}
-      subtitle={
-        isBn
-          ? "ভাড়াটিয়াদের বাসা দেখার তারিখ ও সময় অনুমোদন বা সম্পন্ন করুন"
-          : "Accept, reschedule, or complete in-person property visit requests"
-      }
+      title={t("landlord.visitsTitle")}
+      subtitle={t("landlord.visitsSubtitle")}
       activeTab="visits"
     >
       {/* Filter Tabs */}
@@ -109,28 +97,16 @@ function LandlordVisitsPage() {
             }`}
           >
             {st === "ALL"
-              ? isBn
-                ? "সকল পরিদর্শন"
-                : "All Visits"
+              ? t("landlord.allVisitsTab")
               : st === "Pending"
-                ? isBn
-                  ? "অনুমোদনাধীন"
-                  : "Pending"
+                ? t("landlord.pendingApproval")
                 : st === "Accepted"
-                  ? isBn
-                    ? "অনুমোদিত"
-                    : "Accepted"
+                  ? t("landlord.approved")
                   : st === "Completed"
-                    ? isBn
-                      ? "সম্পন্ন"
-                      : "Completed"
+                    ? t("tenant.statusCompleted")
                     : st === "Rejected"
-                      ? isBn
-                        ? "প্রত্যাখ্যাত"
-                        : "Rejected"
-                      : isBn
-                        ? "বাতিল"
-                        : "Cancelled"}
+                      ? t("landlord.rejected")
+                      : t("tenant.statusCancelled")}
           </button>
         ))}
       </div>
@@ -146,7 +122,7 @@ function LandlordVisitsPage() {
             onClick={() => setActionNotice(null)}
             className="text-xs font-semibold hover:underline"
           >
-            {isBn ? "বন্ধ করুন" : "Dismiss"}
+            {t("landlord.dismiss")}
           </button>
         </div>
       )}
@@ -155,19 +131,17 @@ function LandlordVisitsPage() {
         <div className="rounded-2xl border border-border bg-surface p-12 text-center">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           <p className="mt-3 text-sm text-muted-foreground">
-            {isBn ? "পরিদর্শন তালিকা লোড হচ্ছে..." : "Loading visits..."}
+            {t("landlord.loadingVisits")}
           </p>
         </div>
       ) : filteredVisits.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
           <CalendarCheck className="mx-auto h-12 w-12 text-muted-foreground opacity-40" />
           <h3 className="mt-4 text-base font-bold text-foreground">
-            {isBn ? "কোনো পরিদর্শন অনুরোধ পাওয়া যায়নি" : "No visit requests found"}
+            {t("landlord.noVisitsTitle")}
           </h3>
           <p className="mt-1 text-sm text-muted-foreground max-w-md mx-auto">
-            {isBn
-              ? "ভাড়াটিয়ারা আপনার বাসা পরিদর্শনের অনুরোধ জানালে এখানে তারিখ ও সময় দেখতে পাবেন।"
-              : "When prospective tenants schedule in-person visits, they will appear here."}
+            {t("landlord.noVisitsDesc")}
           </p>
         </div>
       ) : (
@@ -198,7 +172,7 @@ function LandlordVisitsPage() {
                         <span>{v.propertyArea}</span>
                         <span>•</span>
                         <span className="font-semibold text-foreground">
-                          ৳{v.propertyRent.toLocaleString()}/মাস
+                          ৳{toBnNumber(v.propertyRent.toLocaleString(), i18n.language)}/{t("properties.month")}
                         </span>
                       </p>
 
@@ -220,31 +194,31 @@ function LandlordVisitsPage() {
                     {isPending && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800">
                         <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>{isBn ? "অনুমোদনাধীন" : "Pending"}</span>
+                        <span>{t("landlord.pendingApproval")}</span>
                       </span>
                     )}
                     {isAccepted && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800">
                         <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>{isBn ? "অনুমোদিত শিডিউল" : "Accepted"}</span>
+                        <span>{t("landlord.approved")}</span>
                       </span>
                     )}
                     {isCompleted && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">
                         <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>{isBn ? "পরিদর্শন সম্পন্ন" : "Completed"}</span>
+                        <span>{t("tenant.statusCompleted")}</span>
                       </span>
                     )}
                     {isRejected && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800">
                         <XCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>{isBn ? "প্রত্যাখ্যাত" : "Rejected"}</span>
+                        <span>{t("landlord.rejected")}</span>
                       </span>
                     )}
                     {isCancelled && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground border border-border">
                         <XCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>{isBn ? "বাতিলকৃত" : "Cancelled"}</span>
+                        <span>{t("tenant.statusCancelled")}</span>
                       </span>
                     )}
                   </div>
@@ -254,7 +228,7 @@ function LandlordVisitsPage() {
                 {v.note && (
                   <div className="mt-3.5 rounded-xl bg-secondary/50 p-3 text-xs text-foreground italic border border-border/50">
                     <span className="font-semibold not-italic text-muted-foreground mr-1">
-                      {isBn ? "ভাড়াটিয়ার নোট:" : "Tenant Note:"}
+                      {t("landlord.tenantNote")}
                     </span>
                     "{v.note}"
                   </div>
@@ -269,7 +243,7 @@ function LandlordVisitsPage() {
                         onClick={() => handleUpdateStatus(v.id, "Rejected")}
                         className="rounded-xl border border-border bg-surface px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all"
                       >
-                        {isBn ? "প্রত্যাখ্যান করুন" : "Reject"}
+                        {t("landlord.rejectVisit")}
                       </button>
                       <button
                         type="button"
@@ -277,7 +251,7 @@ function LandlordVisitsPage() {
                         className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-sm hover:opacity-95 transition-all"
                       >
                         <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>{isBn ? "পরিদর্শন অনুমোদন করুন" : "Accept Visit"}</span>
+                        <span>{t("landlord.acceptVisit")}</span>
                       </button>
                     </>
                   )}
@@ -289,7 +263,7 @@ function LandlordVisitsPage() {
                         onClick={() => handleUpdateStatus(v.id, "Cancelled")}
                         className="rounded-xl border border-border bg-surface px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-muted transition-all"
                       >
-                        {isBn ? "বাতিল করুন" : "Cancel"}
+                        {t("landlord.cancelVisit")}
                       </button>
                       <button
                         type="button"
@@ -298,7 +272,7 @@ function LandlordVisitsPage() {
                       >
                         <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
                         <span>
-                          {isBn ? "পরিদর্শন সম্পন্ন হিসেবে চিহ্নিত করুন" : "Mark as Completed"}
+                          {t("landlord.markVisitCompleted")}
                         </span>
                       </button>
                     </>

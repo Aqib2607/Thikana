@@ -31,8 +31,7 @@ export const Route = createFileRoute("/landlord/contact-requests")({
 });
 
 function LandlordContactRequestsPage() {
-  const { t, i18n } = useTranslation();
-  const isBn = i18n.language === "bn";
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   const [requests, setRequests] = useState<ContactRequestItem[]>([]);
@@ -58,12 +57,8 @@ function LandlordContactRequestsPage() {
       await mockLandlordApi.updateContactRequestStatus(requestId, newStatus);
       setActionNotice(
         newStatus === "Accepted"
-          ? isBn
-            ? "অনুরোধ গৃহীত হয়েছে! ভাড়াটিয়ার সাথে সরাসরি বার্তা আদান-প্রদান উন্মুক্ত হয়েছে।"
-            : "Request accepted! Messaging has been unlocked with this tenant."
-          : isBn
-            ? "অনুরোধটি প্রত্যাখ্যান করা হয়েছে।"
-            : "Request rejected.",
+          ? t("landlord.requestAcceptedMsg")
+          : t("landlord.requestRejectedMsg"),
       );
       loadRequests();
     } catch {
@@ -74,12 +69,8 @@ function LandlordContactRequestsPage() {
   return (
     <RoleLayout
       requiredRole="landlord"
-      title={isBn ? "ভাড়াটিয়াদের যোগাযোগের অনুরোধ" : "Tenant Contact Requests"}
-      subtitle={
-        isBn
-          ? "ভাড়াটিয়াদের অনুসন্ধানী বার্তা পর্যালোচনা করুন। অনুমোদন করলে তাদের সাথে সরাসরি চ্যাট উন্মুক্ত হবে।"
-          : "Review inbound tenant inquiries. Approving unlocks direct platform messaging."
-      }
+      title={t("landlord.contactRequestsTitle")}
+      subtitle={t("landlord.contactRequestsSubtitle")}
       activeTab="requests"
     >
       {/* Notice Banner */}
@@ -87,12 +78,10 @@ function LandlordContactRequestsPage() {
         <Clock className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
         <div>
           <p className="font-semibold text-foreground">
-            {isBn ? "যোগাযোগের নিয়মাবলী" : "Communication Policy"}
+            {t("landlord.policyTitle")}
           </p>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {isBn
-              ? "প্ল্যাটফর্মের নিরাপত্তা রক্ষার জন্য ভাড়াটিয়ারা শুধুমাত্র আপনার অনুমোদনের পরেই বার্তা পাঠাতে পারেন।"
-              : "To protect landlord privacy, tenants can only send direct messages after you approve their initial request."}
+            {t("landlord.policyDesc")}
           </p>
         </div>
       </div>
@@ -108,7 +97,7 @@ function LandlordContactRequestsPage() {
             onClick={() => setActionNotice(null)}
             className="text-xs font-semibold hover:underline"
           >
-            {isBn ? "বন্ধ করুন" : "Dismiss"}
+            {t("landlord.dismiss")}
           </button>
         </div>
       )}
@@ -117,19 +106,17 @@ function LandlordContactRequestsPage() {
         <div className="rounded-2xl border border-border bg-surface p-12 text-center">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           <p className="mt-3 text-sm text-muted-foreground">
-            {isBn ? "অনুরোধ লোড হচ্ছে..." : "Loading contact requests..."}
+            {t("landlord.loadingRequests")}
           </p>
         </div>
       ) : requests.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
           <FileText className="mx-auto h-12 w-12 text-muted-foreground opacity-40" />
           <h3 className="mt-4 text-base font-bold text-foreground">
-            {isBn ? "কোনো যোগাযোগের অনুরোধ নেই" : "No contact requests yet"}
+            {t("landlord.noRequestsTitle")}
           </h3>
           <p className="mt-1 text-sm text-muted-foreground max-w-md mx-auto">
-            {isBn
-              ? "ভাড়াটিয়ারা আপনার বাসা নিয়ে আগ্রহী হলে এখানে তাদের অনুরোধ ও বার্তা দেখতে পাবেন।"
-              : "When prospective tenants submit inquiries for your listings, they will appear here."}
+            {t("landlord.noRequestsDesc")}
           </p>
         </div>
       ) : (
@@ -171,19 +158,19 @@ function LandlordContactRequestsPage() {
                     {isPending && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800">
                         <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>{isBn ? "অনুমোদনাধীন" : "Pending"}</span>
+                        <span>{t("landlord.pendingApproval")}</span>
                       </span>
                     )}
                     {isAccepted && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">
                         <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>{isBn ? "অনুমোদিত" : "Accepted"}</span>
+                        <span>{t("landlord.approved")}</span>
                       </span>
                     )}
                     {isRejected && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800">
                         <XCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>{isBn ? "প্রত্যাখ্যাত" : "Rejected"}</span>
+                        <span>{t("landlord.rejected")}</span>
                       </span>
                     )}
                   </div>
@@ -192,7 +179,7 @@ function LandlordContactRequestsPage() {
                 {/* Tenant Message */}
                 <div className="mt-4 rounded-xl bg-secondary/50 p-4 border border-border/60">
                   <p className="text-xs font-semibold uppercase text-muted-foreground mb-1">
-                    {isBn ? "ভাড়াটিয়ার বার্তা:" : "Tenant Message:"}
+                    {t("landlord.tenantMessage")}
                   </p>
                   <p className="text-sm text-foreground italic">"{req.message}"</p>
                 </div>
@@ -207,7 +194,7 @@ function LandlordContactRequestsPage() {
                         className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all"
                       >
                         <XCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>{isBn ? "প্রত্যাখ্যান করুন" : "Reject"}</span>
+                        <span>{t("landlord.rejectRequest")}</span>
                       </button>
                       <button
                         type="button"
@@ -216,7 +203,7 @@ function LandlordContactRequestsPage() {
                       >
                         <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
                         <span>
-                          {isBn ? "অনুরোধ গ্রহণ করুন (বার্তা উন্মুক্ত হবে)" : "Accept Request"}
+                          {t("landlord.acceptRequest")}
                         </span>
                       </button>
                     </>
@@ -228,7 +215,7 @@ function LandlordContactRequestsPage() {
                       className="inline-flex items-center gap-1.5 rounded-xl bg-secondary px-4 py-2 text-xs font-semibold text-foreground hover:bg-secondary/80 border border-border transition-all"
                     >
                       <MessageSquare className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-                      <span>{isBn ? "কথোপকথন খুলুন" : "Open Conversation"}</span>
+                      <span>{t("landlord.openConversation")}</span>
                     </Link>
                   )}
                 </div>

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
 import { mockLandlordApi } from "@/lib/api/mock/landlord";
+import { toBnNumber } from "@/lib/i18n";
 import type { LandlordStats } from "@/lib/api/landlord";
 import {
   Building2,
@@ -15,8 +16,6 @@ import {
   ArrowRight,
   Clock,
   CheckCircle2,
-  AlertCircle,
-  ShieldCheck,
 } from "lucide-react";
 
 export const Route = createFileRoute("/landlord/dashboard")({
@@ -34,7 +33,6 @@ export const Route = createFileRoute("/landlord/dashboard")({
 
 function LandlordDashboard() {
   const { t, i18n } = useTranslation();
-  const isBn = i18n.language === "bn";
   const { user } = useAuth();
 
   const [stats, setStats] = useState<LandlordStats>({
@@ -64,58 +62,48 @@ function LandlordDashboard() {
   const cards = [
     {
       title: t("dashboard.myProperties"),
-      desc: isBn
-        ? "আপনার প্রকাশিত ও খসড়া বাসাগুলোর তথ্য, ভাড়া এবং প্রাপ্যতা (Available, Reserved, Rented) নিয়ন্ত্রণ করুন।"
-        : "Manage your property listings, approval states, and rental availability.",
+      desc: t("landlord.myPropertiesDesc"),
       icon: Building2,
       href: "/landlord/properties",
-      badge: `${stats.totalListings} ${isBn ? "লিস্টিং" : "Listings"}`,
-      cta: isBn ? "লিস্টিং পরিচালনা করুন" : "Manage Listings",
+      badge: `${toBnNumber(stats.totalListings, i18n.language)} ${t("landlord.myListings")}`,
+      cta: t("landlord.myPropertiesCta"),
     },
     {
       title: t("dashboard.newProperty"),
-      desc: isBn
-        ? "সর্বোচ্চ ৫টি ছবি, বিস্তারিত অবস্থান এবং সুবিধাসমূহ দিয়ে নতুন লিস্টিং অনুমোদনের জন্য জমা দিন।"
-        : "Upload up to 5 photos, structured Khulna location, and submit for admin review.",
+      desc: t("landlord.newPropertyDesc"),
       icon: PlusCircle,
       href: "/landlord/properties/new",
-      badge: isBn ? "নতুন যোগ" : "Create New",
-      cta: isBn ? "নতুন বাসা যোগ করুন" : "Add Property",
+      badge: t("landlord.newPropertyBadge"),
+      cta: t("landlord.newPropertyCta"),
     },
     {
       title: t("dashboard.contactRequests"),
-      desc: isBn
-        ? "ভাড়াটিয়াদের যোগাযোগের অনুরোধ পর্যালোচনা ও গ্রহণ করুন (মেসেজিং আনলক হবে)।"
-        : "Review and approve tenant contact requests to unlock direct platform messaging.",
+      desc: t("landlord.contactRequestsDesc"),
       icon: FileText,
       href: "/landlord/contact-requests",
       badge:
         stats.pendingContactRequests > 0
-          ? `${stats.pendingContactRequests} ${isBn ? "অপেক্ষমাণ" : "Pending"}`
+          ? `${toBnNumber(stats.pendingContactRequests, i18n.language)} ${t("landlord.pendingApproval")}`
           : undefined,
-      cta: isBn ? "অনুরোধ তালিকা দেখুন" : "View Inquiries",
+      cta: t("landlord.contactRequestsCta"),
     },
     {
       title: t("dashboard.myMessages"),
-      desc: isBn
-        ? "অনুমোদিত ভাড়াটিয়াদের সাথে বাসা সম্পর্কিত সরাসরি বার্তা আদান-প্রদান করুন।"
-        : "Direct conversation inbox with approved prospective tenants.",
+      desc: t("landlord.myMessagesDesc"),
       icon: MessageSquare,
       href: "/landlord/messages",
-      cta: isBn ? "বার্তা ইনবক্স" : "Open Inbox",
+      cta: t("landlord.myMessagesCta"),
     },
     {
       title: t("dashboard.myVisits"),
-      desc: isBn
-        ? "ভাড়াটিয়ার বাসা পরিদর্শনের তারিখ অনুমোদন বা সম্পন্ন করুন (Pending, Accepted, Completed)।"
-        : "Accept in-person visits and mark them completed to verify tenant reviews.",
+      desc: t("landlord.myVisitsDesc"),
       icon: CalendarCheck,
       href: "/landlord/visits",
       badge:
         stats.activeVisits > 0
-          ? `${stats.activeVisits} ${isBn ? "সক্রিয় শিডিউল" : "Active"}`
+          ? `${toBnNumber(stats.activeVisits, i18n.language)} ${t("landlord.activeBadge")}`
           : undefined,
-      cta: isBn ? "পরিদর্শন শিডিউল" : "Schedule Visits",
+      cta: t("landlord.myVisitsCta"),
     },
   ];
 
@@ -131,12 +119,10 @@ function LandlordDashboard() {
         <Eye className="mt-0.5 h-5 w-5 shrink-0 text-foreground" aria-hidden="true" />
         <div className="text-sm">
           <p className="font-semibold text-foreground">
-            {isBn ? "যোগাযোগ ও গোপনীয়তা নিয়ন্ত্রণ" : "Landlord Contact & Privacy Control"}
+            {t("landlord.privacyBannerTitle")}
           </p>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {isBn
-              ? "বাড়িওয়ালা হিসেবে আপনি প্রতিটি প্রপার্টিতে নির্বাচন করতে পারবেন আপনার যোগাযোগের তথ্য (মোবাইল নম্বর) জনসম্মুখে সরাসরি প্রদর্শিত হবে কি না। লুকানো থাকলে ভাড়াটিয়ারা কেবল অনুমোদনের পরই যোগাযোগ করতে পারবে।"
-              : "As a landlord, you control whether your phone number is publicly visible on your listing or protected behind contact request approval."}
+            {t("landlord.privacyBannerDesc")}
           </p>
         </div>
       </div>
@@ -145,63 +131,63 @@ function LandlordDashboard() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 mb-8">
         <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase text-muted-foreground">
-            {isBn ? "মোট লিস্টিং" : "Total Listings"}
+            {t("landlord.kpiTotalListings")}
           </p>
           <p className="text-2xl font-black text-foreground mt-1">
-            {loading ? "..." : stats.totalListings}
+            {loading ? "..." : toBnNumber(stats.totalListings, i18n.language)}
           </p>
           <span className="text-[11px] text-muted-foreground mt-0.5 block">
-            {isBn ? "আপনার অ্যাকাউন্টে" : "In your account"}
+            {t("landlord.kpiTotalDesc")}
           </span>
         </div>
 
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20 dark:border-emerald-800 p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase text-emerald-800 dark:text-emerald-300">
-            {isBn ? "অনুমোদিত লিস্টিং" : "Approved"}
+            {t("landlord.kpiApproved")}
           </p>
           <p className="text-2xl font-black text-emerald-900 dark:text-emerald-200 mt-1">
-            {loading ? "..." : stats.approvedListings}
+            {loading ? "..." : toBnNumber(stats.approvedListings, i18n.language)}
           </p>
-          <span className="text-[11px] text-emerald-700 dark:text-emerald-400 mt-0.5 block flex items-center gap-1">
+          <span className="text-[11px] text-emerald-700 dark:text-emerald-400 mt-0.5 flex items-center gap-1">
             <CheckCircle2 className="h-3 w-3" />
-            {isBn ? "অনুসন্ধানে সক্রিয়" : "Live on discovery"}
+            {t("landlord.kpiApprovedDesc")}
           </span>
         </div>
 
         <div className="rounded-2xl border border-amber-200 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800 p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase text-amber-800 dark:text-amber-300">
-            {isBn ? "অনুমোদনাধীন" : "Pending Review"}
+            {t("landlord.kpiPending")}
           </p>
           <p className="text-2xl font-black text-amber-900 dark:text-amber-200 mt-1">
-            {loading ? "..." : stats.pendingListings}
+            {loading ? "..." : toBnNumber(stats.pendingListings, i18n.language)}
           </p>
-          <span className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5 block flex items-center gap-1">
+          <span className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5 flex items-center gap-1">
             <Clock className="h-3 w-3" />
-            {isBn ? "অ্যাডমিন রিভিউ" : "Under review"}
+            {t("landlord.kpiPendingDesc")}
           </span>
         </div>
 
         <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase text-muted-foreground">
-            {isBn ? "সক্রিয় পরিদর্শন" : "Active Visits"}
+            {t("landlord.kpiActiveVisits")}
           </p>
           <p className="text-2xl font-black text-foreground mt-1">
-            {loading ? "..." : stats.activeVisits}
+            {loading ? "..." : toBnNumber(stats.activeVisits, i18n.language)}
           </p>
           <span className="text-[11px] text-muted-foreground mt-0.5 block">
-            {isBn ? "অনুমোদিত বা অপেক্ষমাণ" : "Upcoming schedule"}
+            {t("landlord.kpiVisitsDesc")}
           </span>
         </div>
 
         <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase text-primary">
-            {isBn ? "অপেক্ষমাণ অনুরোধ" : "Inquiries"}
+            {t("landlord.kpiInquiries")}
           </p>
           <p className="text-2xl font-black text-foreground mt-1">
-            {loading ? "..." : stats.pendingContactRequests}
+            {loading ? "..." : toBnNumber(stats.pendingContactRequests, i18n.language)}
           </p>
           <span className="text-[11px] text-muted-foreground mt-0.5 block">
-            {isBn ? "ভাড়াটিয়াদের আগ্রহ" : "Action needed"}
+            {t("landlord.kpiInquiriesDesc")}
           </span>
         </div>
       </div>

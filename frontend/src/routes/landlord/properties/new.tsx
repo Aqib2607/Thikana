@@ -21,8 +21,7 @@ export const Route = createFileRoute("/landlord/properties/new")({
 });
 
 function CreatePropertyPage() {
-  const { t, i18n } = useTranslation();
-  const isBn = i18n.language === "bn";
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -39,12 +38,8 @@ function CreatePropertyPage() {
   return (
     <RoleLayout
       requiredRole="landlord"
-      title={isBn ? "নতুন বাসা লিস্টিং যোগ করুন" : "Add New Property Listing"}
-      subtitle={
-        isBn
-          ? "সঠিক তথ্য ও ছবি দিয়ে লিস্টিং জমা দিন। অ্যাডমিন পর্যালোচনার পর এটি অনুসন্ধান ফলাফলে প্রদর্শিত হবে।"
-          : "Provide property specifications and photos. Listings go live after administrative review."
-      }
+      title={t("landlord.addNewTitle")}
+      subtitle={t("landlord.addNewSubtitle")}
       activeTab="new"
     >
       <div className="max-w-4xl mx-auto">

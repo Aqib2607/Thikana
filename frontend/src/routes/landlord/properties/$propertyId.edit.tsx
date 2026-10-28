@@ -21,8 +21,7 @@ export const Route = createFileRoute("/landlord/properties/$propertyId/edit")({
 });
 
 function EditPropertyPage() {
-  const { i18n } = useTranslation();
-  const isBn = i18n.language === "bn";
+  const { t } = useTranslation();
   const { propertyId } = useParams({ from: "/landlord/properties/$propertyId/edit" });
   const navigate = useNavigate();
 
@@ -50,12 +49,8 @@ function EditPropertyPage() {
   return (
     <RoleLayout
       requiredRole="landlord"
-      title={isBn ? "বাসার তথ্য সম্পাদনা করুন" : "Edit Property Listing"}
-      subtitle={
-        isBn
-          ? "বাসার বিবরণ, ভাড়া, সুযোগ-সুবিধা এবং প্রাপ্যতা আপডেট করুন"
-          : "Update property specifications, pricing, amenities, and availability"
-      }
+      title={t("landlord.editPropertyTitle")}
+      subtitle={t("landlord.editPropertySubtitle")}
       activeTab="properties"
     >
       <div className="max-w-4xl mx-auto">
@@ -63,12 +58,12 @@ function EditPropertyPage() {
           <div className="rounded-2xl border border-border bg-surface p-12 text-center">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
             <p className="mt-3 text-sm text-muted-foreground">
-              {isBn ? "বাসার তথ্য লোড হচ্ছে..." : "Loading property data..."}
+              {t("landlord.loadingProperty")}
             </p>
           </div>
         ) : !property ? (
           <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-8 text-center text-sm text-destructive">
-            {isBn ? "প্রপার্টি খুঁজে পাওয়া যায়নি।" : "Property listing not found."}
+            {t("landlord.propertyNotFound")}
           </div>
         ) : (
           <PropertyForm

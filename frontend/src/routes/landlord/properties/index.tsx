@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
 import { mockLandlordApi } from "@/lib/api/mock/landlord";
+import { toBnNumber, translateAvailability } from "@/lib/i18n";
 import type { PropertyItem, AvailabilityStatus } from "@/lib/api/properties";
 import {
   Building2,
@@ -15,7 +16,6 @@ import {
   EyeOff,
   Edit3,
   ExternalLink,
-  Power,
   Trash2,
 } from "lucide-react";
 
@@ -34,7 +34,6 @@ export const Route = createFileRoute("/landlord/properties/")({
 
 function LandlordPropertiesPage() {
   const { t, i18n } = useTranslation();
-  const isBn = i18n.language === "bn";
   const { user } = useAuth();
   const [properties, setProperties] = useState<PropertyItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,11 +56,7 @@ function LandlordPropertiesPage() {
   const handleAvailabilityChange = async (id: string, newStatus: AvailabilityStatus) => {
     try {
       await mockLandlordApi.updateAvailability(id, newStatus);
-      setActionMessage(
-        isBn
-          ? "বাসার প্রাপ্যতা স্ট্যাটাস সফলভাবে আপডেট হয়েছে।"
-          : "Property availability status updated successfully.",
-      );
+      setActionMessage(t("landlord.statusUpdated"));
       loadProperties();
     } catch {
       // Ignore
@@ -73,12 +68,8 @@ function LandlordPropertiesPage() {
       await mockLandlordApi.toggleContactVisibility(id, !currentVisible);
       setActionMessage(
         !currentVisible
-          ? isBn
-            ? "যোগাযোগের তথ্য জনসম্মুখে দৃশ্যমান করা হয়েছে।"
-            : "Contact details are now publicly visible."
-          : isBn
-            ? "যোগাযোগের তথ্য লুকানো হয়েছে (অনুরোধের মাধ্যমে যোগাযোগ)।"
-            : "Contact details are now hidden (request required).",
+          ? t("landlord.visibilityPublicMsg")
+          : t("landlord.visibilityProtectedMsg"),
       );
       loadProperties();
     } catch {
@@ -87,18 +78,12 @@ function LandlordPropertiesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (
-      !window.confirm(
-        isBn
-          ? "আপনি কি নিশ্চিতভাবে এই লিস্টিংটি মুছে ফেলতে চান?"
-          : "Are you sure you want to remove this listing?",
-      )
-    ) {
+    if (!window.confirm(t("landlord.deleteConfirm"))) {
       return;
     }
     try {
       await mockLandlordApi.deleteProperty(id);
-      setActionMessage(isBn ? "লিস্টিং মুছে ফেলা হয়েছে।" : "Listing removed.");
+      setActionMessage(t("landlord.listingDeleted"));
       loadProperties();
     } catch {
       // Ignore
@@ -108,21 +93,17 @@ function LandlordPropertiesPage() {
   return (
     <RoleLayout
       requiredRole="landlord"
-      title={isBn ? "আমার প্রপার্টি লিস্টিং" : "My Property Listings"}
-      subtitle={
-        isBn
-          ? "আপনার বাসাগুলোর অনুমোদন স্ট্যাটাস, প্রাপ্যতা এবং দৃশ্যমানতা নিয়ন্ত্রণ করুন"
-          : "Manage your listings, review approval states, and control availability"
-      }
+      title={t("dashboard.myProperties")}
+      subtitle={t("landlord.propertiesSubtitle")}
       activeTab="properties"
     >
       {/* Top action bar */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-sm text-muted-foreground">
-            {isBn
-              ? `মোট ${properties.length}টি লিস্টিং পাওয়া গেছে`
-              : `Found ${properties.length} listings in your account`}
+            {t("landlord.foundListings", {
+              count: toBnNumber(properties.length, i18n.language),
+            })}
           </p>
         </div>
         <Link
@@ -130,7 +111,7 @@ function LandlordPropertiesPage() {
           className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-95 transition-all"
         >
           <PlusCircle className="h-4 w-4" aria-hidden="true" />
-          <span>{isBn ? "নতুন বাসা যোগ করুন" : "Add New Property"}</span>
+          <span>{t("landlord.addNewProperty")}</span>
         </Link>
       </div>
 
@@ -145,7 +126,7 @@ function LandlordPropertiesPage() {
             onClick={() => setActionMessage(null)}
             className="text-xs font-semibold hover:underline"
           >
-            {isBn ? "বন্ধ করুন" : "Dismiss"}
+            {t("landlord.dismiss")}
           </button>
         </div>
       )}
@@ -154,26 +135,24 @@ function LandlordPropertiesPage() {
         <div className="rounded-2xl border border-border bg-surface p-12 text-center">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           <p className="mt-3 text-sm text-muted-foreground">
-            {isBn ? "লিস্টিং লোড হচ্ছে..." : "Loading listings..."}
+            {t("landlord.loadingListings")}
           </p>
         </div>
       ) : properties.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
           <Building2 className="mx-auto h-12 w-12 text-muted-foreground opacity-40" />
           <h3 className="mt-4 text-base font-bold text-foreground">
-            {isBn ? "কোনো লিস্টিং পাওয়া যায়নি" : "No listings yet"}
+            {t("landlord.noListingsTitle")}
           </h3>
           <p className="mt-1 text-sm text-muted-foreground max-w-md mx-auto">
-            {isBn
-              ? "আপনার বাসাটি ছাত্র ও চাকরিপ্রার্থীদের কাছে দৃশ্যমান করতে প্রথম লিস্টিং যোগ করুন।"
-              : "Create your first listing to start discovering student and professional tenants."}
+            {t("landlord.noListingsDesc")}
           </p>
           <Link
             to="/landlord/properties/new"
             className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
           >
             <PlusCircle className="h-4 w-4" aria-hidden="true" />
-            <span>{isBn ? "এখনই বাসা যোগ করুন" : "Create Listing"}</span>
+            <span>{t("landlord.createListingCta")}</span>
           </Link>
         </div>
       ) : (
@@ -183,15 +162,15 @@ function LandlordPropertiesPage() {
               <thead>
                 <tr className="border-b border-border bg-secondary/50 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   <th className="py-3.5 pl-6 pr-4">
-                    {isBn ? "বাসা ও অবস্থান" : "Property & Location"}
+                    {t("landlord.propertyAndLocation")}
                   </th>
-                  <th className="px-4 py-3.5">{isBn ? "ভাড়া / মাস" : "Monthly Rent"}</th>
-                  <th className="px-4 py-3.5">{isBn ? "অনুমোদন স্ট্যাটাস" : "Approval State"}</th>
-                  <th className="px-4 py-3.5">{isBn ? "প্রাপ্যতা" : "Availability"}</th>
+                  <th className="px-4 py-3.5">{t("landlord.monthlyRent")}</th>
+                  <th className="px-4 py-3.5">{t("landlord.approvalStateCol")}</th>
+                  <th className="px-4 py-3.5">{t("landlord.availabilityLabel")}</th>
                   <th className="px-4 py-3.5">
-                    {isBn ? "যোগাযোগ গোপনীয়তা" : "Contact Visibility"}
+                    {t("landlord.contactVisibilityCol")}
                   </th>
-                  <th className="py-3.5 pl-4 pr-6 text-right">{isBn ? "পদক্ষেপ" : "Actions"}</th>
+                  <th className="py-3.5 pl-4 pr-6 text-right">{t("landlord.actionsCol")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -212,14 +191,16 @@ function LandlordPropertiesPage() {
                           />
                           <div className="min-w-0">
                             <h4 className="font-semibold text-foreground truncate max-w-xs">
-                              {isBn && property.banglaTitle ? property.banglaTitle : property.title}
+                              {i18n.language.startsWith("bn") && property.banglaTitle
+                                ? property.banglaTitle
+                                : property.title}
                             </h4>
                             <p className="text-xs text-muted-foreground truncate max-w-xs mt-0.5">
                               {property.area}, {property.city}
                             </p>
                             <span className="inline-block text-[11px] font-mono text-muted-foreground mt-0.5">
-                              {property.rooms} Bed • {property.bathrooms} Bath • {property.size}{" "}
-                              sqft
+                              {toBnNumber(property.rooms, i18n.language)} {t("properties.rooms")} • {toBnNumber(property.bathrooms, i18n.language)} {t("properties.baths")} • {toBnNumber(property.size, i18n.language)}{" "}
+                              {t("properties.sqft")}
                             </span>
                           </div>
                         </div>
@@ -227,9 +208,9 @@ function LandlordPropertiesPage() {
 
                       {/* Rent */}
                       <td className="px-4 py-4 whitespace-nowrap font-semibold text-foreground">
-                        ৳{property.rent.toLocaleString()}
+                        ৳{toBnNumber(property.rent.toLocaleString(), i18n.language)}
                         <span className="text-xs font-normal text-muted-foreground ml-1">
-                          {isBn ? "/মাস" : "/mo"}
+                          /{t("properties.month")}
                         </span>
                       </td>
 
@@ -238,19 +219,19 @@ function LandlordPropertiesPage() {
                         {isApproved && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">
                             <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                            <span>{isBn ? "অনুমোদিত" : "Approved"}</span>
+                            <span>{t("landlord.approved")}</span>
                           </span>
                         )}
                         {isPending && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800">
                             <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-                            <span>{isBn ? "অনুমোদনাধীন" : "Pending Approval"}</span>
+                            <span>{t("landlord.pendingApproval")}</span>
                           </span>
                         )}
                         {isRejected && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800">
                             <AlertCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                            <span>{isBn ? "প্রত্যাখ্যাত" : "Rejected"}</span>
+                            <span>{t("landlord.rejected")}</span>
                           </span>
                         )}
                       </td>
@@ -268,16 +249,16 @@ function LandlordPropertiesPage() {
                           className="rounded-lg border border-border bg-surface px-2.5 py-1 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                         >
                           <option value="Available">
-                            {isBn ? "খালি আছে (Available)" : "Available"}
+                            {translateAvailability("Available", i18n.language)}
                           </option>
                           <option value="Reserved">
-                            {isBn ? "বুকিং করা (Reserved)" : "Reserved"}
+                            {translateAvailability("Reserved", i18n.language)}
                           </option>
                           <option value="Rented">
-                            {isBn ? "ভাড়া হয়ে গেছে (Rented)" : "Rented"}
+                            {translateAvailability("Rented", i18n.language)}
                           </option>
                           <option value="Temporarily Unavailable">
-                            {isBn ? "সাময়িক বন্ধ (Unavailable)" : "Temporarily Unavailable"}
+                            {translateAvailability("Temporarily Unavailable", i18n.language)}
                           </option>
                         </select>
                       </td>
@@ -297,25 +278,16 @@ function LandlordPropertiesPage() {
                               ? "border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-300"
                               : "border-border bg-surface text-muted-foreground hover:bg-muted"
                           }`}
-                          title={
-                            property.landlord.publicContactVisible
-                              ? isBn
-                                ? "ফোন নম্বর সবার জন্য উন্মুক্ত (ক্লিক করে লুকান)"
-                                : "Phone visible publicly (click to hide)"
-                              : isBn
-                                ? "অনুরোধ সাপেক্ষে যোগাযোগ (ক্লিক করে উন্মুক্ত করুন)"
-                                : "Request required (click to make public)"
-                          }
                         >
                           {property.landlord.publicContactVisible ? (
                             <>
                               <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-                              <span>{isBn ? "প্রকাশ্যে দৃশ্যমান" : "Public"}</span>
+                              <span>{t("landlord.publicBadge")}</span>
                             </>
                           ) : (
                             <>
                               <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />
-                              <span>{isBn ? "অনুরোধ সাপেক্ষে" : "Protected"}</span>
+                              <span>{t("landlord.protectedBadge")}</span>
                             </>
                           )}
                         </button>
@@ -328,7 +300,7 @@ function LandlordPropertiesPage() {
                             to="/properties/$propertyId"
                             params={{ propertyId: property.id }}
                             className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-                            title={isBn ? "প্রিভিউ দেখুন" : "View preview"}
+                            title={t("landlord.viewPreview")}
                           >
                             <ExternalLink className="h-4 w-4" aria-hidden="true" />
                           </Link>
@@ -336,7 +308,7 @@ function LandlordPropertiesPage() {
                             to="/landlord/properties/$propertyId/edit"
                             params={{ propertyId: property.id }}
                             className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-                            title={isBn ? "সম্পাদনা করুন" : "Edit listing"}
+                            title={t("landlord.editListing")}
                           >
                             <Edit3 className="h-4 w-4" aria-hidden="true" />
                           </Link>
@@ -344,7 +316,7 @@ function LandlordPropertiesPage() {
                             type="button"
                             onClick={() => handleDelete(property.id)}
                             className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                            title={isBn ? "মুছে ফেলুন" : "Delete listing"}
+                            title={t("landlord.deleteListing")}
                           >
                             <Trash2 className="h-4 w-4" aria-hidden="true" />
                           </button>
