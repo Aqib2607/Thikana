@@ -3,6 +3,12 @@ import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
 import { mockAdminApi } from "@/lib/api/mock/admin";
+import {
+  toBnNumber,
+  translatePropertyType,
+  translateTenantPreference,
+  translateVerification,
+} from "@/lib/i18n";
 import type { PropertyItem, ApprovalStatus } from "@/lib/api/properties";
 import {
   CheckCircle2,
@@ -16,7 +22,7 @@ import {
 } from "lucide-react";
 
 export function AdminPropertiesPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [properties, setProperties] = useState<PropertyItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,7 +65,7 @@ export function AdminPropertiesPage() {
       if (activeProperty?.id === property.id) {
         setActiveProperty(updated);
       }
-      setActionNotice(`'${property.title}' সফলভাবে অনুমোদিত হয়েছে।`);
+      setActionNotice(`'${property.title}' — ${t("landlord.approved")}`);
       setTimeout(() => setActionNotice(null), 4000);
     } finally {
       setSubmittingAction(false);
@@ -72,7 +78,7 @@ export function AdminPropertiesPage() {
     try {
       const updated = await mockAdminApi.rejectProperty(
         rejectingProperty.id,
-        rejectReason.trim() || "তথ্য অসম্পূর্ণ বা যাচাইয়ে ত্রুটি পাওয়া গেছে।",
+        rejectReason.trim() || "Policy mismatch or unverified details.",
         user.id,
         user.name || "Admin",
       );
@@ -80,7 +86,7 @@ export function AdminPropertiesPage() {
       if (activeProperty?.id === rejectingProperty.id) {
         setActiveProperty(updated);
       }
-      setActionNotice(`'${rejectingProperty.title}' বাতিল করা হয়েছে। কারণ অডিটে সংরক্ষিত হয়েছে।`);
+      setActionNotice(`'${rejectingProperty.title}' — ${t("landlord.rejected")}`);
       setRejectingProperty(null);
       setRejectReason("");
       setTimeout(() => setActionNotice(null), 4000);
@@ -130,7 +136,7 @@ export function AdminPropertiesPage() {
     <RoleLayout
       requiredRole="admin"
       title={t("dashboard.allProperties")}
-      subtitle="প্ল্যাটফর্মের সকল লিস্টিং যাচাই, অনুমোদন এবং স্থিতি ব্যবস্থাপনা"
+      subtitle={t("admin.propertiesSubtitle")}
       activeTab="properties"
     >
       {/* Action Notification Alert */}
@@ -167,17 +173,20 @@ export function AdminPropertiesPage() {
               }`}
             >
               {tab === "ALL"
-                ? "সকল লিস্টিং"
+                ? t("admin.allTab")
                 : tab === "Pending Approval"
-                  ? "অনুমোদনাধীন"
+                  ? t("admin.pendingTab")
                   : tab === "Approved"
-                    ? "অনুমোদিত"
-                    : "প্রত্যাখ্যাত"}
+                    ? t("admin.approvedTab")
+                    : t("admin.rejectedTab")}
               <span className="ml-1.5 opacity-75">
                 (
-                {tab === "ALL"
-                  ? properties.length
-                  : properties.filter((p) => p.approvalStatus === tab).length}
+                {toBnNumber(
+                  tab === "ALL"
+                    ? properties.length
+                    : properties.filter((p) => p.approvalStatus === tab).length,
+                  i18n.language,
+                )}
                 )
               </span>
             </button>
@@ -194,7 +203,7 @@ export function AdminPropertiesPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="বাসার নাম, এলাকা বা বাড়িওয়ালা খুঁজুন..."
+            placeholder={t("admin.searchPlaceholder")}
             className="h-10 w-full rounded-xl border border-border bg-surface pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
           {search && (
@@ -213,15 +222,17 @@ export function AdminPropertiesPage() {
       {/* Properties Table */}
       <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
         {loading ? (
-          <div className="p-12 text-center text-sm text-muted-foreground">লিস্টিং লোড হচ্ছে...</div>
+          <div className="p-12 text-center text-sm text-muted-foreground">
+            {t("admin.loadingListings")}
+          </div>
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center">
             <Building2 className="mx-auto h-10 w-10 text-muted-foreground/60" />
             <p className="mt-3 text-base font-semibold text-foreground">
-              কোনো প্রপার্টি পাওয়া যায়নি
+              {t("admin.noPropertiesTitle")}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              অনুসন্ধান শর্ত বা ফিল্টার পরিবর্তন করে আবার চেষ্টা করুন।
+              {t("admin.noPropertiesDesc")}
             </p>
           </div>
         ) : (
@@ -230,22 +241,22 @@ export function AdminPropertiesPage() {
               <thead className="border-b border-border bg-secondary/50 text-xs font-semibold text-muted-foreground">
                 <tr>
                   <th scope="col" className="px-4 py-3.5">
-                    বাসা ও বিবরণ
+                    {t("admin.colProperty")}
                   </th>
                   <th scope="col" className="px-4 py-3.5">
-                    বাড়িওয়ালা
+                    {t("admin.colLandlord")}
                   </th>
                   <th scope="col" className="px-4 py-3.5">
-                    ভাড়া
+                    {t("admin.colRent")}
                   </th>
                   <th scope="col" className="px-4 py-3.5">
-                    অবস্থা
+                    {t("admin.colStatus")}
                   </th>
                   <th scope="col" className="px-4 py-3.5">
-                    যাচাইকরণ
+                    {t("admin.colVerifications")}
                   </th>
                   <th scope="col" className="px-4 py-3.5 text-right">
-                    কার্যক্রম
+                    {t("admin.colActions")}
                   </th>
                 </tr>
               </thead>
@@ -260,7 +271,9 @@ export function AdminPropertiesPage() {
                           className="h-12 w-16 shrink-0 rounded-lg object-cover border border-border"
                         />
                         <div className="min-w-0 max-w-xs">
-                          <p className="truncate font-semibold text-foreground">{p.title}</p>
+                          <p className="truncate font-semibold text-foreground">
+                            {i18n.language.startsWith("bn") && p.banglaTitle ? p.banglaTitle : p.title}
+                          </p>
                           <p className="flex items-center gap-1 text-xs text-muted-foreground">
                             <MapPin className="h-3 w-3 shrink-0" />
                             <span className="truncate">{p.area}</span>
@@ -273,7 +286,7 @@ export function AdminPropertiesPage() {
                       <div className="text-xs">
                         <p className="font-semibold text-foreground">{p.landlord.name}</p>
                         <p className="text-muted-foreground">
-                          {p.landlord.phone || "ফোন উল্লেখ নেই"}
+                          {p.landlord.phone || t("admin.noPhone")}
                         </p>
                         <span
                           className={`mt-0.5 inline-block text-[10px] font-semibold ${
@@ -283,14 +296,16 @@ export function AdminPropertiesPage() {
                           }`}
                         >
                           {p.landlord.publicContactVisible
-                            ? "প্রকাশ্যে দৃশ্যমান"
-                            : "গোপন (অনুরোধ সাপেক্ষ)"}
+                            ? t("admin.publicContactOn")
+                            : t("admin.publicContactOff")}
                         </span>
                       </div>
                     </td>
 
                     <td className="px-4 py-3.5 whitespace-nowrap">
-                      <p className="font-bold text-foreground">৳{p.rent.toLocaleString()}</p>
+                      <p className="font-bold text-foreground">
+                        ৳{toBnNumber(p.rent.toLocaleString(), i18n.language)}
+                      </p>
                       <p className="text-xs text-muted-foreground">/{t("properties.month")}</p>
                     </td>
 
@@ -306,11 +321,13 @@ export function AdminPropertiesPage() {
                               key={v}
                               className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary"
                             >
-                              {v.replace(" Verified", "")}
+                              {translateVerification(v, i18n.language)}
                             </span>
                           ))
                         ) : (
-                          <span className="text-xs text-muted-foreground">কোনো যাচাই নেই</span>
+                          <span className="text-xs text-muted-foreground">
+                            {t("admin.noVerifications")}
+                          </span>
                         )}
                       </div>
                     </td>
@@ -321,10 +338,10 @@ export function AdminPropertiesPage() {
                           type="button"
                           onClick={() => setActiveProperty(p)}
                           className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary"
-                          title="বিস্তারিত বিবরণ দেখুন"
+                          title={t("admin.viewDetailsTitle")}
                         >
                           <Eye className="h-3.5 w-3.5" />
-                          <span>বিবরণ</span>
+                          <span>{t("admin.viewDetails")}</span>
                         </button>
 
                         {p.approvalStatus !== "Approved" && (
@@ -335,7 +352,7 @@ export function AdminPropertiesPage() {
                             className="inline-flex items-center gap-1 rounded-lg bg-success px-2.5 py-1.5 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
                           >
                             <CheckCircle2 className="h-3.5 w-3.5" />
-                            <span>অনুমোদন</span>
+                            <span>{t("admin.approve")}</span>
                           </button>
                         )}
 
@@ -350,7 +367,7 @@ export function AdminPropertiesPage() {
                             className="inline-flex items-center gap-1 rounded-lg border border-destructive/40 bg-destructive/10 px-2.5 py-1.5 text-xs font-semibold text-destructive hover:bg-destructive/20 disabled:opacity-50"
                           >
                             <XCircle className="h-3.5 w-3.5" />
-                            <span>বাতিল</span>
+                            <span>{t("admin.reject")}</span>
                           </button>
                         )}
                       </div>
@@ -375,11 +392,15 @@ export function AdminPropertiesPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-primary">
-                    {activeProperty.propertyType}
+                    {translatePropertyType(activeProperty.propertyType, i18n.language)}
                   </span>
                   {getStatusBadge(activeProperty.approvalStatus)}
                 </div>
-                <h3 className="mt-1 text-xl font-bold text-foreground">{activeProperty.title}</h3>
+                <h3 className="mt-1 text-xl font-bold text-foreground">
+                  {i18n.language.startsWith("bn") && activeProperty.banglaTitle
+                    ? activeProperty.banglaTitle
+                    : activeProperty.title}
+                </h3>
                 <p className="text-sm text-muted-foreground">{activeProperty.exactAddress}</p>
               </div>
               <button
@@ -395,7 +416,7 @@ export function AdminPropertiesPage() {
             {/* Photos Preview */}
             <div className="mt-4">
               <p className="text-xs font-semibold text-muted-foreground">
-                আপলোডকৃত ছবিসমূহ (সর্বোচ্চ ৫টি)
+                {t("admin.uploadedPhotos")}
               </p>
               <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
                 {activeProperty.images.map((img, i) => (
@@ -410,7 +431,7 @@ export function AdminPropertiesPage() {
                     />
                     {i === 0 && (
                       <span className="absolute bottom-1 left-1 rounded bg-black/70 px-1 py-0.5 text-[9px] font-bold text-white">
-                        প্রধান ছবি
+                        {t("admin.featuredPhotoBadge")}
                       </span>
                     )}
                   </div>
@@ -421,34 +442,34 @@ export function AdminPropertiesPage() {
             {/* Key Specifications Grid */}
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-xl border border-border bg-secondary/30 p-4 text-xs">
               <div>
-                <span className="text-muted-foreground">মাসিক ভাড়া</span>
+                <span className="text-muted-foreground">{t("admin.monthlyRentLabel")}</span>
                 <p className="font-bold text-foreground text-sm">
-                  ৳{activeProperty.rent.toLocaleString()}
+                  ৳{toBnNumber(activeProperty.rent.toLocaleString(), i18n.language)}
                 </p>
               </div>
               <div>
-                <span className="text-muted-foreground">অগ্রিম জামানত</span>
+                <span className="text-muted-foreground">{t("admin.advanceDepositLabel")}</span>
                 <p className="font-bold text-foreground text-sm">
-                  ৳{activeProperty.advance?.toLocaleString() || "0"}
+                  ৳{toBnNumber(activeProperty.advance?.toLocaleString() || "0", i18n.language)}
                 </p>
               </div>
               <div>
-                <span className="text-muted-foreground">রুম ও বাথ</span>
+                <span className="text-muted-foreground">{t("admin.roomsAndBathsLabel")}</span>
                 <p className="font-bold text-foreground text-sm">
-                  {activeProperty.rooms} রুম · {activeProperty.bathrooms} বাথ
+                  {toBnNumber(activeProperty.rooms, i18n.language)} {t("properties.rooms")} · {toBnNumber(activeProperty.bathrooms, i18n.language)} {t("properties.baths")}
                 </p>
               </div>
               <div>
-                <span className="text-muted-foreground">পছন্দনীয় ভাড়াটিয়া</span>
+                <span className="text-muted-foreground">{t("admin.preferredTenantLabel")}</span>
                 <p className="font-bold text-foreground text-sm">
-                  {activeProperty.preferredTenant}
+                  {translateTenantPreference(activeProperty.preferredTenant, i18n.language)}
                 </p>
               </div>
             </div>
 
             {/* Landlord Contact Info */}
             <div className="mt-4 rounded-xl border border-border bg-surface p-4">
-              <p className="text-xs font-bold text-foreground">বাড়িওয়ালার তথ্য</p>
+              <p className="text-xs font-bold text-foreground">{t("admin.landlordInfoTitle")}</p>
               <div className="mt-2 flex items-center justify-between text-xs">
                 <div>
                   <p className="font-semibold text-foreground">{activeProperty.landlord.name}</p>
@@ -464,8 +485,8 @@ export function AdminPropertiesPage() {
                     }`}
                   >
                     {activeProperty.landlord.publicContactVisible
-                      ? "পাবলিক কন্টাক্ট অন"
-                      : "পাবলিক কন্টাক্ট অফ"}
+                      ? t("admin.publicContactOn")
+                      : t("admin.publicContactOff")}
                   </span>
                 </div>
               </div>
@@ -473,15 +494,15 @@ export function AdminPropertiesPage() {
 
             {/* Neighborhood / Community Insight */}
             <div className="mt-4 rounded-xl border border-border bg-surface p-4 text-xs">
-              <p className="font-bold text-foreground">কমিউনিটি ও যাতায়াত তথ্য</p>
+              <p className="font-bold text-foreground">{t("admin.communityInfoTitle")}</p>
               <p className="mt-1 text-muted-foreground leading-relaxed">
-                <strong>যাতায়াত:</strong> {activeProperty.community.transport}
+                <strong>{t("admin.transportLabel")}</strong> {activeProperty.community.transport}
               </p>
               <p className="mt-1 text-muted-foreground leading-relaxed">
-                <strong>জলাবদ্ধতা:</strong> {activeProperty.community.waterlogging}
+                <strong>{t("admin.waterloggingLabel")}</strong> {activeProperty.community.waterlogging}
               </p>
               <p className="mt-1 text-muted-foreground leading-relaxed">
-                <strong>ইন্টারনেট:</strong> {activeProperty.community.internet}
+                <strong>{t("admin.internetLabel")}</strong> {activeProperty.community.internet}
               </p>
             </div>
 
@@ -494,7 +515,7 @@ export function AdminPropertiesPage() {
                   disabled={submittingAction}
                   className="rounded-lg bg-success px-4 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
                 >
-                  অনুমোদন দিন
+                  {t("admin.approve")}
                 </button>
               )}
               {activeProperty.approvalStatus !== "Rejected" && (
@@ -507,7 +528,7 @@ export function AdminPropertiesPage() {
                   disabled={submittingAction}
                   className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-2 text-xs font-semibold text-destructive hover:bg-destructive/20 disabled:opacity-50"
                 >
-                  প্রত্যাখ্যান করুন
+                  {t("admin.reject")}
                 </button>
               )}
               <button
@@ -515,7 +536,7 @@ export function AdminPropertiesPage() {
                 onClick={() => setActiveProperty(null)}
                 className="rounded-lg border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-secondary"
               >
-                বন্ধ করুন
+                {t("admin.close")}
               </button>
             </div>
           </div>
@@ -536,15 +557,14 @@ export function AdminPropertiesPage() {
               </div>
               <div>
                 <h3 className="text-base font-bold text-foreground">
-                  লিস্টিং প্রত্যাখ্যান নিশ্চিতকরণ
+                  {t("admin.rejectConfirmTitle")}
                 </h3>
                 <p className="text-xs text-muted-foreground">{rejectingProperty.title}</p>
               </div>
             </div>
 
             <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-              বাড়িওয়ালার অবগতির জন্য লিস্টিংটি প্রত্যাখ্যান করার কারণ লিখুন। এটি অডিট লগে সংরক্ষিত
-              হবে।
+              {t("admin.rejectConfirmDesc")}
             </p>
 
             <div className="mt-3">
@@ -552,7 +572,7 @@ export function AdminPropertiesPage() {
                 rows={3}
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
-                placeholder="যেমন: ছবি স্পষ্ট নয়, ঠিকানায় অসংগতি রয়েছে, অথবা অস্বাভাবিক ভাড়া চাওয়া হয়েছে..."
+                placeholder={t("admin.rejectReasonPlaceholder")}
                 className="w-full rounded-xl border border-border bg-surface p-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-destructive focus:outline-none focus:ring-1 focus:ring-destructive"
               />
             </div>
@@ -563,7 +583,7 @@ export function AdminPropertiesPage() {
                 onClick={() => setRejectingProperty(null)}
                 className="rounded-lg border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-secondary"
               >
-                বাতিল
+                {t("landlord.cancel")}
               </button>
               <button
                 type="button"
@@ -571,7 +591,7 @@ export function AdminPropertiesPage() {
                 disabled={submittingAction}
                 className="rounded-lg bg-destructive px-4 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
               >
-                {submittingAction ? "প্রক্রিয়াধীন..." : "প্রত্যাখ্যান নিশ্চিত করুন"}
+                {submittingAction ? t("admin.processing") : t("admin.confirmRejectBtn")}
               </button>
             </div>
           </div>

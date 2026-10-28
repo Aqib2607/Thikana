@@ -4,6 +4,13 @@ import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
 import { mockAdminApi } from "@/lib/api/mock/admin";
+import {
+  toBnNumber,
+  translatePropertyType,
+  translateRentalType,
+  translateFurnished,
+  translateTenantPreference,
+} from "@/lib/i18n";
 import type { PropertyItem } from "@/lib/api/properties";
 import {
   AlertTriangle,
@@ -16,7 +23,7 @@ import {
 } from "lucide-react";
 
 export function AdminPendingPropertiesPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [pendingList, setPendingList] = useState<PropertyItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,7 +54,7 @@ export function AdminPendingPropertiesPage() {
     try {
       await mockAdminApi.approveProperty(p.id, user.id, user.name || "Admin");
       setPendingList((prev) => prev.filter((item) => item.id !== p.id));
-      setNotice(`'${p.title}' সফলভাবে অনুমোদিত এবং লাইভ করা হয়েছে।`);
+      setNotice(`'${p.title}' — ${t("landlord.approved")}`);
       setTimeout(() => setNotice(null), 4000);
     } finally {
       setProcessingId(null);
@@ -60,12 +67,12 @@ export function AdminPendingPropertiesPage() {
     try {
       await mockAdminApi.rejectProperty(
         rejectingItem.id,
-        rejectReason.trim() || "তথ্য অসম্পূর্ণ বা যাচাইয়ে ত্রুটি পাওয়া গেছে।",
+        rejectReason.trim() || "Policy mismatch or unverified details.",
         user.id,
         user.name || "Admin",
       );
       setPendingList((prev) => prev.filter((item) => item.id !== rejectingItem.id));
-      setNotice(`'${rejectingItem.title}' বাতিল করা হয়েছে।`);
+      setNotice(`'${rejectingItem.title}' — ${t("landlord.rejected")}`);
       setRejectingItem(null);
       setRejectReason("");
       setTimeout(() => setNotice(null), 4000);
@@ -78,7 +85,7 @@ export function AdminPendingPropertiesPage() {
     <RoleLayout
       requiredRole="admin"
       title={t("dashboard.pendingApprovals")}
-      subtitle="নতুন বাড়িওয়ালাদের জমা দেয়া লিস্টিং যাচাই ও অনুমোদন কিউ"
+      subtitle={t("admin.pendingSubtitle")}
       activeTab="pending"
     >
       {/* Notice */}
@@ -96,28 +103,28 @@ export function AdminPendingPropertiesPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-warning/20 text-xs font-bold text-warning-foreground">
-              {pendingList.length}
+              {toBnNumber(pendingList.length, i18n.language)}
             </span>
             <span className="text-sm font-semibold text-foreground">
-              পর্যালোচনার জন্য অপেক্ষমাণ
+              {t("admin.pendingReviewHeader")}
             </span>
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            প্রতিটি বাসার ঠিকানা, ছবি এবং ভাড়া যাচাই করে তবেই প্ল্যাটফর্মে দৃশ্যমান করুন।
+            {t("admin.pendingReviewNotice")}
           </p>
         </div>
         <Link
           to="/admin/properties"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground hover:text-link"
         >
-          <span>সকল প্রপার্টি দেখুন</span>
+          <span>{t("admin.viewAllProperties")}</span>
           <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
 
       {loading ? (
         <div className="rounded-2xl border border-border bg-surface p-12 text-center text-sm text-muted-foreground">
-          অপেক্ষমাণ তালিকা লোড হচ্ছে...
+          {t("admin.loadingListings")}
         </div>
       ) : pendingList.length === 0 ? (
         <div className="rounded-2xl border border-border bg-surface p-12 text-center shadow-sm">
@@ -125,10 +132,10 @@ export function AdminPendingPropertiesPage() {
             <Sparkles className="h-7 w-7" />
           </div>
           <h2 className="mt-4 text-lg font-bold text-foreground">
-            সকল অপেক্ষমাণ লিস্টিং যাচাই সম্পন্ন হয়েছে!
+            {t("admin.allPendingReviewedTitle")}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            এই মুহূর্তে পর্যালোচনার জন্য কোনো নতুন লিস্টিং নেই।
+            {t("admin.allPendingReviewedDesc")}
           </p>
           <div className="mt-6">
             <Link
@@ -136,7 +143,7 @@ export function AdminPendingPropertiesPage() {
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90"
             >
               <Building2 className="h-4 w-4" />
-              <span>সকল প্রপার্টি পরিচালনা করুন</span>
+              <span>{t("admin.manageAllPropertiesCta")}</span>
             </Link>
           </div>
         </div>
@@ -157,7 +164,7 @@ export function AdminPendingPropertiesPage() {
                       className="h-full w-full object-cover"
                     />
                     <span className="absolute top-2 left-2 rounded-full bg-warning/90 px-2 py-0.5 text-[10px] font-bold text-black">
-                      অনুমোদনাধীন
+                      {t("landlord.pendingApproval")}
                     </span>
                   </div>
                   {p.images.length > 1 && (
@@ -180,10 +187,12 @@ export function AdminPendingPropertiesPage() {
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                          {p.propertyType} · {p.rentalType}
+                          {translatePropertyType(p.propertyType, i18n.language)} · {translateRentalType(p.rentalType, i18n.language)}
                         </span>
-                        <h2 className="mt-1 text-lg font-bold text-foreground">{p.title}</h2>
-                        {p.banglaTitle && (
+                        <h2 className="mt-1 text-lg font-bold text-foreground">
+                          {i18n.language.startsWith("bn") && p.banglaTitle ? p.banglaTitle : p.title}
+                        </h2>
+                        {p.banglaTitle && !i18n.language.startsWith("bn") && (
                           <p className="text-sm font-medium text-muted-foreground">
                             {p.banglaTitle}
                           </p>
@@ -195,7 +204,7 @@ export function AdminPendingPropertiesPage() {
                       </div>
                       <div className="text-right whitespace-nowrap">
                         <span className="text-2xl font-bold text-foreground">
-                          ৳{p.rent.toLocaleString()}
+                          ৳{toBnNumber(p.rent.toLocaleString(), i18n.language)}
                         </span>
                         <span className="text-xs text-muted-foreground">
                           /{t("properties.month")}
@@ -206,19 +215,19 @@ export function AdminPendingPropertiesPage() {
                     {/* Specs Tags */}
                     <div className="mt-4 flex flex-wrap gap-2 text-xs">
                       <span className="rounded-lg bg-secondary px-2.5 py-1 font-medium text-foreground">
-                        {p.rooms} রুম · {p.bathrooms} বাথরুম
+                        {toBnNumber(p.rooms, i18n.language)} {t("properties.rooms")} · {toBnNumber(p.bathrooms, i18n.language)} {t("properties.baths")}
                       </span>
                       <span className="rounded-lg bg-secondary px-2.5 py-1 font-medium text-foreground">
-                        {p.size} বর্গফুট
+                        {toBnNumber(p.size, i18n.language)} {t("properties.sqft")}
                       </span>
                       <span className="rounded-lg bg-secondary px-2.5 py-1 font-medium text-foreground">
-                        {p.furnishedStatus}
+                        {translateFurnished(p.furnishedStatus, i18n.language)}
                       </span>
                       <span className="rounded-lg bg-secondary px-2.5 py-1 font-medium text-foreground">
-                        অগ্রিম: ৳{p.advance?.toLocaleString() || 0}
+                        {t("admin.advanceDepositLabel")}: ৳{toBnNumber(p.advance?.toLocaleString() || 0, i18n.language)}
                       </span>
                       <span className="rounded-lg bg-primary/10 px-2.5 py-1 font-semibold text-primary">
-                        পছন্দনীয়: {p.preferredTenant}
+                        {t("admin.preferredTenantLabel")}: {translateTenantPreference(p.preferredTenant, i18n.language)}
                       </span>
                     </div>
 
@@ -227,16 +236,16 @@ export function AdminPendingPropertiesPage() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-bold text-foreground">
-                            বাড়িওয়ালা: {p.landlord.name}
+                            {t("admin.colLandlord")}: {p.landlord.name}
                           </p>
                           <p className="text-muted-foreground">
-                            {p.landlord.email} · {p.landlord.phone}
+                            {p.landlord.email} · {p.landlord.phone || t("admin.noPhone")}
                           </p>
                         </div>
                         <span className="text-[11px] font-semibold text-muted-foreground">
                           {p.landlord.publicContactVisible
-                            ? "ফোন নম্বর প্রকাশ্য"
-                            : "ফোন নম্বর অনুরোধ সাপেক্ষ"}
+                            ? t("admin.publicContactOn")
+                            : t("admin.publicContactOff")}
                         </span>
                       </div>
                     </div>
@@ -254,7 +263,7 @@ export function AdminPendingPropertiesPage() {
                       className="inline-flex items-center gap-1.5 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-2 text-xs font-semibold text-destructive hover:bg-destructive/20 disabled:opacity-50"
                     >
                       <XCircle className="h-4 w-4" />
-                      <span>প্রত্যাখ্যান ও কারণ পাঠান</span>
+                      <span>{t("admin.rejectAndSendReason")}</span>
                     </button>
                     <button
                       type="button"
@@ -263,7 +272,7 @@ export function AdminPendingPropertiesPage() {
                       className="inline-flex items-center gap-1.5 rounded-lg bg-success px-5 py-2 text-xs font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-50"
                     >
                       <CheckCircle2 className="h-4 w-4" />
-                      <span>অনুমোদন ও লাইভ করুন</span>
+                      <span>{t("admin.approveAndGoLive")}</span>
                     </button>
                   </div>
                 </div>
@@ -286,13 +295,15 @@ export function AdminPendingPropertiesPage() {
                 <AlertTriangle className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-foreground">লিস্টিং প্রত্যাখ্যানের কারণ</h3>
+                <h3 className="text-base font-bold text-foreground">
+                  {t("admin.rejectConfirmTitle")}
+                </h3>
                 <p className="text-xs text-muted-foreground">{rejectingItem.title}</p>
               </div>
             </div>
 
             <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-              বাড়িওয়ালার অবগতির জন্য লিস্টিংটি প্রত্যাখ্যান করার নির্দিষ্ট কারণ উল্লেখ করুন:
+              {t("admin.rejectConfirmDesc")}
             </p>
 
             <div className="mt-3">
@@ -300,7 +311,7 @@ export function AdminPendingPropertiesPage() {
                 rows={3}
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
-                placeholder="যেমন: ১নং রুমের ছবি স্পষ্ট নয়, ঠিকানায় সড়ক নম্বর অনুপস্থিত, বা ভাড়া অসংগত..."
+                placeholder={t("admin.rejectReasonPlaceholder")}
                 className="w-full rounded-xl border border-border bg-surface p-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-destructive focus:outline-none focus:ring-1 focus:ring-destructive"
               />
             </div>
@@ -311,7 +322,7 @@ export function AdminPendingPropertiesPage() {
                 onClick={() => setRejectingItem(null)}
                 className="rounded-lg border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-secondary"
               >
-                বাতিল
+                {t("landlord.cancel")}
               </button>
               <button
                 type="button"
@@ -320,8 +331,8 @@ export function AdminPendingPropertiesPage() {
                 className="rounded-lg bg-destructive px-4 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
               >
                 {processingId === rejectingItem.id
-                  ? "প্রক্রিয়াধীন..."
-                  : "প্রত্যাখ্যান নিশ্চিত করুন"}
+                  ? t("admin.processing")
+                  : t("admin.confirmRejectBtn")}
               </button>
             </div>
           </div>

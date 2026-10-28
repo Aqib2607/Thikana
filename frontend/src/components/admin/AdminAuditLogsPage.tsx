@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { mockAdminApi } from "@/lib/api/mock/admin";
+import { toBnNumber } from "@/lib/i18n";
 import type { AuditLogItem } from "@/lib/api/admin";
 import { ScrollText, Search, ShieldCheck, Clock, X } from "lucide-react";
 
 export function AdminAuditLogsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [logs, setLogs] = useState<AuditLogItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [targetTypeFilter, setTargetTypeFilter] = useState<
@@ -60,7 +61,7 @@ export function AdminAuditLogsPage() {
     <RoleLayout
       requiredRole="admin"
       title={t("dashboard.auditLogs")}
-      subtitle="প্রশাসনিক অনুমোদন, পরিবর্তন ও মডারেশন কাজের অপরিবর্তনীয় অডিট লগ ট্রেইল"
+      subtitle={t("admin.auditLogsSubtitle")}
       activeTab="audit"
     >
       {/* Integrity Notice */}
@@ -71,12 +72,10 @@ export function AdminAuditLogsPage() {
           </div>
           <div>
             <h2 className="text-sm font-bold text-foreground">
-              অপরিবর্তনীয় প্রশাসনিক রেকর্ড (Immutable Audit Trail)
+              {t("admin.immutableBannerTitle")}
             </h2>
             <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-              প্ল্যাটফর্মে যেকোনো লিস্টিং অনুমোদন, বাতিল, অ্যাকাউন্ট সাসপেনশন, ভেরিফিকেশন প্রদান
-              কিংবা রিভিউ মুছে ফেলার প্রতিটি পদক্ষেপ নির্দিষ্ট প্রশাসক এবং সময়কালের সাথে
-              স্থায়ীভাবে রেকর্ড করা হয়।
+              {t("admin.immutableBannerDesc")}
             </p>
           </div>
         </div>
@@ -98,18 +97,23 @@ export function AdminAuditLogsPage() {
               }`}
             >
               {type === "ALL"
-                ? "সকল রেকর্ড"
+                ? t("admin.allLogsTab")
                 : type === "property"
-                  ? "প্রপার্টি"
+                  ? t("admin.propertyTab")
                   : type === "user"
-                    ? "ব্যবহারকারী"
+                    ? t("admin.userTab")
                     : type === "report"
-                      ? "রিপোর্ট"
+                      ? t("admin.reportTab")
                       : type === "review"
-                        ? "রিভিউ"
-                        : "কমিউনিটি"}
+                        ? t("admin.reviewTab")
+                        : t("admin.communityTab")}
               <span className="ml-1 opacity-75">
-                ({type === "ALL" ? logs.length : logs.filter((l) => l.targetType === type).length})
+                (
+                {toBnNumber(
+                  type === "ALL" ? logs.length : logs.filter((l) => l.targetType === type).length,
+                  i18n.language,
+                )}
+                )
               </span>
             </button>
           ))}
@@ -125,7 +129,7 @@ export function AdminAuditLogsPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="অ্যাকশন, অ্যাডমিন বা বিবরণ খুঁজুন..."
+            placeholder={t("admin.auditSearchPlaceholder")}
             className="h-10 w-full rounded-xl border border-border bg-surface pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
           {search && (
@@ -145,13 +149,13 @@ export function AdminAuditLogsPage() {
       <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
         {loading ? (
           <div className="p-12 text-center text-sm text-muted-foreground">
-            অডিট রেকর্ড লোড হচ্ছে...
+            {t("admin.loadingAudit")}
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center">
             <ScrollText className="mx-auto h-10 w-10 text-muted-foreground/60" />
             <p className="mt-3 text-base font-semibold text-foreground">
-              কোনো অডিট লগ পাওয়া যায়নি
+              {t("admin.noAuditTitle")}
             </p>
           </div>
         ) : (
@@ -160,19 +164,19 @@ export function AdminAuditLogsPage() {
               <thead className="border-b border-border bg-secondary/50 text-xs font-semibold text-muted-foreground">
                 <tr>
                   <th scope="col" className="px-4 py-3.5 whitespace-nowrap">
-                    সময়কাল (Timestamp)
+                    {t("admin.colTimestamp")}
                   </th>
                   <th scope="col" className="px-4 py-3.5">
-                    অ্যাডমিন (Actor)
+                    {t("admin.colActor")}
                   </th>
                   <th scope="col" className="px-4 py-3.5">
-                    পদক্ষেপ (Action)
+                    {t("admin.colActionLog")}
                   </th>
                   <th scope="col" className="px-4 py-3.5">
-                    লক্ষ্যবস্তু (Target)
+                    {t("admin.colTarget")}
                   </th>
                   <th scope="col" className="px-4 py-3.5">
-                    বিস্তারিত বিবরণ (Details)
+                    {t("admin.colDetails")}
                   </th>
                 </tr>
               </thead>
@@ -182,7 +186,11 @@ export function AdminAuditLogsPage() {
                     <td className="px-4 py-3.5 whitespace-nowrap text-xs text-muted-foreground">
                       <div className="flex items-center gap-1.5">
                         <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span>{new Date(log.timestamp).toLocaleString("bn-BD")}</span>
+                        <span>
+                          {new Date(log.timestamp).toLocaleString(
+                            i18n.language.startsWith("bn") ? "bn-BD" : "en-US",
+                          )}
+                        </span>
                       </div>
                       <span className="text-[10px] text-muted-foreground/75 font-mono">
                         {log.id}

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
 import { mockAdminApi } from "@/lib/api/mock/admin";
+import { toBnNumber } from "@/lib/i18n";
 import {
   type PropertyItem,
   type VerificationState,
@@ -11,7 +12,7 @@ import {
 import { ShieldAlert, Search, CheckCircle2, Building2, MapPin, X } from "lucide-react";
 
 export function AdminVerificationsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [properties, setProperties] = useState<PropertyItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,9 +51,7 @@ export function AdminVerificationsPage() {
       );
       setProperties((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
       setNotice(
-        `'${prop.title}'-এ '${verif.replace(" Verified", "")}' ব্যাজ ${
-          exists ? "অপসারণ" : "যুক্ত"
-        } করা হয়েছে।`,
+        `'${prop.title}' — ${verif} ${exists ? t("landlord.cancel") : t("admin.badgeActive")}`,
       );
       setTimeout(() => setNotice(null), 4000);
     } finally {
@@ -70,11 +69,26 @@ export function AdminVerificationsPage() {
     );
   });
 
+  const getVerificationLabel = (state: VerificationState) => {
+    switch (state) {
+      case "Owner Identity Verified":
+        return t("admin.ownerIdentityBadge");
+      case "Phone Verified":
+        return t("admin.phoneBadge");
+      case "Availability Verified":
+        return t("admin.availabilityBadge");
+      case "Documents Verified":
+        return t("admin.documentsBadge");
+      default:
+        return state;
+    }
+  };
+
   return (
     <RoleLayout
       requiredRole="admin"
       title={t("dashboard.verifications")}
-      subtitle="প্ল্যাটফর্ম-স্তরের সিমুলেটেড যাচাইকরণ ব্যবস্থাপনা ও ব্যাজ নিয়ন্ত্রণ"
+      subtitle={t("admin.verificationsSubtitle")}
       activeTab="verifications"
     >
       {/* Platform Disclaimer Banner */}
@@ -108,9 +122,11 @@ export function AdminVerificationsPage() {
       {/* Search Header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base font-bold text-foreground">লিস্টিংভিত্তিক যাচাইকরণ তালিকা</h2>
+          <h2 className="text-base font-bold text-foreground">
+            {t("admin.verificationsListHeader")}
+          </h2>
           <p className="text-xs text-muted-foreground">
-            চেকবক্সগুলোতে ক্লিক করে রিয়েল-টাইমে ভেরিফিকেশন স্ট্যাটাস পরিবর্তন করুন
+            {t("admin.verificationsListDesc")}
           </p>
         </div>
 
@@ -123,7 +139,7 @@ export function AdminVerificationsPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="বাসার নাম বা এলাকা খুঁজুন..."
+            placeholder={t("admin.searchPlaceholder")}
             className="h-10 w-full rounded-xl border border-border bg-surface pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
           {search && (
@@ -142,12 +158,14 @@ export function AdminVerificationsPage() {
       {/* Verifications Matrix Table */}
       <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
         {loading ? (
-          <div className="p-12 text-center text-sm text-muted-foreground">লিস্টিং লোড হচ্ছে...</div>
+          <div className="p-12 text-center text-sm text-muted-foreground">
+            {t("admin.loadingListings")}
+          </div>
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center">
             <Building2 className="mx-auto h-10 w-10 text-muted-foreground/60" />
             <p className="mt-3 text-base font-semibold text-foreground">
-              কোনো প্রপার্টি পাওয়া যায়নি
+              {t("admin.noPropertiesTitle")}
             </p>
           </div>
         ) : (
@@ -156,26 +174,20 @@ export function AdminVerificationsPage() {
               <thead className="border-b border-border bg-secondary/50 text-xs font-semibold text-muted-foreground">
                 <tr>
                   <th scope="col" className="px-4 py-3.5 min-w-[240px]">
-                    প্রপার্টি ও বাড়িওয়ালা
+                    {t("admin.colProperty")}
                   </th>
                   {VERIFICATION_STATES.map((state) => (
                     <th key={state} scope="col" className="px-3 py-3.5 text-center">
                       <span className="block whitespace-nowrap text-foreground font-bold">
-                        {state === "Owner Identity Verified"
-                          ? "মালিক পরিচয়"
-                          : state === "Phone Verified"
-                            ? "ফোন নম্বর"
-                            : state === "Availability Verified"
-                              ? "প্রাপ্যতা"
-                              : "নথিপত্র"}
+                        {getVerificationLabel(state)}
                       </span>
                       <span className="block text-[10px] text-muted-foreground font-normal">
-                        (Simulated)
+                        {t("admin.simulatedNotice")}
                       </span>
                     </th>
                   ))}
                   <th scope="col" className="px-4 py-3.5 text-right whitespace-nowrap">
-                    মোট ব্যাজ
+                    {t("admin.totalBadges")}
                   </th>
                 </tr>
               </thead>
@@ -190,13 +202,15 @@ export function AdminVerificationsPage() {
                           className="h-10 w-14 shrink-0 rounded-lg object-cover border border-border"
                         />
                         <div className="min-w-0 max-w-xs">
-                          <p className="truncate font-semibold text-foreground">{p.title}</p>
+                          <p className="truncate font-semibold text-foreground">
+                            {i18n.language.startsWith("bn") && p.banglaTitle ? p.banglaTitle : p.title}
+                          </p>
                           <p className="flex items-center gap-1 text-xs text-muted-foreground">
                             <MapPin className="h-3 w-3 shrink-0" />
                             <span className="truncate">{p.area}</span>
                           </p>
                           <p className="text-[11px] text-muted-foreground font-medium">
-                            বাড়িওয়ালা: {p.landlord.name}
+                            {t("admin.colLandlord")}: {p.landlord.name}
                           </p>
                         </div>
                       </div>
@@ -217,15 +231,14 @@ export function AdminVerificationsPage() {
                                 ? "bg-success/15 text-success hover:bg-success/25 ring-1 ring-success/30"
                                 : "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
                             }`}
-                            title={`ক্লিক করে ${verif} স্ট্যাটাস পরিবর্তন করুন`}
                           >
                             {isActive ? (
                               <>
                                 <CheckCircle2 className="h-3.5 w-3.5" />
-                                <span>সক্রিয়</span>
+                                <span>{t("admin.badgeActive")}</span>
                               </>
                             ) : (
-                              <span>নিষ্ক্রিয়</span>
+                              <span>{t("admin.badgeInactive")}</span>
                             )}
                           </button>
                         </td>
@@ -234,7 +247,7 @@ export function AdminVerificationsPage() {
 
                     <td className="px-4 py-3.5 text-right whitespace-nowrap">
                       <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
-                        {p.verifications.length} / 4
+                        {toBnNumber(p.verifications.length, i18n.language)} / {toBnNumber(4, i18n.language)}
                       </span>
                     </td>
                   </tr>

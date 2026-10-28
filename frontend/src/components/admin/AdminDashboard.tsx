@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
 import { mockAdminApi } from "@/lib/api/mock/admin";
+import { toBnNumber } from "@/lib/i18n";
 import type { AdminStats } from "@/lib/api/admin";
 import {
   AlertTriangle,
@@ -20,7 +21,7 @@ import {
 } from "lucide-react";
 
 export function AdminDashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,74 +42,87 @@ export function AdminDashboard() {
   const cards = [
     {
       title: t("dashboard.pendingApprovals"),
-      desc: "নতুন জমা পড়া বাসাগুলো যাচাই করে অনুমোদন অথবা কারণসহ বাতিল করুন।",
+      desc: t("admin.pendingApprovalsDesc"),
       icon: AlertTriangle,
       href: "/admin/properties/pending",
-      cta: "অপেক্ষমাণ তালিকা দেখুন",
-      badge: stats ? `${stats.pendingProperties} Pending` : undefined,
+      cta: t("admin.pendingApprovalsCta"),
+      badge: stats
+        ? `${toBnNumber(stats.pendingProperties, i18n.language)} ${t("landlord.pendingApproval")}`
+        : undefined,
       highlight: stats ? stats.pendingProperties > 0 : false,
     },
     {
       title: t("dashboard.allProperties"),
-      desc: "প্ল্যাটফর্মের সকল সক্রিয়, সংরক্ষিত ও ভাড়া দেওয়া বাসার তালিকা পরিচালনা।",
+      desc: t("admin.allPropertiesDesc"),
       icon: Building2,
       href: "/admin/properties",
-      cta: "সকল প্রপার্টি",
-      badge: stats ? `${stats.totalProperties} Total` : undefined,
+      cta: t("admin.allPropertiesCta"),
+      badge: stats
+        ? `${toBnNumber(stats.totalProperties, i18n.language)} ${t("properties.allProperties")}`
+        : undefined,
     },
     {
       title: t("dashboard.userManagement"),
-      desc: "ভাড়াটিয়া ও বাড়িওয়ালাদের অ্যাকাউন্ট সক্রিয়করণ ও তথ্য তদারকি।",
+      desc: t("admin.userManagementDesc"),
       icon: Users,
       href: "/admin/users",
-      cta: "ব্যবহারকারী তালিকা",
-      badge: stats ? `${stats.totalUsers} Users` : undefined,
+      cta: t("admin.userManagementCta"),
+      badge: stats
+        ? `${toBnNumber(stats.totalUsers, i18n.language)} ${t("admin.totalUsers")}`
+        : undefined,
     },
     {
       title: t("dashboard.verifications"),
-      desc: "মালিক পরিচয়, ফোন, প্রাপ্যতা এবং নথি সংক্রান্ত প্ল্যাটফর্ম-স্তরের সিমুলেটেড যাচাইকরণ।",
+      desc: t("admin.verificationsDesc"),
       icon: ShieldCheck,
       href: "/admin/verifications",
-      cta: "যাচাইকরণ প্যানেল",
+      cta: t("admin.verificationsCta"),
     },
     {
       title: t("dashboard.reportsModeration"),
-      desc: "ভাড়াটিয়াদের পাঠানো অভিযোগ (ভুয়া লিস্টিং, ভুল তথ্য) পর্যালোচনা ও ব্যবস্থা গ্রহণ।",
+      desc: t("admin.reportsDesc"),
       icon: AlertTriangle,
       href: "/admin/reports",
-      cta: "রিপোর্ট ম্যানেজমেন্ট",
-      badge: stats && stats.pendingReports > 0 ? `${stats.pendingReports} Unresolved` : undefined,
+      cta: t("admin.reportsCta"),
+      badge:
+        stats && stats.pendingReports > 0
+          ? `${toBnNumber(stats.pendingReports, i18n.language)} ${t("admin.unresolvedReports")}`
+          : undefined,
       highlight: stats ? stats.pendingReports > 0 : false,
     },
     {
       title: t("dashboard.reviewsModeration"),
-      desc: "ভাড়াটিয়াদের দেয়া রিভিউ ও রেটিং পর্যবেক্ষণ ও অনুপযুক্ত মন্তব্য অপসারণ।",
+      desc: t("admin.reviewsDesc"),
       icon: Star,
       href: "/admin/reviews",
-      cta: "রিভিউসমূহ",
-      badge: stats ? `${stats.totalReviews} Reviews` : undefined,
+      cta: t("admin.reviewsCta"),
+      badge: stats
+        ? `${toBnNumber(stats.totalReviews, i18n.language)} ${t("admin.reviewsCta")}`
+        : undefined,
     },
     {
       title: t("dashboard.communityManagement"),
-      desc: "খুলনার বিভিন্ন এলাকার যাতায়াত, জলাবদ্ধতা, ইন্টারনেট, নিরাপত্তা সম্পর্কিত তথ্য ব্যবস্থাপনা।",
+      desc: t("admin.communityDesc"),
       icon: FileSpreadsheet,
       href: "/admin/community",
-      cta: "কমিউনিটি ডাটা",
+      cta: t("admin.communityCta"),
     },
     {
       title: t("dashboard.analytics"),
-      desc: "অনুসন্ধান প্রবণতা, এলাকাভিত্তিক চাহিদা এবং লিস্টিং পরিসংখ্যান।",
+      desc: t("admin.analyticsDesc"),
       icon: BarChart3,
       href: "/admin/analytics",
-      cta: "অ্যানালিটিক্স দেখুন",
+      cta: t("admin.analyticsCta"),
     },
     {
       title: t("dashboard.auditLogs"),
-      desc: "প্রশাসনিক অনুমোদন, পরিবর্তন ও মডারেশন কাজের অপরিবর্তনীয় অডিট লগ।",
+      desc: t("admin.auditLogsDesc"),
       icon: ScrollText,
       href: "/admin/audit-logs",
-      cta: "অডিট লগ দেখুন",
-      badge: stats ? `${stats.auditLogsCount} Logs` : undefined,
+      cta: t("admin.auditLogsCta"),
+      badge: stats
+        ? `${toBnNumber(stats.auditLogsCount, i18n.language)} ${t("admin.colActionLog")}`
+        : undefined,
     },
   ];
 
@@ -147,50 +161,61 @@ export function AdminDashboard() {
             <AlertTriangle className="h-4 w-4 text-warning" aria-hidden="true" />
           </div>
           <p className="mt-2 text-2xl font-bold tracking-tight text-foreground">
-            {loading ? "..." : (stats?.pendingProperties ?? 0)}
+            {loading ? "..." : toBnNumber(stats?.pendingProperties ?? 0, i18n.language)}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">লিস্টিং অপেক্ষমাণ</p>
+          <p className="mt-1 text-xs text-muted-foreground">{t("admin.listingsPending")}</p>
         </div>
 
         <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">অনুমোদিত প্রপার্টি</span>
+            <span className="text-xs font-medium text-muted-foreground">
+              {t("admin.approvedProperties")}
+            </span>
             <CheckCircle2 className="h-4 w-4 text-success" aria-hidden="true" />
           </div>
           <p className="mt-2 text-2xl font-bold tracking-tight text-foreground">
-            {loading ? "..." : (stats?.approvedProperties ?? 0)}
+            {loading ? "..." : toBnNumber(stats?.approvedProperties ?? 0, i18n.language)}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">মোট প্রপার্টির মধ্যে</p>
+          <p className="mt-1 text-xs text-muted-foreground">{t("admin.outOfTotal")}</p>
         </div>
 
         <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">মোট ব্যবহারকারী</span>
+            <span className="text-xs font-medium text-muted-foreground">
+              {t("admin.totalUsers")}
+            </span>
             <Users className="h-4 w-4 text-primary" aria-hidden="true" />
           </div>
           <p className="mt-2 text-2xl font-bold tracking-tight text-foreground">
-            {loading ? "..." : (stats?.totalUsers ?? 0)}
+            {loading ? "..." : toBnNumber(stats?.totalUsers ?? 0, i18n.language)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            {stats ? `${stats.tenantUsers} ভাড়াটিয়া · ${stats.landlordUsers} বাড়িওয়ালা` : "..."}
+            {stats
+              ? t("admin.userStatsFormat", {
+                  tenants: toBnNumber(stats.tenantUsers, i18n.language),
+                  landlords: toBnNumber(stats.landlordUsers, i18n.language),
+                })
+              : "..."}
           </p>
         </div>
 
         <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">অমীমাংসিত অভিযোগ</span>
+            <span className="text-xs font-medium text-muted-foreground">
+              {t("admin.unresolvedReports")}
+            </span>
             <AlertTriangle className="h-4 w-4 text-destructive" aria-hidden="true" />
           </div>
           <p className="mt-2 text-2xl font-bold tracking-tight text-foreground">
-            {loading ? "..." : (stats?.pendingReports ?? 0)}
+            {loading ? "..." : toBnNumber(stats?.pendingReports ?? 0, i18n.language)}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">মডারেশন প্রয়োজন</p>
+          <p className="mt-1 text-xs text-muted-foreground">{t("admin.moderationNeeded")}</p>
         </div>
       </div>
 
       {/* Admin Modules Navigation */}
       <h2 className="mb-4 text-lg font-bold tracking-tight text-foreground">
-        প্রশাসনিক কন্ট্রোল প্যানেল
+        {t("admin.adminControlPanel")}
       </h2>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => {

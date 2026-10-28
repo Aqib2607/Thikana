@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
 import { mockAdminApi } from "@/lib/api/mock/admin";
+import { toBnNumber } from "@/lib/i18n";
 import type { AdminUserItem } from "@/lib/api/admin";
 import {
   Users,
@@ -16,7 +17,7 @@ import {
 } from "lucide-react";
 
 export function AdminUsersPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user: currentAdmin } = useAuth();
   const [users, setUsers] = useState<AdminUserItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +43,7 @@ export function AdminUsersPage() {
   const handleToggleStatus = async (targetUser: AdminUserItem) => {
     if (!currentAdmin) return;
     if (targetUser.id === currentAdmin.id) {
-      alert("নিজের অ্যাকাউন্ট স্থগিত করা যাবে না।");
+      alert(t("admin.cannotSuspendSelf"));
       return;
     }
 
@@ -57,9 +58,7 @@ export function AdminUsersPage() {
       );
       setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
       setNotice(
-        `ব্যবহারকারী ${targetUser.name}-এর অ্যাকাউন্ট ${
-          nextStatus === "suspended" ? "স্থগিত" : "পুনরায় সক্রিয়"
-        } করা হয়েছে।`,
+        `${targetUser.name} — ${nextStatus === "suspended" ? t("admin.suspended") : t("admin.active")}`,
       );
       setTimeout(() => setNotice(null), 4000);
     } finally {
@@ -82,7 +81,7 @@ export function AdminUsersPage() {
     <RoleLayout
       requiredRole="admin"
       title={t("dashboard.userManagement")}
-      subtitle="প্ল্যাটফর্মের সকল ভাড়াটিয়া ও বাড়িওয়ালার অ্যাকাউন্ট সক্রিয়করণ ও তদারকি"
+      subtitle={t("admin.usersSubtitle")}
       activeTab="users"
     >
       {/* Notice */}
@@ -111,14 +110,19 @@ export function AdminUsersPage() {
               }`}
             >
               {r === "ALL"
-                ? "সকল অ্যাকাউন্ট"
+                ? t("admin.allAccountsTab")
                 : r === "tenant"
-                  ? "ভাড়াটিয়া"
+                  ? t("roles.tenant")
                   : r === "landlord"
-                    ? "বাড়িওয়ালা"
-                    : "প্রশাসক"}
+                    ? t("roles.landlord")
+                    : t("roles.admin")}
               <span className="ml-1.5 opacity-75">
-                ({r === "ALL" ? users.length : users.filter((u) => u.role === r).length})
+                (
+                {toBnNumber(
+                  r === "ALL" ? users.length : users.filter((u) => u.role === r).length,
+                  i18n.language,
+                )}
+                )
               </span>
             </button>
           ))}
@@ -134,7 +138,7 @@ export function AdminUsersPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="নাম, ইমেইল বা ফোন নম্বর..."
+            placeholder={t("admin.userSearchPlaceholder")}
             className="h-10 w-full rounded-xl border border-border bg-surface pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
           {search && (
@@ -154,16 +158,16 @@ export function AdminUsersPage() {
       <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
         {loading ? (
           <div className="p-12 text-center text-sm text-muted-foreground">
-            ব্যবহারকারী লোড হচ্ছে...
+            {t("admin.loadingUsers")}
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center">
             <Users className="mx-auto h-10 w-10 text-muted-foreground/60" />
             <p className="mt-3 text-base font-semibold text-foreground">
-              কোনো ব্যবহারকারী পাওয়া যায়নি
+              {t("admin.noUsersTitle")}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              অনুসন্ধান শর্ত পরিবর্তন করে আবার চেষ্টা করুন।
+              {t("admin.noUsersDesc")}
             </p>
           </div>
         ) : (
@@ -172,22 +176,22 @@ export function AdminUsersPage() {
               <thead className="border-b border-border bg-secondary/50 text-xs font-semibold text-muted-foreground">
                 <tr>
                   <th scope="col" className="px-4 py-3.5">
-                    ব্যবহারকারী
+                    {t("admin.colUser")}
                   </th>
                   <th scope="col" className="px-4 py-3.5">
-                    ভূমিকা
+                    {t("admin.colRole")}
                   </th>
                   <th scope="col" className="px-4 py-3.5">
-                    যোগাযোগ
+                    {t("admin.colContact")}
                   </th>
                   <th scope="col" className="px-4 py-3.5">
-                    যাচাইকৃত অবস্থা
+                    {t("admin.colVerifiedStatus")}
                   </th>
                   <th scope="col" className="px-4 py-3.5">
-                    অ্যাকাউন্ট স্থিতি
+                    {t("admin.colAccountStatus")}
                   </th>
                   <th scope="col" className="px-4 py-3.5 text-right">
-                    অ্যাকশন
+                    {t("admin.colAction")}
                   </th>
                 </tr>
               </thead>
@@ -224,11 +228,11 @@ export function AdminUsersPage() {
                         {u.verified ? (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-success">
                             <ShieldCheck className="h-4 w-4" />
-                            <span>যাচাইকৃত</span>
+                            <span>{t("admin.verified")}</span>
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                            <span>অযাচাইকৃত</span>
+                            <span>{t("admin.unverified")}</span>
                           </span>
                         )}
                       </td>
@@ -237,19 +241,21 @@ export function AdminUsersPage() {
                         {u.status === "active" ? (
                           <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2.5 py-0.5 text-xs font-semibold text-success">
                             <CheckCircle2 className="h-3 w-3" />
-                            <span>সক্রিয়</span>
+                            <span>{t("admin.active")}</span>
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded-full bg-destructive/15 px-2.5 py-0.5 text-xs font-semibold text-destructive">
                             <ShieldAlert className="h-3 w-3" />
-                            <span>স্থগিত</span>
+                            <span>{t("admin.suspended")}</span>
                           </span>
                         )}
                       </td>
 
                       <td className="px-4 py-3.5 text-right whitespace-nowrap">
                         {isCurrentAdmin ? (
-                          <span className="text-xs text-muted-foreground italic">বর্তমান সেশন</span>
+                          <span className="text-xs text-muted-foreground italic">
+                            {t("admin.currentSession")}
+                          </span>
                         ) : (
                           <button
                             type="button"
@@ -264,12 +270,12 @@ export function AdminUsersPage() {
                             {u.status === "active" ? (
                               <>
                                 <UserX className="h-3.5 w-3.5" />
-                                <span>স্থগিত করুন</span>
+                                <span>{t("admin.suspendUser")}</span>
                               </>
                             ) : (
                               <>
                                 <UserCheck className="h-3.5 w-3.5" />
-                                <span>সক্রিয় করুন</span>
+                                <span>{t("admin.activateUser")}</span>
                               </>
                             )}
                           </button>

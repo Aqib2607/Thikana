@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
 import { mockAdminApi } from "@/lib/api/mock/admin";
+import { toBnNumber } from "@/lib/i18n";
 import type { PropertyReviewItem } from "@/lib/api/tenant";
 import {
   Star,
@@ -15,7 +16,7 @@ import {
 } from "lucide-react";
 
 export function AdminReviewsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [reviews, setReviews] = useState<PropertyReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +41,7 @@ export function AdminReviewsPage() {
   const handleDelete = async (review: PropertyReviewItem) => {
     if (!user) return;
     const ok = window.confirm(
-      `আপনি কি নিশ্চিত যে '${review.tenantName}'-এর রিভিউটি অপসারণ করতে চান? এটি অডিট লগে রেকর্ড হবে।`,
+      t("admin.deleteReviewConfirm", { name: review.tenantName }),
     );
     if (!ok) return;
 
@@ -48,7 +49,7 @@ export function AdminReviewsPage() {
     try {
       await mockAdminApi.deleteReview(review.id, user.id, user.name || "Admin");
       setReviews((prev) => prev.filter((r) => r.id !== review.id));
-      setNotice(`রিভিউটি সফলভাবে মুছে ফেলা হয়েছে।`);
+      setNotice(t("admin.deleteReviewBtn"));
       setTimeout(() => setNotice(null), 4000);
     } finally {
       setDeletingId(null);
@@ -69,7 +70,7 @@ export function AdminReviewsPage() {
     <RoleLayout
       requiredRole="admin"
       title={t("dashboard.reviewsModeration")}
-      subtitle="ভাড়াটিয়াদের দেয়া রেটিং, কমেন্ট ও 'পরিদর্শিত' যাচাইকরণ তদারকি"
+      subtitle={t("admin.reviewsSubtitle")}
       activeTab="reviews"
     >
       {/* Notice */}
@@ -85,9 +86,11 @@ export function AdminReviewsPage() {
       {/* Search Header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base font-bold text-foreground">মোট {reviews.length} টি রিভিউ</h2>
+          <h2 className="text-base font-bold text-foreground">
+            {t("admin.totalReviewsHeader", { count: toBnNumber(reviews.length, i18n.language) })}
+          </h2>
           <p className="text-xs text-muted-foreground">
-            অনুচিত মন্তব্য বা ভুল তথ্যযুক্ত রিভিউ প্রয়োজন সাপেক্ষে অপসারণ করুন
+            {t("admin.reviewsHeaderDesc")}
           </p>
         </div>
 
@@ -100,7 +103,7 @@ export function AdminReviewsPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="ভাড়াটিয়ার নাম বা মন্তব্য খুঁজুন..."
+            placeholder={t("admin.reviewSearchPlaceholder")}
             className="h-10 w-full rounded-xl border border-border bg-surface pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
           {search && (
@@ -119,12 +122,14 @@ export function AdminReviewsPage() {
       {/* Reviews List */}
       {loading ? (
         <div className="rounded-2xl border border-border bg-surface p-12 text-center text-sm text-muted-foreground">
-          রিভিউ লোড হচ্ছে...
+          {t("admin.loadingReviews")}
         </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-2xl border border-border bg-surface p-12 text-center shadow-sm">
           <MessageSquare className="mx-auto h-10 w-10 text-muted-foreground/60" />
-          <h2 className="mt-3 text-base font-bold text-foreground">কোনো রিভিউ পাওয়া যায়নি</h2>
+          <h2 className="mt-3 text-base font-bold text-foreground">
+            {t("admin.noReviewsTitle")}
+          </h2>
         </div>
       ) : (
         <div className="grid gap-4">
@@ -144,7 +149,7 @@ export function AdminReviewsPage() {
                       </span>
                     )}
                     <span className="text-xs text-muted-foreground">
-                      প্রপার্টি ID: {r.propertyId}
+                      ID: {r.propertyId}
                     </span>
                   </div>
 
@@ -162,16 +167,16 @@ export function AdminReviewsPage() {
                       />
                     ))}
                     <span className="ml-1 text-xs font-bold text-foreground">
-                      {r.overallRating}.0
+                      {toBnNumber(r.overallRating, i18n.language)}.0
                     </span>
                   </div>
 
                   <p className="mt-3 text-sm leading-relaxed text-foreground">"{r.comment}"</p>
 
                   <div className="mt-3 flex flex-wrap gap-3 text-[11px] text-muted-foreground">
-                    <span>সঠিকতা: {r.accuracyRating}/5</span>
-                    <span>বাড়িওয়ালার আচরণ: {r.landlordBehaviorRating}/5</span>
-                    <span>এলাকার সুবিধা: {r.locationRating}/5</span>
+                    <span>{t("admin.accuracyRatingLabel")} {toBnNumber(r.accuracyRating, i18n.language)}/5</span>
+                    <span>{t("admin.landlordRatingLabel")} {toBnNumber(r.landlordBehaviorRating, i18n.language)}/5</span>
+                    <span>{t("admin.locationRatingLabel")} {toBnNumber(r.locationRating, i18n.language)}/5</span>
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {new Date(r.createdAt).toLocaleDateString()}
@@ -188,7 +193,7 @@ export function AdminReviewsPage() {
                     className="inline-flex items-center gap-1.5 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-xs font-semibold text-destructive hover:bg-destructive/20 disabled:opacity-50"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
-                    <span>মুছে ফেলুন</span>
+                    <span>{t("admin.deleteReviewBtn")}</span>
                   </button>
                 </div>
               </div>

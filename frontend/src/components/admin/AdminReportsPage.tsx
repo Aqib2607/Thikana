@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
 import { mockAdminApi } from "@/lib/api/mock/admin";
+import { toBnNumber } from "@/lib/i18n";
 import type { ListingReportItem } from "@/lib/api/tenant";
 import {
   CheckCircle2,
@@ -14,7 +15,7 @@ import {
 } from "lucide-react";
 
 export function AdminReportsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [reports, setReports] = useState<ListingReportItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +64,7 @@ export function AdminReportsPage() {
       );
       setReports((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
       setNotice(
-        `রিপোর্টটি '${targetStatus === "Resolved" ? "সমাধান" : "বাতিল"}' হিসেবে চিহ্নিত হয়েছে।`,
+        `Report ${activeReport.id} — ${targetStatus === "Resolved" ? t("admin.resolvedTab") : t("admin.dismissedTab")}`,
       );
       setActiveReport(null);
       setResolutionNote("");
@@ -88,7 +89,7 @@ export function AdminReportsPage() {
     <RoleLayout
       requiredRole="admin"
       title={t("dashboard.reportsModeration")}
-      subtitle="ভুয়া লিস্টিং, ভুল তথ্য বা অসদাচরণের অভিযোগ পর্যালোচনা ও নিষ্পত্তি"
+      subtitle={t("admin.reportsSubtitle")}
       activeTab="reports"
     >
       {/* Notice */}
@@ -117,14 +118,21 @@ export function AdminReportsPage() {
               }`}
             >
               {tab === "ALL"
-                ? "সকল অভিযোগ"
+                ? t("admin.allReportsTab")
                 : tab === "Pending Review"
-                  ? "অপেক্ষমাণ"
+                  ? t("admin.pendingReviewTab")
                   : tab === "Resolved"
-                    ? "মীমাংসিত"
-                    : "বাতিলকৃত"}
+                    ? t("admin.resolvedTab")
+                    : t("admin.dismissedTab")}
               <span className="ml-1.5 opacity-75">
-                ({tab === "ALL" ? reports.length : reports.filter((r) => r.status === tab).length})
+                (
+                {toBnNumber(
+                  tab === "ALL"
+                    ? reports.length
+                    : reports.filter((r) => r.status === tab).length,
+                  i18n.language,
+                )}
+                )
               </span>
             </button>
           ))}
@@ -140,7 +148,7 @@ export function AdminReportsPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="প্রপার্টি বা অভিযোগের কারণ..."
+            placeholder={t("admin.reportSearchPlaceholder")}
             className="h-10 w-full rounded-xl border border-border bg-surface pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
           {search && (
@@ -159,14 +167,16 @@ export function AdminReportsPage() {
       {/* Reports Grid */}
       {loading ? (
         <div className="rounded-2xl border border-border bg-surface p-12 text-center text-sm text-muted-foreground">
-          অভিযোগ তালিকা লোড হচ্ছে...
+          {t("admin.loadingReports")}
         </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-2xl border border-border bg-surface p-12 text-center shadow-sm">
           <ShieldCheck className="mx-auto h-10 w-10 text-success" />
-          <h2 className="mt-3 text-base font-bold text-foreground">কোনো অভিযোগ নেই</h2>
+          <h2 className="mt-3 text-base font-bold text-foreground">
+            {t("admin.noReportsTitle")}
+          </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            এই ফিল্টারের অধীনে কোনো অমীমাংসিত অভিযোগ পাওয়া যায়নি।
+            {t("admin.noReportsDesc")}
           </p>
         </div>
       ) : (
@@ -196,23 +206,23 @@ export function AdminReportsPage() {
                       }`}
                     >
                       {r.status === "Pending Review"
-                        ? "পর্যালোচনা প্রয়োজন"
+                        ? t("admin.reviewNeeded")
                         : r.status === "Resolved"
-                          ? "মীমাংসিত"
-                          : "বাতিল"}
+                          ? t("admin.resolvedTab")
+                          : t("admin.dismissedTab")}
                     </span>
-                    <span className="text-xs text-muted-foreground">রিপোর্ট ID: {r.id}</span>
+                    <span className="text-xs text-muted-foreground">ID: {r.id}</span>
                   </div>
 
                   <h3 className="mt-2 text-base font-bold text-foreground">
-                    প্রপার্টি: {r.propertyTitle}
+                    {t("admin.colProperty")}: {r.propertyTitle}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-foreground bg-secondary/30 p-3 rounded-xl border border-border">
                     "{r.details}"
                   </p>
 
                   <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
-                    <span>রিপোর্টার: {r.reporterId}</span>
+                    <span>{t("admin.reporter")} {r.reporterId}</span>
                     <span className="flex items-center gap-1">
                       <Clock className="h-3.5 w-3.5" />
                       {new Date(r.createdAt).toLocaleDateString()}
@@ -230,7 +240,7 @@ export function AdminReportsPage() {
                         className="inline-flex items-center gap-1.5 rounded-lg bg-success px-3.5 py-1.5 text-xs font-semibold text-white hover:opacity-90 shadow-sm"
                       >
                         <CheckCircle2 className="h-3.5 w-3.5" />
-                        <span>সমাধান করুন</span>
+                        <span>{t("admin.resolveBtn")}</span>
                       </button>
                       <button
                         type="button"
@@ -238,13 +248,13 @@ export function AdminReportsPage() {
                         className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3.5 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-secondary hover:text-foreground"
                       >
                         <XCircle className="h-3.5 w-3.5" />
-                        <span>বাতিল করুন</span>
+                        <span>{t("admin.dismissBtn")}</span>
                       </button>
                     </>
                   )}
                   {r.status !== "Pending Review" && (
                     <span className="text-xs font-medium text-muted-foreground italic">
-                      নিষ্পন্ন করা হয়েছে
+                      {t("admin.reportResolvedAlready")}
                     </span>
                   )}
                 </div>
@@ -263,10 +273,10 @@ export function AdminReportsPage() {
         >
           <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-2xl">
             <h3 className="text-base font-bold text-foreground">
-              {targetStatus === "Resolved" ? "অভিযোগ সমাধান ও মন্তব্য" : "অভিযোগ বাতিল ও মন্তব্য"}
+              {targetStatus === "Resolved" ? t("admin.resolveModalTitle") : t("admin.dismissModalTitle")}
             </h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              প্রপার্টি: {activeReport.propertyTitle}
+              {t("admin.colProperty")}: {activeReport.propertyTitle}
             </p>
 
             <div className="mt-4">
@@ -274,14 +284,14 @@ export function AdminReportsPage() {
                 htmlFor="resolutionNote"
                 className="block text-xs font-semibold text-foreground mb-1"
               >
-                প্রশাসনিক সমাধানের মন্তব্য (অডিট লগে সংরক্ষিত হবে):
+                {t("admin.resolutionNoteLabel")}
               </label>
               <textarea
                 id="resolutionNote"
                 rows={3}
                 value={resolutionNote}
                 onChange={(e) => setResolutionNote(e.target.value)}
-                placeholder="যেমন: বাড়িওয়ালার সাথে কথা বলে সঠিক তথ্য যাচাই করা হয়েছে..."
+                placeholder={t("admin.resolutionNotePlaceholder")}
                 className="w-full rounded-xl border border-border bg-surface p-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -292,7 +302,7 @@ export function AdminReportsPage() {
                 onClick={() => setActiveReport(null)}
                 className="rounded-lg border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-secondary"
               >
-                বাতিল
+                {t("landlord.cancel")}
               </button>
               <button
                 type="button"
@@ -302,7 +312,7 @@ export function AdminReportsPage() {
                   targetStatus === "Resolved" ? "bg-success" : "bg-destructive"
                 }`}
               >
-                {submitting ? "প্রক্রিয়াধীন..." : "নিশ্চিত করুন"}
+                {submitting ? t("admin.processing") : t("admin.confirmAction")}
               </button>
             </div>
           </div>
