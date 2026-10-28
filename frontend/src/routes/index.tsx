@@ -7,7 +7,6 @@ import {
   ArrowUpRight,
   ShieldCheck,
   Building2,
-  CalendarCheck,
   CheckCircle2,
   Star,
   MapPin,
@@ -55,14 +54,9 @@ export const Route = createFileRoute("/")({
 const SHOWCASE_TABS = [
   {
     num: "01",
-    label: "Family Apartments",
-    labelBn: "ফ্যামিলি ফ্ল্যাট",
-    title: "Spacious Multi-Room Residences in Sonadanga & Boyra",
-    titleBn: "সোনাডাঙ্গা ও বয়রায় খোলামেলা পারিবারিক ফ্ল্যাট",
-    desc: "Carefully verified 2 to 4-bedroom apartments with separate drawing-dining spaces, secure building entry, dedicated gas line or cylinder, and elevator access.",
-    descBn:
-      "২ থেকে ৪ রুমের পারিবারিক ফ্ল্যাট, ড্রয়িং-ডাইনিং, নিজস্ব গ্যাস লাইন, সিকিউরিটি গার্ড এবং লিফট সুবিধাসহ খুলনা শহরের সেরা আবাসিক এলাকায়।",
-    priceRange: "৳ 12,000 – ৳ 28,000 / mo",
+    id: "tab_01",
+    minRent: "12,000",
+    maxRent: "28,000",
     propertyType: "apartment",
     image:
       "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80",
@@ -70,14 +64,9 @@ const SHOWCASE_TABS = [
   },
   {
     num: "02",
-    label: "Bachelor & Student Rooms",
-    labelBn: "ব্যাচেলর ও স্টুডেন্ট রুম",
-    title: "Quiet Single & Double Rooms Close to KUET & KU",
-    titleBn: "কুয়েট ও খুলনা বিশ্ববিদ্যালয়ের সন্নিকটে নিরিবিলি রুম",
-    desc: "Independent single and shared bachelor accommodations tailored for students and researchers. High-speed WiFi, generator/IPS backup, and flexible landlord rules.",
-    descBn:
-      "শিক্ষার্থী ও গবেষকদের জন্য উপযুক্ত সিঙ্গেল এবং ডাবল রুম। দ্রুতগতির ওয়াইফাই, আইপিএস ব্যাকআপ এবং কোনো অনাকাঙ্ক্ষিত বিধিনিষেধ ছাড়াই।",
-    priceRange: "৳ 3,000 – ৳ 7,500 / mo",
+    id: "tab_02",
+    minRent: "3,000",
+    maxRent: "7,500",
     propertyType: "bachelor_room",
     image:
       "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=80",
@@ -85,14 +74,9 @@ const SHOWCASE_TABS = [
   },
   {
     num: "03",
-    label: "Mess & Hostels",
-    labelBn: "মেস ও হোস্টেল",
-    title: "Organized Meal-Inclusive Student Quarters",
-    titleBn: "মিল সুবিধাসহ সুশৃঙ্খল স্টুডেন্ট মেস ও হোস্টেল",
-    desc: "Community living with managed daily meals, manager-run mess accounts, shared refrigerators, and comfortable study environments in Teligati and Gollamari.",
-    descBn:
-      "দৈনিক ৩ বেলা স্বাস্থ্যকর খাবার, অভিজ্ঞ মেস ম্যানেজার, ফ্রিজ ও পড়ার উপযোগী পরিবেশসহ সাশ্রয়ী মেস ব্যবস্থা।",
-    priceRange: "৳ 2,500 – ৳ 5,500 / mo",
+    id: "tab_03",
+    minRent: "2,500",
+    maxRent: "5,500",
     propertyType: "hostel",
     image:
       "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=80",
@@ -104,14 +88,9 @@ const SHOWCASE_TABS = [
   },
   {
     num: "04",
-    label: "Sublet Rooms",
-    labelBn: "সাবলেট রুম",
-    title: "Furnished & Semi-Furnished Private Rooms",
-    titleBn: "পারিবারিক বাসায় পরিপাটি ও নিরাপদ সাবলেট রুম",
-    desc: "Private room inside a peaceful family home with attached bathroom and shared kitchen privileges. Ideal for working professionals and postgraduate researchers.",
-    descBn:
-      "শান্ত পারিবারিক পরিবেশে এটাচড বাথ ও রান্নাঘরের সুবিধাসহ একা বা দুজনের থাকার জন্য নিরাপদ সাবলেট।",
-    priceRange: "৳ 4,500 – ৳ 9,000 / mo",
+    id: "tab_04",
+    minRent: "4,500",
+    maxRent: "9,000",
     propertyType: "sublet",
     image:
       "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
@@ -119,14 +98,9 @@ const SHOWCASE_TABS = [
   },
   {
     num: "05",
-    label: "Commercial & Office Spaces",
-    labelBn: "অফিস ও বাণিজ্যিক স্থান",
-    title: "Prime Business Hubs along KDA Avenue & Shibbari",
-    titleBn: "কেডিএ এভিনিউ ও শিববাড়ি মোড়ে বাণিজ্যিক স্পেস",
-    desc: "Roadside commercial spaces, IT office floors, coaching branches, and retail facilities with high footfall and reliable infrastructure.",
-    descBn:
-      "প্রধান রাস্তার পাশে বাণিজ্যিক ফ্লোর, আইটি অফিস ও কোচিং সেন্টারের জন্য সুপ্রশস্ত জায়গা।",
-    priceRange: "৳ 18,000 – ৳ 65,000 / mo",
+    id: "tab_05",
+    minRent: "18,000",
+    maxRent: "65,000",
     propertyType: "commercial",
     image:
       "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
@@ -135,35 +109,48 @@ const SHOWCASE_TABS = [
 ];
 
 const FAQS = [
+  { id: "faq_1" },
+  { id: "faq_2" },
+  { id: "faq_3" },
+  { id: "faq_4" },
+  { id: "faq_5" },
+];
+
+const COLLECTIONS = [
   {
-    q: "How does Thikana verify rental properties in Khulna?",
-    qBn: "ঠিকানা কীভাবে খুলনার বাসা ও মেস ভেরিফাই করে?",
-    a: "Every listing on Thikana undergoes a strict verification pipeline. We confirm the landlord's national identity, phone number, property ownership/manager status, physical location coordinates, and up-to-date utility bills before issuing the verified checkmark badge.",
-    aBn: "ঠিকানায় প্রকাশিত প্রতিটি প্রপার্টির মালিকের জাতীয় পরিচয়পত্র, মোবাইল নম্বর, প্রপার্টির সঠিক লোকেশন এবং ইউটিলিটি বিলের কপি প্ল্যাটফর্মের মাধ্যমে যাচাই করা হয়।",
+    key: "col_apartment",
+    type: "apartment",
+    img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
   },
   {
-    q: "Are there any hidden brokerage or middleman fees?",
-    qBn: "ঠিকানায় কি কোনো গোপন দালাল বা মিডিয়া ফি রয়েছে?",
-    a: "Zero hidden fees. Thikana connects tenants directly with verified homeowners and registered mess managers. You deal transparently without paying arbitrary third-party broker cuts.",
-    aBn: "একদমই না। ঠিকানা কোনো মধ্যস্বত্বভোগী বা দালাল ছাড়া সরাসরি ভাড়াটিয়া ও বাড়িওয়ালার মধ্যে যোগাযোগ করিয়ে দেয়। কোনো গোপন চার্জ নেই।",
+    key: "col_bachelor_room",
+    type: "bachelor_room",
+    img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80",
   },
   {
-    q: "How do university students get prioritized rental access?",
-    qBn: "বিশ্ববিদ্যালয়ের শিক্ষার্থীরা কীভাবে অগ্রাধিকার পায়?",
-    a: "Students from KUET, Khulna University, BL College, and KMC can verify their student institutional email or student ID. This unlocks exclusive verified mess rooms and discounted advance deposit terms.",
-    aBn: "কুয়েট, খুলনা বিশ্ববিদ্যালয়, বিএল কলেজ ও কেএমসির শিক্ষার্থীরা স্টুডেন্ট আইডি দিয়ে প্রোফাইল ভেরিফাই করে ক্যাম্পাস সংলগ্ন মেস ও রুমে বিশেষ সুবিধা পান।",
+    key: "col_hostel",
+    type: "hostel",
+    img: "https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=800&q=80",
   },
   {
-    q: "What is the Three-Property Comparison tool?",
-    qBn: "৩টি প্রপার্টির তুলনামূলক ফিচারটি কীভাবে কাজ করে?",
-    a: "You can pin up to three properties side-by-side to compare advance deposits, square footage, monthly utility rules, gas cylinder vs pipeline, WiFi speed, and landlord restrictions in a single unified table.",
-    aBn: "একসাথে ৩টি বাসা নির্বাচন করে পাশাপাশি রেখে তাদের ভাড়া, সিকিউরিটি ডিপোজিট, গ্যাস-বিদ্যুৎ বিল ও সুবিধার বিস্তারিত তুলনা করতে পারবেন।",
+    key: "col_sublet",
+    type: "sublet",
+    img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+  },
+];
+
+const COMMUNITY_HOSTS = [
+  {
+    id: "host_1",
+    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
   },
   {
-    q: "How can a landlord in Khulna list their home?",
-    qBn: "খুলনার একজন বাড়ির মালিক কীভাবে বাসা যুক্ত করবেন?",
-    a: "Landlords can register for free, upload high-resolution photos, specify rooms and amenities, and instantly begin receiving verified visit requests through their dedicated landlord portal.",
-    aBn: "বাড়ির মালিকরা সম্পূর্ণ বিনামূল্যে রেজিস্ট্রেশন করে তাদের বাসার ছবি, ভাড়ার পরিমাণ ও সুবিধা উল্লেখ করে বিজ্ঞাপন প্রকাশ করতে পারেন।",
+    id: "host_2",
+    img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: "host_3",
+    img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
   },
 ];
 
@@ -171,7 +158,6 @@ function Index() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const isBn = i18n.language === "bn";
 
   // Search form state
   const [searchQuery, setSearchQuery] = useState("");
@@ -255,16 +241,12 @@ function Index() {
                 {t("home.heroSub")}
               </TextReveal>
               <TextReveal className="block text-muted-foreground font-medium mt-1" delay={200}>
-                {isBn
-                  ? "যেখানে প্রতিটি বাড়ি হয়ে ওঠে আপনার আপন ঠিকানা"
-                  : "Designed for homes that feel like home."}
+                {t("home.heroTagline")}
               </TextReveal>
             </h1>
             <MotionReveal variant="fadeUp" delay={280}>
               <p className="mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-muted-foreground">
-                {isBn
-                  ? "কুয়েট, খুলনা বিশ্ববিদ্যালয় ও সোনাডাঙ্গার শত শত ভেরিফাইড ফ্ল্যাট, মেস ও ব্যাচেলর রুম। কোনো লুকানো দালাল ছাড়া সরাসরি বাড়িওয়ালার সাথে স্বচ্ছ চুক্তি।"
-                  : "Explore verified residential apartments, university student rooms, messes, and executive sublets across Khulna. 100% direct landlord connections with transparent agreements."}
+                {t("home.heroSubtitle2")}
               </p>
             </MotionReveal>
           </div>
@@ -339,7 +321,7 @@ function Index() {
                     <option value="">{t("home.allKhulnaAreas")}</option>
                     {KHULNA_AREAS.filter((a) => a !== "All Areas").map((a) => (
                       <option key={a} value={a}>
-                        {a}
+                        {translateArea(a, i18n.language)}
                       </option>
                     ))}
                   </select>
@@ -358,7 +340,7 @@ function Index() {
                     <option value="">{t("home.allPropertyTypes")}</option>
                     {PROPERTY_TYPES.map((pt) => (
                       <option key={pt} value={pt}>
-                        {t(`properties.type.${pt}`, pt.replace("_", " "))}
+                        {translatePropertyType(pt, i18n.language)}
                       </option>
                     ))}
                   </select>
@@ -397,11 +379,11 @@ function Index() {
                   {t("home.popularHubs")}
                 </span>
                 {[
-                  { name: "KUET Gate / Teligati", label: "KUET Gate" },
-                  { name: "Gallamari / Zero Point (KU)", label: "KU / Zero Point" },
-                  { name: "Sonadanga R/A", label: "Sonadanga R/A" },
-                  { name: "Boyra", label: "Boyra & KMC" },
-                  { name: "Daulatpur (BL College)", label: "BL College Hub" },
+                  { name: "KUET Gate / Teligati", areaKey: "kuet_gate_teligati" },
+                  { name: "Gallamari / Zero Point (KU)", areaKey: "gallamari_zero_point_ku" },
+                  { name: "Sonadanga R/A", areaKey: "sonadanga_r_a" },
+                  { name: "Boyra", areaKey: "boyra" },
+                  { name: "Daulatpur (BL College)", areaKey: "daulatpur_bl_college" },
                 ].map((hub) => (
                   <button
                     key={hub.name}
@@ -409,7 +391,7 @@ function Index() {
                     onClick={() => handleQuickArea(hub.name)}
                     className="rounded-full bg-secondary/80 border border-border/60 px-3.5 py-1 text-xs font-semibold text-foreground transition-all hover:bg-primary hover:text-primary-foreground hover:border-transparent cursor-pointer"
                   >
-                    {hub.label}
+                    {translateArea(hub.name, i18n.language)}
                   </button>
                 ))}
               </div>
@@ -429,7 +411,7 @@ function Index() {
                   <div>
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-md px-3 py-1 text-xs font-semibold text-white mb-2">
                       <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                      Verified Sonadanga Residency
+                      {t("properties.verifiedBadge")} · {translateArea("Sonadanga R/A", i18n.language)}
                     </span>
                     <h2 className="text-xl sm:text-3xl font-bold text-white tracking-tight">
                       Sonadanga Avenue 3-Bedroom Master Suite
@@ -440,14 +422,18 @@ function Index() {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <span className="text-xs text-neutral-400 block uppercase">Monthly Rent</span>
-                      <span className="text-xl sm:text-2xl font-bold text-white">৳ 16,500</span>
+                      <span className="text-xs text-neutral-400 block uppercase">
+                        {t("home.featuredRentLabel")}
+                      </span>
+                      <span className="text-xl sm:text-2xl font-bold text-white">
+                        ৳ {toBnNumber("16,500", i18n.language)}
+                      </span>
                     </div>
                     <Link
                       to="/properties"
                       className="rounded-full bg-white text-black px-5 py-2.5 text-xs font-bold hover:bg-neutral-200 transition-colors"
                     >
-                      View Details ↗
+                      {t("common.viewDetails")} ↗
                     </Link>
                   </div>
                 </div>
@@ -464,9 +450,7 @@ function Index() {
         <MotionReveal variant="fadeIn" duration={800}>
           <div className="mx-auto max-w-6xl px-5 text-center sm:px-8">
             <p className="text-xs font-semibold tracking-wider text-muted-foreground">
-              {isBn
-                ? "খুলনার শীর্ষ শিক্ষা প্রতিষ্ঠান ও কমিউনিটির আস্থা"
-                : "Trusted by Students & Residents Across Top Institutions in Khulna"}
+              {t("home.trustBanner")}
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-sm font-semibold tracking-wider text-muted-foreground grayscale hover:grayscale-0 transition-all opacity-75">
               <div className="flex items-center gap-2">
@@ -505,9 +489,7 @@ function Index() {
                 {t("home.categoriesEyebrow")}
               </p>
               <h2 className="mt-2 text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
-                {isBn
-                  ? "খুলনার সকল ধরনের আবাসন এক ঠিকানায়"
-                  : "Tailored Living Spaces for Every Need in Khulna"}
+                {t("home.livingSpacesTitle")}
               </h2>
             </div>
           </MotionReveal>
@@ -533,7 +515,7 @@ function Index() {
                         isActive ? "text-foreground" : "text-muted-foreground/60"
                       }`}
                     >
-                      {tab.num}
+                      {toBnNumber(tab.num, i18n.language)}
                     </span>
                     <div className="flex-1">
                       <h3
@@ -541,14 +523,14 @@ function Index() {
                           isActive ? "text-foreground" : "text-muted-foreground"
                         }`}
                       >
-                        {isBn ? tab.labelBn : tab.label}
+                        {t(`home.showcase.${tab.id}.label`)}
                       </h3>
                       {isActive && (
                         <div className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                          <p>{isBn ? tab.descBn : tab.desc}</p>
+                          <p>{t(`home.showcase.${tab.id}.desc`)}</p>
                           <div className="mt-3 flex items-center justify-between pt-2 border-t border-border/60">
                             <span className="font-bold text-foreground text-xs">
-                              {tab.priceRange}
+                              ৳ {toBnNumber(tab.minRent, i18n.language)} – ৳ {toBnNumber(tab.maxRent, i18n.language)} / {t("properties.perMonth")}
                             </span>
                             <Link
                               to="/properties"
@@ -573,17 +555,17 @@ function Index() {
                 <img
                   key={currentTab.num}
                   src={currentTab.image}
-                  alt={currentTab.title}
+                  alt={t(`home.showcase.${currentTab.id}.title`)}
                   className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
                 />
                 {/* Floating pill badge */}
                 <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between rounded-full bg-black/75 px-5 py-3 text-white backdrop-blur-md">
                   <div>
                     <span className="text-xs font-mono text-neutral-400 block">
-                      {currentTab.num} / 05
+                      {toBnNumber(currentTab.num, i18n.language)} / {toBnNumber("05", i18n.language)}
                     </span>
                     <span className="text-sm font-bold">
-                      {isBn ? currentTab.titleBn : currentTab.title}
+                      {t(`home.showcase.${currentTab.id}.title`)}
                     </span>
                   </div>
                   <Link
@@ -591,7 +573,7 @@ function Index() {
                     search={{ propertyType: currentTab.propertyType }}
                     className="rounded-full bg-white text-black px-4 py-1.5 text-xs font-semibold hover:bg-neutral-200 transition-colors"
                   >
-                    View All ↗
+                    {t("home.viewAllProperties")} ↗
                   </Link>
                 </div>
               </div>
@@ -626,44 +608,7 @@ function Index() {
           </MotionReveal>
 
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              {
-                title: "Family Residences",
-                titleBn: "পারিবারিক ফ্ল্যাট",
-                sub: "2-4 Bed Flats in Sonadanga & Boyra",
-                price: "From ৳ 12,000",
-                type: "apartment",
-                img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
-                count: "18 Homes",
-              },
-              {
-                title: "Bachelor Single Rooms",
-                titleBn: "ব্যাচেলর সিঙ্গেল রুম",
-                sub: "High Speed WiFi, Walk to KUET & KU",
-                price: "From ৳ 3,500",
-                type: "bachelor_room",
-                img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80",
-                count: "24 Rooms",
-              },
-              {
-                title: "Student Mess & Hostels",
-                titleBn: "মেস ও হোস্টেল ব্যবস্থা",
-                sub: "3 Meals Daily, Study Friendly",
-                price: "From ৳ 2,800",
-                type: "hostel",
-                img: "https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=800&q=80",
-                count: "12 Hostels",
-              },
-              {
-                title: "Sublet & Studio Units",
-                titleBn: "সাবলেট ও স্টুডিও রুম",
-                sub: "Attached Bath, Kitchen Access",
-                price: "From ৳ 4,500",
-                type: "sublet",
-                img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
-                count: "9 Units",
-              },
-            ].map((col, idx) => (
+            {COLLECTIONS.map((col, idx) => (
               <MotionReveal key={col.type} variant="fadeUp" delay={idx * 90}>
                 <Link
                   to="/properties"
@@ -673,20 +618,22 @@ function Index() {
                   <div className="relative aspect-[4/5] overflow-hidden">
                     <img
                       src={col.img}
-                      alt={col.title}
+                      alt={t(`home.collectionsItems.${col.key}.title`)}
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-5 text-white">
                       <h3 className="text-lg font-bold leading-tight">
-                        {isBn ? col.titleBn : col.title}
+                        {t(`home.collectionsItems.${col.key}.title`)}
                       </h3>
-                      <p className="mt-1 text-xs text-neutral-300 line-clamp-1">{col.sub}</p>
+                      <p className="mt-1 text-xs text-neutral-300 line-clamp-1">
+                        {t(`home.collectionsItems.${col.key}.sub`)}
+                      </p>
                       <div className="mt-3 flex items-center justify-between border-t border-white/20 pt-2.5">
                         <span className="text-xs font-medium text-neutral-200">
-                          {col.count} · {col.price}
+                          {t(`home.collectionsItems.${col.key}.count`)} · {t(`home.collectionsItems.${col.key}.price`)}
                         </span>
                         <div className="flex items-center gap-1 text-xs font-semibold text-white group-hover:translate-x-1 transition-transform">
-                          <span>Explore</span>
+                          <span>{t("home.exploreAction")}</span>
                           <ArrowUpRight className="h-3.5 w-3.5" />
                         </div>
                       </div>
@@ -705,7 +652,7 @@ function Index() {
       <section id="why-thikana" className="py-20 md:py-28">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-            {/* Left Big Editorial Column (Balanced with adjacent cards) */}
+            {/* Left Big Editorial Column */}
             <MotionReveal
               variant="slideInLeft"
               className="lg:col-span-5 flex flex-col justify-center space-y-6"
@@ -717,10 +664,8 @@ function Index() {
                 <h2 className="mt-2 text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-[1.12]">
                   {t("home.featuresTitle")}
                 </h2>
-                <p className="mt-3 text-sm sm:text-base leading-relaxed text-muted-foreground">
-                  {isBn
-                    ? "ঠিকানায় প্রতিটি প্রপার্টি সরাসরি অডিট করা। সঠিক রুম সাইজ, ভেরিফাইড ইউটিলিটি বিল, কোনো দালাল ছাড়া মালিকের সাথে সরাসরি চুক্তি।"
-                    : "Every property on Thikana is verified on the ground. Transparent pricing, zero middleman cuts, verified security deposits, and legitimate landlord contacts."}
+                <p className="mt-3 text-sm sm:base leading-relaxed text-muted-foreground">
+                  {t("home.featuresSubtitle")}
                 </p>
               </div>
 
@@ -734,9 +679,7 @@ function Index() {
                       {t("home.featPricing")}
                     </h3>
                     <p className="text-xs text-muted-foreground">
-                      {isBn
-                        ? "ভাড়া, সিকিউরিটি ডিপোজিট ও ইউটিলিটি রুলস শুরুতেই স্পষ্ট।"
-                        : "Rent, advance deposit, service charges, and electricity rules clearly documented."}
+                      {t("home.featuresPricingDesc")}
                     </p>
                   </div>
                 </div>
@@ -750,9 +693,7 @@ function Index() {
                       {t("home.featVisits")}
                     </h3>
                     <p className="text-xs text-muted-foreground">
-                      {isBn
-                        ? "প্ল্যাটফর্মের মাধ্যমেই পছন্দসই সময়ে বাসা পরিদর্শনের অনুরোধ পাঠান।"
-                        : "Book physical walkthroughs with landlords with calendar confirmation."}
+                      {t("home.featuresVisitsDesc")}
                     </p>
                   </div>
                 </div>
@@ -766,9 +707,7 @@ function Index() {
                       {t("home.featDeposits")}
                     </h3>
                     <p className="text-xs text-muted-foreground">
-                      {isBn
-                        ? "খুলনার প্রচলিত নিয়মানুযায়ী স্বচ্ছ অগ্রিম শর্তাবলী ও রশিদ নিশ্চয়তা।"
-                        : "Standard Khulna residential advance terms with verified receipts."}
+                      {t("home.featuresDepositsDesc")}
                     </p>
                   </div>
                 </div>
@@ -813,59 +752,32 @@ function Index() {
                 {t("home.communityTitle")}
               </h2>
               <p className="mt-3 text-sm text-muted-foreground">
-                {isBn
-                  ? "খুলনার বিভিন্ন এলাকার নির্ভরযোগ্য হোস্টদের সাথে সরাসরি পরিচিত হোন।"
-                  : "Meet the trusted property hosts and campus housing advisors ensuring transparent living in Khulna."}
+                {t("home.communitySubtitle")}
               </p>
             </div>
           </MotionReveal>
 
           <div className="mt-12 grid gap-6 sm:grid-cols-3">
-            {[
-              {
-                name: "Engr. Rafiqul Islam",
-                nameBn: "ইঞ্জি. রফিকুল ইসলাম",
-                role: "Sonadanga Residential Host · 8 Properties",
-                roleBn: "সোনাডাঙ্গা আবাসিক হোস্ট · ৮টি প্রপার্টি",
-                badge: "Verified Landlord · 4.9 ★ (32 Reviews)",
-                img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
-              },
-              {
-                name: "Tanvir Ahmed",
-                nameBn: "তানভীর আহমেদ",
-                role: "KUET Student Housing Guide · Teligati",
-                roleBn: "কুয়েট ক্যাম্পাস গাইড · টেলিগাতী হাব",
-                badge: "Campus Ambassador · KUET CSE '22",
-                img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
-              },
-              {
-                name: "Nasreen Sultana",
-                nameBn: "নাসরীন সুলতানা",
-                role: "Boyra Family Residence Host · 5 Flats",
-                roleBn: "বয়রা ফ্যামিলি হোস্ট · ৫টি ফ্ল্যাট",
-                badge: "Verified Landlord · 5.0 ★ (19 Reviews)",
-                img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
-              },
-            ].map((person, idx) => (
-              <MotionReveal key={person.name} variant="fadeUp" delay={idx * 100}>
+            {COMMUNITY_HOSTS.map((person, idx) => (
+              <MotionReveal key={person.id} variant="fadeUp" delay={idx * 100}>
                 <div className="overflow-hidden rounded-3xl border border-border/80 bg-surface shadow-sm transition-all hover:shadow-lg hover-lift">
                   <div className="aspect-[4/4] overflow-hidden">
                     <img
                       src={person.img}
-                      alt={person.name}
+                      alt={t(`home.communityHosts.${person.id}.name`)}
                       className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                     />
                   </div>
                   <div className="p-6">
                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 px-3 py-0.5 text-xs font-bold dark:bg-emerald-950 dark:text-emerald-300">
                       <ShieldCheck className="h-3.5 w-3.5" />
-                      {person.badge}
+                      {t(`home.communityHosts.${person.id}.badge`)}
                     </span>
                     <h3 className="mt-3 text-lg font-bold text-foreground">
-                      {isBn ? person.nameBn : person.name}
+                      {t(`home.communityHosts.${person.id}.name`)}
                     </h3>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {isBn ? person.roleBn : person.role}
+                      {t(`home.communityHosts.${person.id}.role`)}
                     </p>
                   </div>
                 </div>
@@ -886,9 +798,7 @@ function Index() {
                 {t("home.reviewsEyebrow")}
               </p>
               <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-                {isBn
-                  ? "খুলনার হাজারো ভাড়াটিয়ার অভিজ্ঞতা"
-                  : "Loved by Thousands of Tenants in Khulna"}
+                {t("home.experienceTitle")}
               </h2>
             </div>
           </MotionReveal>
@@ -969,7 +879,7 @@ function Index() {
                 const isOpen = openFaq === idx;
                 return (
                   <div
-                    key={idx}
+                    key={faq.id}
                     className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/70 backdrop-blur-md transition-all"
                   >
                     <button
@@ -979,7 +889,7 @@ function Index() {
                       aria-expanded={isOpen}
                     >
                       <span className="text-base sm:text-lg font-bold text-white">
-                        {isBn ? faq.qBn : faq.q}
+                        {t(`home.faqItems.${faq.id}.q`)}
                       </span>
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-black font-bold">
                         {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -987,7 +897,7 @@ function Index() {
                     </button>
                     {isOpen && (
                       <div className="px-6 pb-6 pt-1 text-sm leading-relaxed text-neutral-300 border-t border-neutral-800/60 animate-fade-in">
-                        {isBn ? faq.aBn : faq.a}
+                        {t(`home.faqItems.${faq.id}.a`)}
                       </div>
                     )}
                   </div>
@@ -1017,9 +927,7 @@ function Index() {
                 {t("home.inquiryTitle")}
               </h2>
               <p className="mt-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                {isBn
-                  ? "আপনার চাহিদা ও বাজেট জানান। ঠিকানার খুলনা টিম আপনার চাহিদামতো ভেরিফাইড বাড়িওয়ালাদের সাথে সরাসরি যোগাযোগ করিয়ে দেবে।"
-                  : "Submit your requirements and our Khulna team will match you with verified landlords matching your budget and campus proximity."}
+                {t("home.inquiryDescription")}
               </p>
 
               {inquirySubmitted ? (
@@ -1029,9 +937,7 @@ function Index() {
                     {t("home.inquirySuccess")}
                   </h4>
                   <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-300">
-                    {isBn
-                      ? "আমাদের খুলনা সাপোর্ট টিম শীঘ্রই আপনার নম্বরে যোগাযোগ করবে।"
-                      : "Our Khulna housing team will contact you within 24 hours."}
+                    {t("home.inquiryFollowUp")}
                   </p>
                 </div>
               ) : (
@@ -1075,7 +981,7 @@ function Index() {
                       >
                         {KHULNA_AREAS.filter((a) => a !== "All Areas").map((a) => (
                           <option key={a} value={a}>
-                            {a}
+                            {translateArea(a, i18n.language)}
                           </option>
                         ))}
                       </select>
@@ -1097,17 +1003,11 @@ function Index() {
 
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      {isBn
-                        ? "নির্দিষ্ট কোনো চাহিদা (রুম সাইজ, গ্যাস, ওয়াইফাই ইত্যাদি)"
-                        : "Specific Requirements"}
+                      {t("home.specificRequirementsLabel")}
                     </label>
                     <textarea
                       rows={3}
-                      placeholder={
-                        isBn
-                          ? "যেমন: ২ বেড, অ্যাটাচড বাথ, কুয়েটের কাছে হতে হবে..."
-                          : "e.g. Need 2 bedrooms with attached bath near KUET gate..."
-                      }
+                      placeholder={t("home.specificRequirementsPlaceholder")}
                       value={inquiryNote}
                       onChange={(e) => setInquiryNote(e.target.value)}
                       className="w-full rounded-2xl border border-border bg-background p-4 text-xs text-foreground focus-visible:outline-2 focus-visible:outline-ring"
@@ -1141,7 +1041,7 @@ function Index() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 rounded-full bg-black/80 px-4 py-1.5 text-xs font-semibold text-white backdrop-blur-md hover:bg-black transition-colors"
                     >
-                      <span>Open in Maps</span>
+                      <span>{t("home.openInMaps")}</span>
                       <ArrowUpRight className="h-3.5 w-3.5" />
                     </a>
                   </div>
@@ -1149,23 +1049,20 @@ function Index() {
 
                 <div className="p-6 sm:p-8 space-y-4">
                   <h3 className="text-lg font-bold text-foreground">
-                    Thikana Khulna Operations & Verification Desk
+                    {t("home.khulnaDeskTitle")}
                   </h3>
                   <div className="space-y-3 text-xs text-muted-foreground">
                     <div className="flex items-start gap-3">
                       <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                      <span>
-                        KDA Avenue, Sonadanga, Khulna (Covering KUET, KU, Boyra, Daulatpur & Zero
-                        Point)
-                      </span>
+                      <span>{t("home.khulnaDeskAddress")}</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <Phone className="h-4 w-4 text-primary shrink-0" />
-                      <span>Direct Hotline: +880 1712 345678</span>
+                      <span>{t("home.directHotlineLabel")}: +880 1712 345678</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <Mail className="h-4 w-4 text-primary shrink-0" />
-                      <span>Verification Desk: verify@thikana.com.bd</span>
+                      <span>{t("home.verificationDeskLabel")}: verify@thikana.com.bd</span>
                     </div>
                   </div>
                 </div>
@@ -1178,9 +1075,7 @@ function Index() {
                     {t("home.landlordCtaTitle")}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {isBn
-                      ? "বিনা খরচে বিজ্ঞাপন দিন এবং সরাসরি নির্ভরযোগ্য ভাড়াটিয়া পান।"
-                      : "List your property in under 3 minutes and connect with verified university students."}
+                    {t("home.landlordCtaDesc")}
                   </p>
                 </div>
                 <Link

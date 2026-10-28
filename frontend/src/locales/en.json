@@ -69,7 +69,121 @@
     "preferredArea": "Preferred Area",
     "maxBudgetLabel": "Max Budget (BDT / month)",
     "submitInquiry": "Submit Rental Request ↗",
-    "landlordCtaTitle": "Are You a Khulna Landlord?"
+    "landlordCtaTitle": "Are You a Khulna Landlord?",
+    "heroTagline": "Designed for homes that feel like home.",
+    "heroSubtitle2": "Explore verified residential apartments, university student rooms, messes, and executive sublets across Khulna. 100% direct landlord connections with transparent agreements.",
+    "trustBanner": "Trusted by Students & Residents Across Top Institutions in Khulna",
+    "livingSpacesTitle": "Tailored Living Spaces for Every Need in Khulna",
+    "exploreAction": "Explore",
+    "featuredRentLabel": "Monthly Rent",
+    "featuresSubtitle": "Every property on Thikana is verified on the ground. Transparent pricing, zero middleman cuts, verified security deposits, and legitimate landlord contacts.",
+    "featuresPricingDesc": "Rent, advance deposit, service charges, and electricity rules clearly documented.",
+    "featuresVisitsDesc": "Book physical walkthroughs with landlords with calendar confirmation.",
+    "featuresDepositsDesc": "Standard Khulna residential advance terms with verified receipts.",
+    "communitySubtitle": "Meet the trusted property hosts and campus housing advisors ensuring transparent living in Khulna.",
+    "experienceTitle": "Loved by Thousands of Tenants in Khulna",
+    "inquiryDescription": "Submit your requirements and our Khulna team will match you with verified landlords matching your budget and campus proximity.",
+    "inquiryFollowUp": "Our Khulna housing team will contact you within 24 hours.",
+    "specificRequirementsLabel": "Specific Requirements",
+    "specificRequirementsPlaceholder": "e.g. Need 2 bedrooms with attached bath near KUET gate...",
+    "openInMaps": "Open in Maps",
+    "khulnaDeskTitle": "Thikana Khulna Operations & Verification Desk",
+    "khulnaDeskAddress": "KDA Avenue, Sonadanga, Khulna (Covering KUET, KU, Boyra, Daulatpur & Zero Point)",
+    "directHotlineLabel": "Direct Hotline",
+    "verificationDeskLabel": "Verification Desk",
+    "landlordCtaDesc": "List your property in under 3 minutes and connect with verified university students.",
+    "showcase": {
+      "tab_01": {
+        "label": "Family Apartments",
+        "title": "Spacious Multi-Room Residences in Sonadanga & Boyra",
+        "desc": "Carefully verified 2 to 4-bedroom apartments with separate drawing-dining spaces, secure building entry, dedicated gas line or cylinder, and elevator access."
+      },
+      "tab_02": {
+        "label": "Bachelor & Student Rooms",
+        "title": "Quiet Single & Double Rooms Close to KUET & KU",
+        "desc": "Independent single and shared bachelor accommodations tailored for students and researchers. High-speed WiFi, generator/IPS backup, and flexible landlord rules."
+      },
+      "tab_03": {
+        "label": "Mess & Hostels",
+        "title": "Organized Meal-Inclusive Student Quarters",
+        "desc": "Community living with managed daily meals, manager-run mess accounts, shared refrigerators, and comfortable study environments in Teligati and Gollamari."
+      },
+      "tab_04": {
+        "label": "Sublet Rooms",
+        "title": "Furnished & Semi-Furnished Private Rooms",
+        "desc": "Private room inside a peaceful family home with attached bathroom and shared kitchen privileges. Ideal for working professionals and postgraduate researchers."
+      },
+      "tab_05": {
+        "label": "Commercial & Office Spaces",
+        "title": "Prime Business Hubs along KDA Avenue & Shibbari",
+        "desc": "Roadside commercial spaces, IT office floors, coaching branches, and retail facilities with high footfall and reliable infrastructure."
+      }
+    },
+    "collectionsItems": {
+      "col_apartment": {
+        "title": "Family Residences",
+        "sub": "2-4 Bed Flats in Sonadanga & Boyra",
+        "price": "From ৳ 12,000",
+        "count": "18 Homes"
+      },
+      "col_bachelor_room": {
+        "title": "Bachelor Single Rooms",
+        "sub": "High Speed WiFi, Walk to KUET & KU",
+        "price": "From ৳ 3,500",
+        "count": "24 Rooms"
+      },
+      "col_hostel": {
+        "title": "Student Mess & Hostels",
+        "sub": "3 Meals Daily, Study Friendly",
+        "price": "From ৳ 2,800",
+        "count": "12 Hostels"
+      },
+      "col_sublet": {
+        "title": "Sublet & Studio Units",
+        "sub": "Attached Bath, Kitchen Access",
+        "price": "From ৳ 4,500",
+        "count": "9 Units"
+      }
+    },
+    "communityHosts": {
+      "host_1": {
+        "name": "Engr. Rafiqul Islam",
+        "role": "Sonadanga Residential Host · 8 Properties",
+        "badge": "Verified Landlord · 4.9 ★ (32 Reviews)"
+      },
+      "host_2": {
+        "name": "Tanvir Ahmed",
+        "role": "KUET Student Housing Guide · Teligati",
+        "badge": "Campus Ambassador · KUET CSE '22"
+      },
+      "host_3": {
+        "name": "Nasreen Sultana",
+        "role": "Boyra Family Residence Host · 5 Flats",
+        "badge": "Verified Landlord · 5.0 ★ (19 Reviews)"
+      }
+    },
+    "faqItems": {
+      "faq_1": {
+        "q": "How does Thikana verify rental properties in Khulna?",
+        "a": "Every listing on Thikana undergoes a strict verification pipeline. We confirm the landlord's national identity, phone number, property ownership/manager status, physical location coordinates, and up-to-date utility bills before issuing the verified checkmark badge."
+      },
+      "faq_2": {
+        "q": "Are there any hidden brokerage or middleman fees?",
+        "a": "Zero hidden fees. Thikana connects tenants directly with verified homeowners and registered mess managers. You deal transparently without paying arbitrary third-party broker cuts."
+      },
+      "faq_3": {
+        "q": "How do university students get prioritized rental access?",
+        "a": "Students from KUET, Khulna University, BL College, and KMC can verify their student institutional email or student ID. This unlocks exclusive verified mess rooms and discounted advance deposit terms."
+      },
+      "faq_4": {
+        "q": "What is the Three-Property Comparison tool?",
+        "a": "You can pin up to three properties side-by-side to compare advance deposits, square footage, monthly utility rules, gas cylinder vs pipeline, WiFi speed, and landlord restrictions in a single unified table."
+      },
+      "faq_5": {
+        "q": "How can a landlord in Khulna list their home?",
+        "a": "Landlords can register for free, upload high-resolution photos, specify rooms and amenities, and instantly begin receiving verified visit requests through their dedicated landlord portal."
+      }
+    }
   },
   "types": {
     "apartment": "Apartment / Flat",
@@ -839,7 +953,12 @@
     "pagination": "Pagination",
     "khulna": "Khulna",
     "home": "Home",
-    "pageOf": "Page {{current}} of {{total}}"
+    "pageOf": "Page {{current}} of {{total}}",
+    "previousSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "sidebar": "Sidebar",
+    "toggleSidebar": "Toggle Sidebar",
+    "monthlyRent": "Monthly Rent"
   },
   "rentalTypes": {
     "monthly_rental": "Monthly Rental",
