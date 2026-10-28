@@ -17,7 +17,7 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
 
   const [accuracy, setAccuracy] = useState(5);
@@ -124,7 +124,7 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          aria-label={isBn ? "বন্ধ করুন" : "Close"}
+          aria-label={t("common.close")}
           className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
         >
           <X className="h-5 w-5" aria-hidden="true" />
@@ -136,7 +136,7 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
           </div>
           <div>
             <h2 id="review-modal-title" className="text-base font-bold text-foreground">
-              {isBn ? "বাসা ও মালিক সম্পর্কে রিভিউ দিন" : "Submit Rental Review"}
+              {t("tenant.ratePropertyTitle")}
             </h2>
             <p className="text-xs text-muted-foreground line-clamp-1">{property.title}</p>
           </div>
@@ -189,22 +189,22 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
             {/* 4 Criteria Star Ratings */}
             <div className="rounded-xl border border-border bg-surface p-3 space-y-1">
               {renderStarPicker(
-                isBn ? "১. প্রপার্টির তথ্যের নির্ভুলতা" : "1. Property Accuracy",
+                t("tenant.accuracyRating"),
                 accuracy,
                 setAccuracy,
               )}
               {renderStarPicker(
-                isBn ? "২. বাড়িওয়ালার ব্যবহার ও সহযোগিতা" : "2. Landlord Behavior",
+                t("tenant.landlordRating"),
                 behavior,
                 setBehavior,
               )}
               {renderStarPicker(
-                isBn ? "৩. এলাকার অবস্থান ও নিরাপত্তা" : "3. Location & Safety",
+                t("tenant.locationRating"),
                 location,
                 setLocation,
               )}
               {renderStarPicker(
-                isBn ? "৪. সার্বিক অভিজ্ঞতা" : "4. Overall Experience",
+                t("tenant.experienceRating"),
                 overall,
                 setOverall,
               )}
@@ -213,7 +213,7 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
             {/* Detailed Comment */}
             <div className="space-y-1.5">
               <label htmlFor="review-comment" className="text-xs font-semibold text-foreground">
-                {isBn ? "আপনার বিস্তারিত অভিজ্ঞতা" : "Your Review & Feedback"}
+                {t("tenant.reviewDetailsLabel")}
               </label>
               <textarea
                 id="review-comment"
@@ -221,11 +221,7 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
                 required
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder={
-                  isBn
-                    ? "বাসার পানির অবস্থা, পরিবেশ, পড়াশোনার সুযোগ বা বাড়িওয়ালার নিয়মকানুন সম্পর্কে লিখুন..."
-                    : "Share details on water supply, study environment, quiet hours, or landlord responsiveness..."
-                }
+                placeholder={t("tenant.reviewDetailsPlaceholder")}
                 className="w-full rounded-xl border border-border bg-surface p-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -236,7 +232,7 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
                 onClick={onClose}
                 className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-secondary"
               >
-                {isBn ? "বাতিল" : "Cancel"}
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
@@ -245,12 +241,8 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
               >
                 <span>
                   {isSubmitting
-                    ? isBn
-                      ? "জমা হচ্ছে..."
-                      : "Submitting..."
-                    : isBn
-                      ? "রিভিউ জমা দিন"
-                      : "Submit Review"}
+                    ? t("tenant.submitting")
+                    : t("tenant.submitReview")}
                 </span>
               </button>
             </div>

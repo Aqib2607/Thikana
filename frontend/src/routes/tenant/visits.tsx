@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { mockTenantApi } from "@/lib/api/mock";
 import { VISIT_STATUSES, type VisitRequestItem, type VisitStatus } from "@/lib/api/tenant";
+import { translateArea, toBnNumber } from "@/lib/i18n";
 import {
   Calendar,
   Clock,
@@ -30,7 +31,7 @@ export const Route = createFileRoute("/tenant/visits")({
 });
 
 function TenantVisitsPage() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
   const [visits, setVisits] = useState<VisitRequestItem[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
@@ -57,7 +58,7 @@ function TenantVisitsPage() {
     }
     await mockTenantApi.cancelVisit(visitId);
     setActionSuccess(
-      isBn ? "পরিদর্শনের আবেদন বাতিল করা হয়েছে।" : "Visit request has been cancelled.",
+      t("tenant.visitCancelledSuccess"),
     );
     loadVisits();
     setTimeout(() => setActionSuccess(null), 3000);
@@ -74,35 +75,35 @@ function TenantVisitsPage() {
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-400">
             <Clock className="h-3 w-3" aria-hidden="true" />
-            <span>{isBn ? "অনুমোদনের অপেক্ষায় (Pending)" : "Pending Approval"}</span>
+            <span>{t("tenant.statusPending")}</span>
           </span>
         );
       case "Accepted":
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
             <CheckCircle className="h-3 w-3" aria-hidden="true" />
-            <span>{isBn ? "অনুমোদিত (Accepted)" : "Accepted"}</span>
+            <span>{t("tenant.statusAccepted")}</span>
           </span>
         );
       case "Completed":
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-400">
             <BadgeCheck className="h-3 w-3" aria-hidden="true" />
-            <span>{isBn ? "পরিদর্শন সম্পন্ন (Completed / Visited)" : "Completed / Visited"}</span>
+            <span>{t("tenant.statusCompleted")}</span>
           </span>
         );
       case "Rejected":
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">
             <AlertCircle className="h-3 w-3" aria-hidden="true" />
-            <span>{isBn ? "প্রত্যাখ্যাত (Rejected)" : "Rejected"}</span>
+            <span>{t("tenant.statusRejected")}</span>
           </span>
         );
       case "Cancelled":
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-muted/60 px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">
             <Ban className="h-3 w-3" aria-hidden="true" />
-            <span>{isBn ? "বাতিলকৃত (Cancelled)" : "Cancelled"}</span>
+            <span>{t("tenant.statusCancelled")}</span>
           </span>
         );
     }
@@ -111,7 +112,7 @@ function TenantVisitsPage() {
   return (
     <RoleLayout
       requiredRole="tenant"
-      title={isBn ? "বাসা পরিদর্শনের তালিকা (My Visits)" : "My Scheduled Visits"}
+      title={t("tenant.visitsTitle")}
       subtitle={
         isBn
           ? "বাড়িওয়ালার সাথে বাসা পরিদর্শনের তারিখ, সময় ও অনুমোদনের স্ট্যাটাস ট্র্যাক করুন।"
@@ -139,7 +140,7 @@ function TenantVisitsPage() {
                 : "border border-border bg-surface text-muted-foreground hover:bg-secondary hover:text-foreground"
             }`}
           >
-            {st === "All" ? (isBn ? "সবগুলো" : "All") : st}
+            {st === "All" ? t("tenant.allFilter") : st}
           </button>
         ))}
       </div>
@@ -148,7 +149,7 @@ function TenantVisitsPage() {
         <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
           <Calendar className="mx-auto h-12 w-12 text-muted-foreground/40" aria-hidden="true" />
           <h2 className="mt-4 text-base font-bold text-foreground">
-            {isBn ? "এই ক্যাটাগরিতে কোনো পরিদর্শনের আবেদন নেই" : "No visits in this category"}
+            {t("tenant.noVisitsInCategory")}
           </h2>
           <p className="mt-2 text-xs text-muted-foreground max-w-sm mx-auto">
             {isBn
@@ -160,7 +161,7 @@ function TenantVisitsPage() {
               to="/properties"
               className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-5 text-xs font-semibold text-primary-foreground hover:scale-[1.02]"
             >
-              {isBn ? "প্রপার্টি ব্রাউজ করুন" : "Browse Properties"}
+              {t("tenant.exploreProperties")}
             </Link>
           </div>
         </div>
@@ -188,9 +189,9 @@ function TenantVisitsPage() {
                     </div>
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                       <MapPin className="h-3 w-3 text-primary shrink-0" aria-hidden="true" />
-                      <span>{visit.propertyArea}</span>
+                      <span>{translateArea(visit.propertyArea, i18n.language)}</span>
                       <span className="font-semibold text-foreground ml-2">
-                        ৳{visit.propertyRent.toLocaleString()}/মাস
+                        ৳{toBnNumber(visit.propertyRent.toLocaleString(), i18n.language)}/{t("properties.month")}
                       </span>
                     </p>
 
@@ -212,7 +213,7 @@ function TenantVisitsPage() {
                     {visit.note && (
                       <p className="mt-2 rounded-lg bg-secondary/40 p-2 text-[11px] text-muted-foreground">
                         <span className="font-semibold text-foreground">
-                          {isBn ? "মন্তব্য: " : "Note: "}
+                          {t("tenant.noteLabel")} 
                         </span>
                         {visit.note}
                       </p>
@@ -226,7 +227,7 @@ function TenantVisitsPage() {
                     params={{ propertyId: visit.propertyId }}
                     className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-border bg-surface px-3 text-xs font-semibold text-foreground hover:bg-secondary"
                   >
-                    <span>{isBn ? "বাসা দেখুন" : "View Property"}</span>
+                    <span>{t("tenant.viewProperty")}</span>
                     <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
                   </Link>
 
@@ -237,7 +238,7 @@ function TenantVisitsPage() {
                       className="inline-flex h-9 items-center gap-1 rounded-xl px-3 text-xs font-semibold text-destructive hover:bg-destructive/10 transition-colors"
                     >
                       <Ban className="h-3.5 w-3.5" aria-hidden="true" />
-                      <span>{isBn ? "অনুরোধ বাতিল" : "Cancel Request"}</span>
+                      <span>{t("tenant.cancelRequest")}</span>
                     </button>
                   )}
                 </div>

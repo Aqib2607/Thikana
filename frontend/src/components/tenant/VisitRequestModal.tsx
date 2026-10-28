@@ -23,7 +23,7 @@ export const VisitRequestModal: React.FC<VisitRequestModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
 
   // Tomorrow as default date (min date)
@@ -91,7 +91,7 @@ export const VisitRequestModal: React.FC<VisitRequestModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          aria-label={isBn ? "বন্ধ করুন" : "Close"}
+          aria-label={t("common.close")}
           className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
         >
           <X className="h-5 w-5" aria-hidden="true" />
@@ -103,7 +103,7 @@ export const VisitRequestModal: React.FC<VisitRequestModalProps> = ({
           </div>
           <div>
             <h2 id="visit-modal-title" className="text-base font-bold text-foreground">
-              {isBn ? "বাসা পরিদর্শনের সময় নির্ধারণ" : "Schedule Property Visit"}
+              {t("tenant.scheduleVisitTitle")}
             </h2>
             <p className="text-xs text-muted-foreground line-clamp-1">
               {property.title} • {property.area}
@@ -223,7 +223,7 @@ export const VisitRequestModal: React.FC<VisitRequestModalProps> = ({
                 onClick={onClose}
                 className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-secondary"
               >
-                {isBn ? "বাতিল" : "Cancel"}
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"

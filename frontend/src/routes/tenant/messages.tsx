@@ -20,7 +20,7 @@ export const Route = createFileRoute("/tenant/messages")({
 });
 
 function TenantMessagesPage() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
 
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
@@ -70,7 +70,7 @@ function TenantMessagesPage() {
   return (
     <RoleLayout
       requiredRole="tenant"
-      title={isBn ? "অভ্যন্তরীণ মেসেজিং (Messages)" : "Landlord Messaging"}
+      title={t("tenant.messagesTitle")}
       subtitle={
         isBn
           ? "যোগাযোগের আবেদন (Contact Request) অনুমোদিত হওয়ার পর বাড়িওয়ালার সাথে সরাসরি মেসেজিং সুবিধা।"
@@ -83,12 +83,10 @@ function TenantMessagesPage() {
         <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
         <div>
           <p className="font-semibold text-foreground">
-            {isBn ? "মেসেজিং ব্যবহারের নীতি ও নিরাপত্তা" : "Contact Request Interaction Gate"}
+            {t("tenant.messagingGateTitle")}
           </p>
           <p className="mt-0.5">
-            {isBn
-              ? "ঠিকানা প্ল্যাটফর্মে স্প্যাম ও মিথ্যা আলাপ বন্ধ করতে প্রথমে যোগাযোগের আবেদন পাঠাতে হয়। বাড়িওয়ালা আবেদন অনুমোদন করলে এই চ্যাট উইন্ডো স্বয়ংক্রিয়ভাবে সক্রিয় হবে।"
-              : "To prevent spam and protect landlord privacy, messaging is only unlocked after the landlord accepts your contact request."}
+            {t("tenant.messagingGateDesc")}
           </p>
         </div>
       </div>
@@ -98,12 +96,12 @@ function TenantMessagesPage() {
         <div className="lg:col-span-4 space-y-4">
           <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
             <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-              {isBn ? "চলমান কথোপকথন" : "Active Conversations"}
+              {t("tenant.activeConversations")}
             </h2>
 
             {conversations.length === 0 ? (
               <p className="text-xs text-muted-foreground py-4 text-center">
-                {isBn ? "এখনো কোনো কথোপকথন সক্রিয় হয়নি।" : "No active conversations yet."}
+                {t("tenant.noActiveConversations")}
               </p>
             ) : (
               <div className="space-y-2">
@@ -144,7 +142,7 @@ function TenantMessagesPage() {
           {/* Pending Contact Requests Widget */}
           <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
             <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-              {isBn ? "যোগাযোগের আবেদন স্ট্যাটাস" : "Contact Request Status"}
+              {t("tenant.contactRequestStatus")}
             </h2>
             <div className="space-y-2.5">
               {contactRequests.map((cr) => (
@@ -159,12 +157,12 @@ function TenantMessagesPage() {
                     {cr.status === "Accepted" ? (
                       <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
                         <CheckCircle className="h-3 w-3" aria-hidden="true" />
-                        <span>{isBn ? "অনুমোদিত" : "Accepted"}</span>
+                        <span>{t("tenant.statusAccepted")}</span>
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400">
                         <Clock className="h-3 w-3" aria-hidden="true" />
-                        <span>{isBn ? "বিবেচনাধীন" : "Pending"}</span>
+                        <span>{t("tenant.statusPending")}</span>
                       </span>
                     )}
                   </div>
@@ -186,7 +184,7 @@ function TenantMessagesPage() {
                     <User className="h-4 w-4 text-primary" aria-hidden="true" />
                     <span>{activeConv.landlordName}</span>
                     <span className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                      {isBn ? "বাড়িওয়ালা" : "Landlord"}
+                      {t("tenant.landlordRole")}
                     </span>
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
@@ -196,7 +194,7 @@ function TenantMessagesPage() {
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-semibold">
                   <CheckCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span>{isBn ? "মেসেজিং সক্রিয়" : "Unlocked"}</span>
+                  <span>{t("tenant.messagingUnlocked")}</span>
                 </div>
               </div>
 
@@ -255,7 +253,7 @@ function TenantMessagesPage() {
                   className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-xs font-semibold text-primary-foreground shadow-sm transition-transform hover:scale-[1.02] disabled:opacity-50"
                 >
                   <Send className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span>{isBn ? "পাঠান" : "Send"}</span>
+                  <span>{t("tenant.send")}</span>
                 </button>
               </form>
             </>
@@ -263,12 +261,10 @@ function TenantMessagesPage() {
             <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
               <Lock className="h-12 w-12 text-muted-foreground/40 mb-3" aria-hidden="true" />
               <h3 className="text-base font-bold text-foreground">
-                {isBn ? "কোনো চ্যাট নির্বাচিত হয়নি" : "No Conversation Selected"}
+                {t("tenant.noChatSelected")}
               </h3>
               <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                {isBn
-                  ? "বাম পাশের তালিকা থেকে কথোপকথন বেছে নিন অথবা প্রপার্টি পেজ থেকে যোগাযোগের আবেদন পাঠান।"
-                  : "Select an active thread from the left, or send a contact request from any listing details page."}
+                {t("tenant.selectChatPrompt")}
               </p>
             </div>
           )}

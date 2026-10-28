@@ -9,6 +9,7 @@ import type { PropertyReviewItem } from "@/lib/api/tenant";
 import type { Property } from "@/lib/api/properties";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Star, CheckCircle2, Building2, Calendar } from "lucide-react";
+import { toBnNumber } from "@/lib/i18n";
 
 export function TenantReviewsPage() {
   const { t, i18n } = useTranslation();
@@ -54,7 +55,7 @@ export function TenantReviewsPage() {
     <RoleLayout
       requiredRole="tenant"
       activeTab="reviews"
-      title={t("dashboard.myReviews", "My Reviews")}
+      title={t("dashboard.myReviews")}
       subtitle={t(
         "tenant.reviewsSubtitle",
         "Manage your submitted property ratings and verified experiences",
@@ -67,19 +68,16 @@ export function TenantReviewsPage() {
       ) : reviews.length === 0 ? (
         <EmptyState
           icon={Star}
-          title={t("tenant.noReviewsTitle", "No reviews submitted yet")}
-          description={t(
-            "tenant.noReviewsDesc",
-            "After completing a property visit, share your honest feedback with the Khulna student community.",
-          )}
-          actionLabel={t("tenant.exploreProperties", "Explore Properties")}
+          title={t("tenant.noReviewsTitle")}
+          description={t("tenant.noReviewsDesc")}
+          actionLabel={t("tenant.exploreProperties")}
           actionHref="/properties"
         />
       ) : (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {t("tenant.reviewsCount", "Showing {{count}} reviews", { count: reviews.length })}
+              {t("tenant.reviewsCount", { count: toBnNumber(reviews.length, i18n.language) })}
             </p>
           </div>
 
@@ -111,7 +109,7 @@ export function TenantReviewsPage() {
                       {rev.visitedVerified && (
                         <span className="inline-flex items-center gap-1 shrink-0 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                           <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
-                          <span>{t("properties.visitedBadge", "Visited / পরিদর্শিত")}</span>
+                          <span>{t("properties.visitedBadge")}</span>
                         </span>
                       )}
                     </div>
@@ -145,25 +143,25 @@ export function TenantReviewsPage() {
                     <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-muted-foreground border-t border-border pt-3">
                       <div>
                         <span className="font-medium text-foreground">
-                          {t("tenant.accuracyRating", "Accuracy")}:
+                          {t("tenant.accuracyRating")}:
                         </span>{" "}
                         {rev.accuracyRating}/5
                       </div>
                       <div>
                         <span className="font-medium text-foreground">
-                          {t("tenant.landlordRating", "Landlord")}:
+                          {t("tenant.landlordRating")}:
                         </span>{" "}
                         {rev.landlordBehaviorRating}/5
                       </div>
                       <div>
                         <span className="font-medium text-foreground">
-                          {t("tenant.locationRating", "Location")}:
+                          {t("tenant.locationRating")}:
                         </span>{" "}
                         {rev.locationRating}/5
                       </div>
                       <div>
                         <span className="font-medium text-foreground">
-                          {t("tenant.experienceRating", "Experience")}:
+                          {t("tenant.experienceRating")}:
                         </span>{" "}
                         {rev.overallExperienceRating}/5
                       </div>
@@ -185,7 +183,7 @@ export function TenantReviewsPage() {
                       params={{ propertyId: rev.propertyId }}
                       className="text-xs font-medium text-primary hover:underline"
                     >
-                      {t("tenant.viewPropertyListing", "View Property")} &rarr;
+                      {t("tenant.viewPropertyListing")} &rarr;
                     </Link>
                   </div>
                 </div>

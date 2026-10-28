@@ -21,7 +21,7 @@ export const Route = createFileRoute("/tenant/comparison")({
 });
 
 function TenantComparisonPage() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
   const [comparedProperties, setComparedProperties] = useState<PropertyItem[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -53,12 +53,8 @@ function TenantComparisonPage() {
   return (
     <RoleLayout
       requiredRole="tenant"
-      title={isBn ? "প্রপার্টি তুলনা (Comparison)" : "Property Comparison"}
-      subtitle={
-        isBn
-          ? "সর্বোচ্চ ৩টি প্রপার্টির ভাড়া, জামানত, ইউটিলিটি ও সুযোগ-সুবিধা পাশাপাশি তুলনা করুন।"
-          : "Inspect up to 3 properties side-by-side across 14 detailed parameters."
-      }
+      title={t("tenant.comparisonTitle")}
+      subtitle={t("tenant.comparisonMaxNotice")}
       activeTab="comparison"
     >
       {errorMessage && (

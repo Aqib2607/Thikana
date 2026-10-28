@@ -5,6 +5,7 @@ import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
 import { mockTenantApi } from "@/lib/api/mock";
 import type { TenantPreferencesData } from "@/lib/api/tenant";
+import { translateArea, translatePropertyType, toBnNumber } from "@/lib/i18n";
 import {
   Search,
   Sliders,
@@ -50,22 +51,22 @@ function TenantDashboard() {
 
   const stats = [
     {
-      label: isBn ? "সংরক্ষিত বাসা" : "Saved Listings",
+      label: t("tenant.savedProperties"),
       value: favoritesCount,
       href: "/tenant/favorites",
     },
     {
-      label: isBn ? "তুলনায় নির্বাচিত" : "Comparing (Max 3)",
+      label: t("tenant.comparingProperties"),
       value: `${comparisonCount}/3`,
       href: "/tenant/comparison",
     },
     {
-      label: isBn ? "নির্ধারিত পরিদর্শন" : "Scheduled Visits",
+      label: t("tenant.visitRequests"),
       value: visitsCount,
       href: "/tenant/visits",
     },
     {
-      label: isBn ? "বার্তা কথোপকথন" : "Conversations",
+      label: t("tenant.activeChats"),
       value: convCount,
       href: "/tenant/messages",
     },
@@ -171,32 +172,32 @@ function TenantDashboard() {
             <div className="flex items-center gap-2">
               <Sliders className="h-4 w-4 text-primary" aria-hidden="true" />
               <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
-                {isBn ? "আপনার বর্তমান সক্রিয় পছন্দসমূহ" : "Active Matching Criteria"}
+                {t("tenant.savedPreferences")}
               </h2>
             </div>
             <Link
               to="/tenant/preferences"
               className="text-xs font-semibold text-primary hover:underline"
             >
-              {isBn ? "পরিবর্তন করুন" : "Edit"}
+              {t("tenant.edit")}
             </Link>
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-xs">
             <span className="rounded-lg bg-surface border border-border px-2.5 py-1 text-foreground">
-              {isBn ? "পছন্দের এলাকা: " : "Area: "}
-              <strong>{prefs.preferredArea || (isBn ? "যেকোনো" : "Any")}</strong>
+              {t("tenant.areaLabel")} 
+              <strong>{prefs.preferredArea ? translateArea(prefs.preferredArea, i18n.language) : t("tenant.any")}</strong>
             </span>
             <span className="rounded-lg bg-surface border border-border px-2.5 py-1 text-foreground">
-              {isBn ? "বাজেট: " : "Budget: "}
-              <strong>৳{(prefs.maxBudget || 10000).toLocaleString()}</strong>
+              {t("tenant.budgetLabel")} 
+              <strong>৳{toBnNumber((prefs.maxBudget || 10000).toLocaleString(), i18n.language)}</strong>
             </span>
             <span className="rounded-lg bg-surface border border-border px-2.5 py-1 text-foreground">
-              {isBn ? "ধরন: " : "Type: "}
-              <strong>{prefs.preferredPropertyType || (isBn ? "যেকোনো" : "Any")}</strong>
+              {t("tenant.typeLabel")} 
+              <strong>{prefs.preferredPropertyType ? translatePropertyType(prefs.preferredPropertyType, i18n.language) : t("tenant.any")}</strong>
             </span>
             <span className="rounded-lg bg-surface border border-border px-2.5 py-1 text-foreground">
-              {isBn ? "রুম: " : "Min Rooms: "}
-              <strong>{prefs.minRooms || 1}</strong>
+              {t("tenant.roomsLabel")} 
+              <strong>{toBnNumber(prefs.minRooms || 1, i18n.language)}</strong>
             </span>
           </div>
         </div>

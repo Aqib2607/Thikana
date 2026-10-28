@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import type { PropertyItem } from "@/lib/api/properties";
 import { X, Plus, ShieldCheck, Check, Building, MapPin, ExternalLink } from "lucide-react";
+import { translatePropertyType, translateFurnished, translateAvailability, translateArea, translateBill, translateVerification, toBnNumber } from "@/lib/i18n";
 
 interface ComparisonTableProps {
   properties: PropertyItem[];
@@ -11,7 +12,7 @@ interface ComparisonTableProps {
 }
 
 export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, onRemove }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
 
   if (properties.length === 0) {
@@ -19,21 +20,17 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
       <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
         <Building className="mx-auto h-12 w-12 text-muted-foreground/60" aria-hidden="true" />
         <h3 className="mt-4 text-lg font-bold text-foreground">
-          {isBn
-            ? "তুলনার জন্য কোনো প্রপার্টি নির্বাচন করা হয়নি"
-            : "No properties selected for comparison"}
+          {t("tenant.comparisonEmptyTitle")}
         </h3>
         <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
-          {isBn
-            ? "বাসা খোঁজার পেজ থেকে যেকোনো প্রপার্টির 'তুলনা' বাটনে ক্লিক করে সর্বোচ্চ ৩টি প্রপার্টি পাশাপাশি তুলনা করুন।"
-            : "Browse properties and click 'Compare' to inspect up to 3 listings side-by-side across rent, amenities, and location."}
+          {t("tenant.comparisonEmptyDesc")}
         </p>
         <div className="mt-6">
           <Link
             to="/properties"
             className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-5 text-xs font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
           >
-            {isBn ? "প্রপার্টি খুঁজুন" : "Browse Properties"}
+            {t("tenant.exploreProperties")}
           </Link>
         </div>
       </div>
@@ -44,28 +41,28 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
   const fields = [
     {
       id: "rent",
-      label: isBn ? "মাসিক ভাড়া" : "Monthly Rent",
+      label: t("tenant.fieldRent"),
       render: (p: PropertyItem) => (
         <span className="text-base font-bold text-primary">
-          ৳{p.rent.toLocaleString()}{" "}
+          ৳{toBnNumber(p.rent.toLocaleString(), i18n.language)}{" "}
           <span className="text-xs font-normal text-muted-foreground">
-            {isBn ? "/মাস" : "/month"}
+            /{t("properties.month")}
           </span>
         </span>
       ),
     },
     {
       id: "advance",
-      label: isBn ? "অগ্রিম জামানত" : "Advance Deposit",
+      label: t("tenant.fieldAdvance"),
       render: (p: PropertyItem) => (
         <span className="font-semibold text-foreground">
-          {p.advance ? `৳${p.advance.toLocaleString()}` : isBn ? "আলোচনা সাপেক্ষে" : "Negotiable"}
+          {p.advance ? `৳${toBnNumber(p.advance.toLocaleString(), i18n.language)}` : t("tenant.fieldNegotiable")}
         </span>
       ),
     },
     {
       id: "additional_charges",
-      label: isBn ? "সার্ভিস ও ইউটিলিটি" : "Additional Charges",
+      label: t("tenant.fieldService"),
       render: (p: PropertyItem) => (
         <div className="text-xs text-muted-foreground space-y-0.5">
           {p.additionalCharges ? (
@@ -75,7 +72,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
                 : `Service/Utility: ৳${p.additionalCharges}`}
             </p>
           ) : (
-            <p>{isBn ? "চার্জ অন্তর্ভুক্ত" : "Charges included"}</p>
+            <p>{t("tenant.fieldChargesIncluded")}</p>
           )}
           {p.billsIncluded && p.billsIncluded.length > 0 && (
             <p className="text-[11px] text-muted-foreground/80">
@@ -89,46 +86,46 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
     },
     {
       id: "type",
-      label: isBn ? "প্রপার্টির ধরন" : "Property Type",
+      label: t("tenant.fieldType"),
       render: (p: PropertyItem) => (
         <span className="inline-flex items-center rounded-md bg-secondary px-2.5 py-1 text-xs font-medium text-foreground">
-          {p.propertyType}
+          {translatePropertyType(p.propertyType, i18n.language)}
         </span>
       ),
     },
     {
       id: "rooms",
-      label: isBn ? "বেডরুম" : "Bedrooms",
+      label: t("tenant.fieldBedrooms"),
       render: (p: PropertyItem) => (
         <span className="font-semibold text-foreground">
-          {p.rooms} {isBn ? "টি" : "Beds"}
+          {toBnNumber(p.rooms, i18n.language)} {t("tenant.unitBeds")}
         </span>
       ),
     },
     {
       id: "bathrooms",
-      label: isBn ? "বাথরুম" : "Bathrooms",
+      label: t("tenant.fieldBathrooms"),
       render: (p: PropertyItem) => (
         <span className="font-semibold text-foreground">
-          {p.bathrooms} {isBn ? "টি" : "Baths"}
+          {toBnNumber(p.bathrooms, i18n.language)} {t("tenant.unitBaths")}
         </span>
       ),
     },
     {
       id: "size",
-      label: isBn ? "আয়তন (বর্গফুট)" : "Size (Sq Ft)",
+      label: t("tenant.fieldSize"),
       render: (p: PropertyItem) => (
         <span className="font-semibold text-foreground">
-          {p.size} {isBn ? "বর্গফুট" : "sq ft"}
+          {toBnNumber(p.size, i18n.language)} {t("tenant.unitSqft")}
         </span>
       ),
     },
     {
       id: "floor",
-      label: isBn ? "ফ্লোর নম্বর" : "Floor Level",
+      label: t("tenant.fieldFloor"),
       render: (p: PropertyItem) => (
         <span className="text-xs text-muted-foreground">
-          {p.floor}{" "}
+          {toBnNumber(p.floor, i18n.language)}{" "}
           {p.totalFloors
             ? isBn
               ? `(মোট ${p.totalFloors} তলা)`
@@ -139,14 +136,14 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
     },
     {
       id: "furnished",
-      label: isBn ? "আসবাবপত্র (Furnished)" : "Furnished Status",
+      label: t("tenant.fieldFurnished"),
       render: (p: PropertyItem) => (
-        <span className="text-xs font-medium text-foreground">{p.furnishedStatus}</span>
+        <span className="text-xs font-medium text-foreground">{translateFurnished(p.furnishedStatus, i18n.language)}</span>
       ),
     },
     {
       id: "amenities",
-      label: isBn ? "সুযোগ-সুবিধাসমূহ" : "Key Amenities",
+      label: t("tenant.fieldAmenities"),
       render: (p: PropertyItem) => (
         <div className="flex flex-wrap gap-1">
           {(p.amenities || []).slice(0, 5).map((a) => (
@@ -168,7 +165,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
     },
     {
       id: "availability",
-      label: isBn ? "প্রাপ্যতা" : "Availability",
+      label: t("tenant.fieldAvailability"),
       render: (p: PropertyItem) => {
         const isAvail = p.availability === "Available";
         return (
@@ -179,14 +176,14 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
                 : "bg-amber-500/10 text-amber-700 dark:text-amber-400"
             }`}
           >
-            {p.availability}
+            {translateAvailability(p.availability, i18n.language)}
           </span>
         );
       },
     },
     {
       id: "verification",
-      label: isBn ? "যাচাইকরণ স্ট্যাটাস" : "Verification Status",
+      label: t("tenant.fieldVerification"),
       render: (p: PropertyItem) => (
         <div className="space-y-1">
           <div className="flex flex-wrap gap-1">
@@ -210,12 +207,12 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
     },
     {
       id: "location",
-      label: isBn ? "অবস্থান ও ঠিকানা" : "Location & Address",
+      label: t("tenant.fieldLocation"),
       render: (p: PropertyItem) => (
         <div className="text-xs space-y-1">
           <p className="font-semibold text-foreground flex items-center gap-1">
             <MapPin className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden="true" />
-            <span>{p.area}</span>
+            <span>{translateArea(p.area, i18n.language)}</span>
           </p>
           <p className="text-[11px] text-muted-foreground line-clamp-2">{p.exactAddress}</p>
         </div>
@@ -223,7 +220,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
     },
     {
       id: "matching",
-      label: isBn ? "ম্যাচিং স্কোর" : "Match Score",
+      label: t("tenant.fieldMatch"),
       render: () => {
         const score = 88;
         return (
@@ -231,7 +228,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
             <div className="flex items-center justify-between text-xs">
               <span className="font-bold text-foreground">{score}%</span>
               <span className="text-[10px] text-muted-foreground">
-                {isBn ? "৬টি মানদণ্ড" : "6 weights"}
+                {t("tenant.fieldWeights")}
               </span>
             </div>
             <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
@@ -269,7 +266,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
             className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm hover:bg-secondary"
           >
             <Plus className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-            <span>{isBn ? "আরেকটি যোগ করুন" : "Add Another"}</span>
+            <span>{t("tenant.addAnother")}</span>
           </Link>
         )}
       </div>
@@ -278,7 +275,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
       <div className="overflow-x-auto w-full">
         <table
           className="w-full min-w-[720px] border-collapse text-left text-xs"
-          aria-label={isBn ? "প্রপার্টি তুলনা টেবিল" : "Property comparison matrix"}
+          aria-label={t("tenant.comparisonMatrixAria")}
         >
           <caption className="sr-only">
             {isBn
@@ -291,7 +288,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
                 scope="col"
                 className="w-48 p-4 font-semibold text-muted-foreground border-r border-border sticky left-0 bg-surface z-10"
               >
-                {isBn ? "বৈশিষ্ট্য / মানদণ্ড" : "Specification Field"}
+                {t("tenant.specField")}
               </th>
               {properties.map((property) => (
                 <th
@@ -303,7 +300,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
                     <button
                       type="button"
                       onClick={() => onRemove(property.id)}
-                      aria-label={`${isBn ? "তুলনা থেকে সরান" : "Remove"} ${property.title}`}
+                      aria-label={t("tenant.removeFromComparison", { title: isBn && property.banglaTitle ? property.banglaTitle : property.title })}
                       className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-secondary hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-colors"
                     >
                       <X className="h-3.5 w-3.5" aria-hidden="true" />
@@ -325,7 +322,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
                         params={{ propertyId: property.id }}
                         className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline"
                       >
-                        <span>{isBn ? "বিস্তারিত দেখুন" : "View Details"}</span>
+                        <span>{t("properties.viewDetails")}</span>
                         <ExternalLink className="h-3 w-3" aria-hidden="true" />
                       </Link>
                     </div>
@@ -345,13 +342,13 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
                       aria-hidden="true"
                     />
                     <p className="text-xs font-medium text-muted-foreground mb-3">
-                      {isBn ? "খালি স্লট" : "Empty Slot"}
+                      {t("tenant.emptySlot")}
                     </p>
                     <Link
                       to="/properties"
                       className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-surface px-3 text-[11px] font-semibold text-foreground hover:bg-secondary"
                     >
-                      {isBn ? "প্রপার্টি বেছে নিন" : "Select Listing"}
+                      {t("tenant.selectListing")}
                     </Link>
                   </div>
                 </th>

@@ -18,7 +18,7 @@ export const ReportPropertyModal: React.FC<ReportPropertyModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
 
   const [reason, setReason] = useState<ReportReason>("Incorrect information");
@@ -83,7 +83,7 @@ export const ReportPropertyModal: React.FC<ReportPropertyModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          aria-label={isBn ? "বন্ধ করুন" : "Close"}
+          aria-label={t("common.close")}
           className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
         >
           <X className="h-5 w-5" aria-hidden="true" />
@@ -95,7 +95,7 @@ export const ReportPropertyModal: React.FC<ReportPropertyModalProps> = ({
           </div>
           <div>
             <h2 id="report-modal-title" className="text-base font-bold text-foreground">
-              {isBn ? "প্রপার্টি রিপোর্ট করুন" : "Report Property Listing"}
+              {t("tenant.reportPropertyTitle")}
             </h2>
             <p className="text-xs text-muted-foreground line-clamp-1">{property.title}</p>
           </div>
@@ -108,7 +108,7 @@ export const ReportPropertyModal: React.FC<ReportPropertyModalProps> = ({
               aria-hidden="true"
             />
             <h3 className="text-base font-bold text-foreground">
-              {isBn ? "রিপোর্ট জমা দেওয়া হয়েছে" : "Report Received"}
+              {t("tenant.reportSubmittedSuccess")}
             </h3>
             <p className="text-xs text-muted-foreground">
               {isBn
@@ -128,7 +128,7 @@ export const ReportPropertyModal: React.FC<ReportPropertyModalProps> = ({
             {/* Predefined Reasons */}
             <div className="space-y-1.5">
               <label htmlFor="report-reason" className="text-xs font-semibold text-foreground">
-                {isBn ? "রিপোর্টের কারণ নির্বাচন করুন" : "Select Report Reason"}
+                {t("tenant.reportReasonLabel")}
               </label>
               <select
                 id="report-reason"
@@ -147,7 +147,7 @@ export const ReportPropertyModal: React.FC<ReportPropertyModalProps> = ({
             {/* Explanation / Details */}
             <div className="space-y-1.5">
               <label htmlFor="report-details" className="text-xs font-semibold text-foreground">
-                {isBn ? "বিস্তারিত বিবরণ" : "Additional Details"}
+                {t("tenant.reportDetailsLabel")}
               </label>
               <textarea
                 id="report-details"
@@ -155,11 +155,7 @@ export const ReportPropertyModal: React.FC<ReportPropertyModalProps> = ({
                 required
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
-                placeholder={
-                  isBn
-                    ? "কেন মনে করছেন লিস্টিংটি সঠিক নয় বা কী সমস্যা লক্ষ্য করেছেন তা লিখুন..."
-                    : "Please explain what is wrong with this listing (e.g. rent stated differs from actual, already rented)..."
-                }
+                placeholder={t("tenant.reportDetailsPlaceholder")}
                 className="w-full rounded-xl border border-border bg-surface p-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -179,7 +175,7 @@ export const ReportPropertyModal: React.FC<ReportPropertyModalProps> = ({
                 onClick={onClose}
                 className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-secondary"
               >
-                {isBn ? "বাতিল" : "Cancel"}
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
@@ -188,12 +184,8 @@ export const ReportPropertyModal: React.FC<ReportPropertyModalProps> = ({
               >
                 <span>
                   {isSubmitting
-                    ? isBn
-                      ? "পাঠানো হচ্ছে..."
-                      : "Submitting..."
-                    : isBn
-                      ? "রিপোর্ট জমা দিন"
-                      : "Submit Report"}
+                    ? t("tenant.submitting")
+                    : t("tenant.submitReport")}
                 </span>
               </button>
             </div>

@@ -6,6 +6,7 @@ import { PreferencesSchema, type TenantPreferencesData } from "@/lib/api/tenant"
 import { PROPERTY_TYPES } from "@/lib/api/properties";
 import { mockTenantApi, KHULNA_AREAS } from "@/lib/api/mock";
 import { Sliders, CheckCircle, ShieldAlert, Info, Save, Check } from "lucide-react";
+import { translateArea, translatePropertyType, translateFurnished, translateAmenity, toBnNumber } from "@/lib/i18n";
 
 const AVAILABLE_AMENITIES = [
   "High-Speed WiFi",
@@ -27,7 +28,7 @@ interface PreferencesFormProps {
 }
 
 export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,7 +85,7 @@ export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => 
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-6"
       noValidate
-      aria-label={isBn ? "ভাড়া পছন্দের ফর্ম" : "Rental preferences form"}
+      aria-label={t("tenant.preferencesTitle")}
     >
       {/* Matching Weights Explanatory Card */}
       <div className="rounded-2xl border border-border bg-secondary/30 p-5">
@@ -106,27 +107,27 @@ export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => 
           <div className="rounded-xl border border-border bg-surface p-2.5">
             <span className="block font-bold text-foreground">৩০%</span>
             <span className="text-[11px] text-muted-foreground">
-              {isBn ? "লোকেশন" : "Location"}
+              {t("tenant.progressLocation")}
             </span>
           </div>
           <div className="rounded-xl border border-border bg-surface p-2.5">
             <span className="block font-bold text-foreground">২৫%</span>
-            <span className="text-[11px] text-muted-foreground">{isBn ? "বাজেট" : "Budget"}</span>
+            <span className="text-[11px] text-muted-foreground">{t("tenant.progressBudget")}</span>
           </div>
           <div className="rounded-xl border border-border bg-surface p-2.5">
             <span className="block font-bold text-foreground">১৫%</span>
-            <span className="text-[11px] text-muted-foreground">{isBn ? "ধরন" : "Type"}</span>
+            <span className="text-[11px] text-muted-foreground">{t("tenant.progressType")}</span>
           </div>
           <div className="rounded-xl border border-border bg-surface p-2.5">
             <span className="block font-bold text-foreground">১০%</span>
             <span className="text-[11px] text-muted-foreground">
-              {isBn ? "রুম/বাথ" : "Rooms/Baths"}
+              {t("tenant.progressRooms")}
             </span>
           </div>
           <div className="rounded-xl border border-border bg-surface p-2.5">
             <span className="block font-bold text-foreground">১৫%</span>
             <span className="text-[11px] text-muted-foreground">
-              {isBn ? "সুযোগ-সুবিধা" : "Amenities"}
+              {t("tenant.progressAmenities")}
             </span>
           </div>
           <div className="rounded-xl border border-border bg-surface p-2.5">
@@ -145,9 +146,7 @@ export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => 
         >
           <CheckCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
           <span>
-            {isBn
-              ? "আপনার পছন্দসমূহ সফলভাবে সেভ হয়েছে! সকল প্রপার্টির ম্যাচিং শতাংশ আপডেট করা হয়েছে।"
-              : "Preferences saved successfully! Match percentages across all listings updated."}
+            {t("tenant.preferencesSavedSuccess")}
           </span>
         </div>
       )}
@@ -156,17 +155,17 @@ export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => 
         {/* Preferred Area */}
         <div className="space-y-1.5">
           <label htmlFor="pref-area" className="text-xs font-semibold text-foreground">
-            {isBn ? "পছন্দের এলাকা (খুলনা)" : "Preferred Area (Khulna)"}
+            {t("tenant.preferredArea")}
           </label>
           <select
             id="pref-area"
             {...register("preferredArea")}
             className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-xs text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           >
-            <option value="">{isBn ? "যেকোনো এলাকা" : "Any Area"}</option>
+            <option value="">{t("tenant.anyArea")}</option>
             {KHULNA_AREAS.map((area) => (
               <option key={area} value={area}>
-                {area}
+                {translateArea(area, i18n.language)}
               </option>
             ))}
           </select>
@@ -178,17 +177,17 @@ export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => 
         {/* Preferred Property Type */}
         <div className="space-y-1.5">
           <label htmlFor="pref-type" className="text-xs font-semibold text-foreground">
-            {isBn ? "প্রপার্টির ধরন" : "Preferred Property Type"}
+            {t("tenant.preferredType")}
           </label>
           <select
             id="pref-type"
             {...register("preferredPropertyType")}
             className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-xs text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           >
-            <option value="">{isBn ? "যেকোনো ধরন" : "Any Type"}</option>
+            <option value="">{t("tenant.anyType")}</option>
             {PROPERTY_TYPES.map((t) => (
               <option key={t} value={t}>
-                {t}
+                {translatePropertyType(t, i18n.language)}
               </option>
             ))}
           </select>
@@ -201,10 +200,10 @@ export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => 
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
             <label htmlFor="pref-budget" className="text-xs font-semibold text-foreground">
-              {isBn ? "সর্বোচ্চ বাজেট (টাকা/মাস)" : "Maximum Budget (BDT/month)"}
+              {t("tenant.maxBudget")}
             </label>
             <span className="text-xs font-bold text-primary">
-              ৳{Number(currentBudget).toLocaleString()}
+              ৳{toBnNumber(Number(currentBudget).toLocaleString(), i18n.language)}
             </span>
           </div>
           <input
@@ -224,17 +223,17 @@ export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => 
         {/* Minimum Rooms */}
         <div className="space-y-1.5">
           <label htmlFor="pref-rooms" className="text-xs font-semibold text-foreground">
-            {isBn ? "নূন্যতম বেডরুম সংখ্যা" : "Minimum Rooms Required"}
+            {t("tenant.minBedrooms")}
           </label>
           <select
             id="pref-rooms"
             {...register("minRooms", { valueAsNumber: true })}
             className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-xs text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           >
-            <option value={1}>{isBn ? "১টি রুম" : "1 Bedroom"}</option>
-            <option value={2}>{isBn ? "২টি রুম" : "2 Bedrooms"}</option>
-            <option value={3}>{isBn ? "৩টি রুম" : "3 Bedrooms"}</option>
-            <option value={4}>{isBn ? "৪ বা ততোধিক রুম" : "4+ Bedrooms"}</option>
+            <option value={1}>{toBnNumber(1, i18n.language)} {t("properties.bedrooms")}</option>
+            <option value={2}>{toBnNumber(2, i18n.language)} {t("properties.bedrooms")}</option>
+            <option value={3}>{toBnNumber(3, i18n.language)} {t("properties.bedrooms")}</option>
+            <option value={4}>{toBnNumber(4, i18n.language)}+ {t("properties.bedrooms")}</option>
           </select>
           {errors.minRooms && (
             <p className="text-[11px] text-destructive">{errors.minRooms.message}</p>
@@ -244,7 +243,7 @@ export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => 
         {/* Preferred Furnished Status */}
         <div className="space-y-1.5 sm:col-span-2">
           <label htmlFor="pref-furnished" className="text-xs font-semibold text-foreground">
-            {isBn ? "আসবাবপত্র অবস্থা (Furnished Status)" : "Furnished Preference"}
+            {t("properties.furnishedStatus")}
           </label>
           <select
             id="pref-furnished"
@@ -253,7 +252,7 @@ export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => 
           >
             {FURNISHED_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
-                {opt}
+                {translateFurnished(opt, i18n.language)}
               </option>
             ))}
           </select>
@@ -263,7 +262,7 @@ export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => 
       {/* Required Amenities Checkboxes */}
       <div className="space-y-2">
         <label className="text-xs font-semibold text-foreground">
-          {isBn ? "জরুরি সুযোগ-সুবিধাসমূহ (১৫% ওজনের মানদণ্ড)" : "Essential Amenities (15% Weight)"}
+          {t("tenant.requiredAmenities")}
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {AVAILABLE_AMENITIES.map((amenity) => {
@@ -288,7 +287,7 @@ export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => 
                 >
                   {isChecked && <Check className="h-3 w-3 stroke-[3]" aria-hidden="true" />}
                 </div>
-                <span className="truncate">{amenity}</span>
+                <span className="truncate">{translateAmenity(amenity, i18n.language)}</span>
               </button>
             );
           })}
@@ -304,12 +303,8 @@ export const PreferencesForm: React.FC<PreferencesFormProps> = ({ onSaved }) => 
           <Save className="h-4 w-4" aria-hidden="true" />
           <span>
             {isSubmitting
-              ? isBn
-                ? "সংরক্ষণ হচ্ছে..."
-                : "Saving..."
-              : isBn
-                ? "পছন্দসমূহ সংরক্ষণ করুন"
-                : "Save Preferences"}
+              ? t("tenant.saving")
+              : t("tenant.savePreferences")}
           </span>
         </button>
       </div>

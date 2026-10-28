@@ -17,13 +17,13 @@ export const Route = createFileRoute("/tenant/preferences")({
 });
 
 function TenantPreferencesPage() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
 
   return (
     <RoleLayout
       requiredRole="tenant"
-      title={isBn ? "ভাড়া পছন্দসমূহ (Rental Preferences)" : "My Rental Preferences"}
+      title={t("tenant.preferencesTitle")}
       subtitle={
         isBn
           ? "আপনার বাজেট, এলাকা ও প্রয়োজনীয় সুবিধার ভিত্তিতে প্রতিটি প্রপার্টির জন্য নির্ভুল ম্যাচিং স্কোর তৈরি হয়।"
