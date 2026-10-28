@@ -20,7 +20,7 @@ export function ErrorState({ title, message, onRetry, className = "" }: ErrorSta
         <AlertCircle className="h-7 w-7" aria-hidden="true" />
       </div>
       <h3 className="mt-4 text-base font-semibold text-foreground">
-        {title || t("common.errorTitle", "Something went wrong")}
+        {title || t("common.errorTitle")}
       </h3>
       {message && <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">{message}</p>}
       {onRetry && (
@@ -31,7 +31,7 @@ export function ErrorState({ title, message, onRetry, className = "" }: ErrorSta
             className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-surface border border-border px-4 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-secondary focus-visible:outline-2 focus-visible:outline-ring"
           >
             <RefreshCw className="h-4 w-4" aria-hidden="true" />
-            <span>{t("common.retry", "Try Again")}</span>
+            <span>{t("common.retry")}</span>
           </button>
         </div>
       )}

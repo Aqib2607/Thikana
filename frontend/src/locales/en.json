@@ -1,13 +1,25 @@
 {
-  "brand": { "tagline": "Find your next address, verified" },
+  "brand": {
+    "tagline": "Find your next address, verified"
+  },
   "nav": {
     "properties": "Find a home",
     "howItWorks": "How it works",
     "login": "Log in",
     "register": "Register",
-    "skip": "Skip to main content"
+    "skip": "Skip to main content",
+    "apartments": "Flats & Apartments",
+    "bachelor": "Bachelor & Mess",
+    "why": "Why Thikana",
+    "contact": "Contact",
+    "listHome": "List Your Home",
+    "toggleMenu": "Toggle navigation menu"
   },
-  "lang": { "label": "Language", "bn": "বাংলা", "en": "English" },
+  "lang": {
+    "label": "Language",
+    "bn": "বাংলা",
+    "en": "English"
+  },
   "home": {
     "eyebrow": "Launching first in Khulna",
     "title": "Trusted rental homes for students and families",
@@ -31,7 +43,10 @@
     "room": "Room",
     "sublet": "Sublet",
     "hostel": "Hostel",
-    "mess": "Mess"
+    "mess": "Mess",
+    "apartment_flat": "Apartment / Flat",
+    "bachelor_room": "Bachelor Room",
+    "commercial": "Offices & Commercial"
   },
   "roles": {
     "tenant": "Tenant",
@@ -148,6 +163,28 @@
     "visitedBadge": "Visited / পরিদর্শিত"
   },
   "footer": {
+    "inquiry": "Have questions or listing a property in Khulna?",
+    "tagline": "Khulna's premier rental discovery & property management network. Connecting students, bachelors, and families with verified residences across the city.",
+    "brandBio": "Khulna's premier rental solution. A trusted rental platform for students and families in Zero Point, Sonadanga, Boyra, and Daulatpur.",
+    "verifiedHosts": "100% Verified Landlords",
+    "colCategories": "Property Types",
+    "colLocations": "Khulna Hubs",
+    "colSupport": "Contact & Hub",
+    "aptFamily": "Family Apartments",
+    "roomBachelor": "Bachelor Single Rooms",
+    "hostelStudent": "Student Mess & Hostels",
+    "subletRoom": "Sublet Rooms",
+    "commercialSpace": "Offices & Commercial",
+    "locZeroPoint": "Zero Point & KUET Area",
+    "locSonadanga": "Sonadanga Residential R/A",
+    "locBoyra": "Boyra & Medical College",
+    "locGollamari": "Gollamari & Khulna University",
+    "locKhalishpur": "Khalishpur & Daulatpur",
+    "addressText": "KDA Avenue, Sonadanga, Khulna",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "backToTop": "Back to Top",
+    "rights": "All rights reserved.",
     "note": "Academic demonstration project. Verification badges are platform-level, not government."
   },
   "tenant": {
@@ -226,6 +263,97 @@
   },
   "common": {
     "errorTitle": "Something went wrong",
-    "retry": "Try Again"
+    "retry": "Try Again",
+    "previous": "Previous",
+    "next": "Next",
+    "morePages": "More pages",
+    "previousPage": "Go to previous page",
+    "nextPage": "Go to next page",
+    "more": "More",
+    "breadcrumb": "Breadcrumb",
+    "close": "Close",
+    "pageNotFound": "Page not found",
+    "pageNotFoundDesc": "The page you're looking for doesn't exist or has been moved.",
+    "goHome": "Go home",
+    "pageLoadError": "This page didn't load",
+    "pageLoadErrorDesc": "Something went wrong on our end. You can try refreshing or head back home.",
+    "portalNav": "Role Portal Navigation",
+    "pagination": "Pagination"
+  },
+  "rentalTypes": {
+    "monthly_rental": "Monthly Rental",
+    "sublet": "Sublet",
+    "family_only": "Family Only",
+    "male_students_only": "Male Students Only",
+    "female_students_only": "Female Students Only",
+    "students_only": "Students Only",
+    "any": "Any",
+    "job_holders": "Job Holders"
+  },
+  "availability": {
+    "available": "Available",
+    "reserved": "Reserved",
+    "rented": "Rented",
+    "temporarily_unavailable": "Temporarily Unavailable"
+  },
+  "amenities": {
+    "high_speed_wifi": "High-Speed Wi-Fi",
+    "generator_ips_backup": "Generator / IPS Backup",
+    "24_7_deep_tube_well_water": "24/7 Deep Tube-well Water",
+    "security_guard": "Security Guard",
+    "cctv_surveillance": "CCTV Surveillance",
+    "attached_bathroom": "Attached Bathroom",
+    "private_balcony": "Private Balcony",
+    "dining_space": "Dining Space",
+    "refrigerator": "Refrigerator Access",
+    "daily_meal_mess_system": "Daily Meal / Mess System",
+    "rooftop_access": "Rooftop Access",
+    "motorbike_parking": "Motorbike Parking",
+    "gas_pipeline_cylinder": "Gas (Pipeline/Cylinder)",
+    "elevator_lift": "Elevator / Lift"
+  },
+  "areas": {
+    "all_areas": "All Areas",
+    "kuet_gate_teligati": "KUET Gate / Teligati",
+    "gallamari_zero_point_ku": "Gallamari / Zero Point (KU)",
+    "sonadanga_r_a": "Sonadanga R/A",
+    "boyra": "Boyra",
+    "mujgunni": "Mujgunni",
+    "nirala_r_a": "Nirala R/A",
+    "khalishpur": "Khalishpur",
+    "daulatpur_bl_college": "Daulatpur (BL College)",
+    "choto_boyra": "Choto Boyra",
+    "shibbari_mor": "Shibbari Mor"
+  },
+  "furnished": {
+    "furnished": "Furnished",
+    "semi_furnished": "Semi-Furnished",
+    "unfurnished": "Unfurnished"
+  },
+  "verification": {
+    "nid_verified": "NID Verified",
+    "ownership_verified": "Ownership Verified",
+    "phone_verified": "Phone Verified",
+    "in_person_checked": "In-Person Checked",
+    "student_verified": "Student Verified",
+    "owner_identity_verified": "Owner Identity Verified",
+    "availability_verified": "Availability Verified",
+    "documents_verified": "Documents Verified"
+  },
+  "bills": {
+    "electricity": "Electricity",
+    "water": "Water",
+    "gas": "Gas",
+    "internet": "Internet",
+    "service_charge": "Service Charge",
+    "generator": "Generator"
+  },
+  "adminStats": {
+    "pending": "Pending",
+    "total": "Total",
+    "users": "Users",
+    "unresolved": "Unresolved",
+    "reviews": "Reviews",
+    "logs": "Logs"
   }
 }

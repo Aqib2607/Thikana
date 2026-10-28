@@ -232,14 +232,14 @@ export function PropertyFilters({
 
         {/* Simulated Verified Only Toggle */}
         <div className="rounded-xl border border-border/80 bg-secondary/40 p-3">
-          <label className="flex cursor-pointer items-center justify-between gap-2 text-xs font-medium text-foreground">
-            <span>{isBn ? "শুধুমাত্র ভেরিফাইড প্রপার্টি" : "Verified Only"}</span>
+          <label className="flex cursor-pointer items-center gap-2.5 text-xs font-medium text-foreground">
             <input
               type="checkbox"
               checked={!!filters.verifiedOnly}
               onChange={(e) => handleVerifiedToggle(e.target.checked)}
               className="h-4 w-4 rounded-sm border-input text-primary focus:ring-primary"
             />
+            <span>{isBn ? "শুধুমাত্র ভেরিফাইড প্রপার্টি" : "Verified Only"}</span>
           </label>
         </div>
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toBnNumber } from "@/lib/i18n";
 import { Star, Trash2, Plus, AlertCircle, Image as ImageIcon, Sparkles } from "lucide-react";
 
 interface PropertyImageUploaderProps {
@@ -177,7 +178,7 @@ export function PropertyImageUploader({ images, onChange, error }: PropertyImage
           <div className="aspect-[4/3] rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center p-3 text-center bg-muted/30 text-muted-foreground">
             <ImageIcon className="h-6 w-6 mb-1 opacity-50" aria-hidden="true" />
             <span className="text-[11px]">
-              {isBn ? `স্লট ${images.length + 1}` : `Slot ${images.length + 1}`}
+              {isBn ? `স্লট ${toBnNumber(images.length + 1)}` : `Slot ${images.length + 1}`}
             </span>
           </div>
         )}

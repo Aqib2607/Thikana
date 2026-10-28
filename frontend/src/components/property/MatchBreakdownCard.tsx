@@ -24,27 +24,29 @@ export function MatchBreakdownCard({ breakdown }: MatchBreakdownCardProps) {
 
   if (!user) {
     return (
-      <div className="rounded-2xl border border-border bg-surface p-6 shadow-xs">
-        <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary">
-            <Percent className="h-5 w-5 text-primary" aria-hidden="true" />
+      <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary">
+              <Percent className="h-5 w-5 text-primary" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-foreground">
+                {isBn ? "ভাড়াটিয়া ম্যাচিং স্কোর" : "Tenant Match Score"}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {isBn
+                  ? "আপনার জন্য এই বাড়িটি কতটা উপযোগী তা দেখতে লগইন করুন।"
+                  : "Log in as a tenant to see your personalized match percentage and breakdown."}
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-base font-semibold text-foreground">
-              {isBn ? "ভাড়াটিয়া ম্যাচিং স্কোর" : "Tenant Match Score"}
-            </h3>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {isBn
-                ? "আপনার জন্য এই বাড়িটি কতটা উপযোগী তা দেখতে লগইন করুন।"
-                : "Log in as a tenant to see your personalized match percentage and breakdown."}
-            </p>
-            <Link
-              to="/login"
-              className="mt-3 inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-xs font-semibold text-primary-foreground hover:opacity-90"
-            >
-              {isBn ? "লগইন করে ম্যাচ দেখুন" : "Log In to View Match"}
-            </Link>
-          </div>
+          <Link
+            to="/login"
+            className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
+          >
+            {isBn ? "লগইন করে ম্যাচ দেখুন" : "Log In to View Match ↗"}
+          </Link>
         </div>
       </div>
     );
@@ -52,27 +54,29 @@ export function MatchBreakdownCard({ breakdown }: MatchBreakdownCardProps) {
 
   if (!breakdown.hasTenantPreferences) {
     return (
-      <div className="rounded-2xl border border-border bg-surface p-6 shadow-xs">
-        <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary">
-            <AlertCircle className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+      <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary">
+              <AlertCircle className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-foreground">
+                {isBn ? "পছন্দ তালিকা সেট করুন" : "Set Rental Preferences"}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {isBn
+                  ? "আপনার ড্যাশবোর্ডে পছন্দের এলাকা, বাজেট ও রিকোয়ারমেন্ট সেট করুন।"
+                  : "Save your preferred area, budget, and requirements to unlock match calculation."}
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-base font-semibold text-foreground">
-              {isBn ? "পছন্দ তালিকা সেট করুন" : "Set Rental Preferences"}
-            </h3>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {isBn
-                ? "আপনার ড্যাশবোর্ডে পছন্দের এলাকা, বাজেট ও রিকোয়ারমেন্ট সেট করলে এখানে শতভাগ নিখুঁত ম্যাচ স্কোর দেখতে পাবেন।"
-                : "Save your preferred area, budget, and requirements in your tenant portal to unlock calculated match breakdown."}
-            </p>
-            <Link
-              to="/tenant/dashboard"
-              className="mt-3 inline-flex h-9 items-center justify-center rounded-lg bg-secondary px-4 text-xs font-semibold text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
-            >
-              {isBn ? "পছন্দ সেট করতে যান" : "Configure Preferences"}
-            </Link>
-          </div>
+          <Link
+            to="/tenant/dashboard"
+            className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-secondary border border-border px-4 text-xs font-semibold text-foreground hover:bg-primary hover:text-primary-foreground hover:border-transparent transition-colors"
+          >
+            {isBn ? "পছন্দ সেট করতে যান" : "Configure Preferences ↗"}
+          </Link>
         </div>
       </div>
     );
@@ -155,7 +159,7 @@ export function MatchBreakdownCard({ breakdown }: MatchBreakdownCardProps) {
                 <span className="flex items-center gap-1.5 font-medium text-foreground">
                   <Icon className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
                   <span>{dim.label}</span>
-                  <span className="text-[10px] text-muted-foreground">({dim.weight})</span>
+                  <span className="text-xs text-muted-foreground">({dim.weight})</span>
                 </span>
                 <span className="font-semibold text-foreground">
                   {dim.score}/{dim.max}

@@ -1,13 +1,25 @@
 {
-  "brand": { "tagline": "আপনার পরবর্তী ঠিকানা, যাচাই করে খুঁজুন" },
+  "brand": {
+    "tagline": "আপনার পরবর্তী ঠিকানা, যাচাই করে খুঁজুন"
+  },
   "nav": {
     "properties": "বাসা খুঁজুন",
     "howItWorks": "কীভাবে কাজ করে",
     "login": "লগইন",
     "register": "নিবন্ধন",
-    "skip": "মূল কনটেন্টে যান"
+    "skip": "মূল কনটেন্টে যান",
+    "apartments": "ফ্ল্যাট ও অ্যাপার্টমেন্ট",
+    "bachelor": "ব্যাচেলর ও মেস",
+    "why": "কেন ঠিকানা",
+    "contact": "যোগাযোগ",
+    "listHome": "বাড়ি লিস্টিং করুন",
+    "toggleMenu": "মেনু প্রদর্শন বা বন্ধ করুন"
   },
-  "lang": { "label": "ভাষা", "bn": "বাংলা", "en": "English" },
+  "lang": {
+    "label": "ভাষা",
+    "bn": "বাংলা",
+    "en": "English"
+  },
   "home": {
     "eyebrow": "খুলনায় প্রথমে চালু",
     "title": "শিক্ষার্থী ও পরিবারের জন্য নির্ভরযোগ্য ভাড়া বাসা",
@@ -31,7 +43,10 @@
     "room": "রুম",
     "sublet": "সাবলেট",
     "hostel": "হোস্টেল",
-    "mess": "মেস"
+    "mess": "মেস",
+    "apartment_flat": "অ্যাপার্টমেন্ট / ফ্ল্যাট",
+    "bachelor_room": "ব্যাচেলর রুম",
+    "commercial": "অফিস ও বাণিজ্যিক স্পেস"
   },
   "roles": {
     "tenant": "ভাড়াটিয়া",
@@ -148,6 +163,28 @@
     "visitedBadge": "Visited / পরিদর্শিত"
   },
   "footer": {
+    "inquiry": "খুলনায় বাসা খুঁজছেন বা বাড়ি ভাড়া দিতে চান?",
+    "tagline": "খুলনার প্রিমিয়ার রেন্টাল ডিসকভারি ও প্রপার্টি ম্যানেজমেন্ট নেটওয়ার্ক। শিক্ষার্থী, ব্যাচেলর ও পরিবারকে শহরের ভেরিফাইড বাসার সাথে যুক্ত করছে।",
+    "brandBio": "খুলনার সেরা ভাড়ার সমাধান। জিরো পয়েন্ট, সোনাডাঙ্গা, বয়রা ও দৌলতপুরের শিক্ষার্থী এবং পরিবারের জন্য বিশ্বস্ত ভাড়ার প্ল্যাটফর্ম।",
+    "verifiedHosts": "১০০% ভেরিফাইড বাড়িওয়ালা",
+    "colCategories": "প্রপার্টির ধরন",
+    "colLocations": "জনপ্রিয় এলাকা",
+    "colSupport": "যোগাযোগ ও তথ্য",
+    "aptFamily": "ফ্যামিলি ফ্ল্যাট ও অ্যাপার্টমেন্ট",
+    "roomBachelor": "ব্যাচেলর সিঙ্গেল রুম",
+    "hostelStudent": "স্টুডেন্ট মেস ও হোস্টেল",
+    "subletRoom": "সাবলেট রুম",
+    "commercialSpace": "অফিস ও বাণিজ্যিক স্পেস",
+    "locZeroPoint": "জিরো পয়েন্ট ও কুয়েট এলাকা",
+    "locSonadanga": "সোনাডাঙ্গা আবাসিক এলাকা",
+    "locBoyra": "বয়রা ও মেডিকেল কলেজ",
+    "locGollamari": "গল্লামারী ও খুলনা বিশ্ববিদ্যালয়",
+    "locKhalishpur": "খালিশপুর ও দৌলতপুর",
+    "addressText": "কেডিএ এভিনিউ, সোনাডাঙ্গা, খুলনা",
+    "privacy": "গোপনীয়তা নীতি",
+    "terms": "ব্যবহারের শর্তাবলী",
+    "backToTop": "উপরে যান",
+    "rights": "সর্বস্বত্ব সংরক্ষিত।",
     "note": "একাডেমিক প্রদর্শনী প্রকল্প। যাচাই চিহ্নগুলো প্ল্যাটফর্ম-স্তরের, সরকারি নয়।"
   },
   "tenant": {
@@ -226,6 +263,97 @@
   },
   "common": {
     "errorTitle": "একটি সমস্যা দেখা দিয়েছে",
-    "retry": "পুনরায় চেষ্টা করুন"
+    "retry": "পুনরায় চেষ্টা করুন",
+    "previous": "পূর্ববর্তী",
+    "next": "পরবর্তী",
+    "morePages": "আরও পৃষ্ঠা",
+    "previousPage": "পূর্ববর্তী পৃষ্ঠায় যান",
+    "nextPage": "পরবর্তী পৃষ্ঠায় যান",
+    "more": "আরও",
+    "breadcrumb": "পৃষ্ঠা নির্দেশক",
+    "close": "বন্ধ করুন",
+    "pageNotFound": "পৃষ্ঠাটি পাওয়া যায়নি",
+    "pageNotFoundDesc": "আপনি যে পৃষ্ঠাটি খুঁজছেন তা মুছে ফেলা হয়েছে অথবা লিংকটি সঠিক নয়।",
+    "goHome": "প্রধান পৃষ্ঠায় ফিরে যান",
+    "pageLoadError": "পৃষ্ঠাটি লোড করা সম্ভব হয়নি",
+    "pageLoadErrorDesc": "আমাদের সিস্টেমে সাময়িক সমস্যা হয়েছে। পৃষ্ঠাটি রিলোড দিন বা প্রধান পৃষ্ঠায় যান।",
+    "portalNav": "পোর্টাল নেভিগেশন",
+    "pagination": "পৃষ্ঠা সংখ্যা"
+  },
+  "rentalTypes": {
+    "monthly_rental": "মাসিক ভাড়া",
+    "sublet": "সাবলেট ভাড়া",
+    "family_only": "পরিবার",
+    "male_students_only": "ছাত্র / ব্যাচেলর (ছেলে)",
+    "female_students_only": "ছাত্রী / ব্যাচেলর (মেয়ে)",
+    "students_only": "শুধুমাত্র শিক্ষার্থী",
+    "any": "যেকোনো ভাড়াটিয়া",
+    "job_holders": "চাকরিজীবী"
+  },
+  "availability": {
+    "available": "খালি আছে",
+    "reserved": "বুকিং করা",
+    "rented": "ভাড়া হয়ে গেছে",
+    "temporarily_unavailable": "সাময়িক অনুপলব্ধ"
+  },
+  "amenities": {
+    "high_speed_wifi": "উচ্চগতির ওয়াইফাই",
+    "generator_ips_backup": "জেনারেটর / আইপিএস ব্যাকআপ",
+    "24_7_deep_tube_well_water": "২৪/৭ গভীর নলকূপের পানি",
+    "security_guard": "সার্বক্ষণিক নিরাপত্তা প্রহরী",
+    "cctv_surveillance": "সিসিটিভি নজরদারি",
+    "attached_bathroom": "অ্যাটাচড বাথরুম",
+    "private_balcony": "ব্যক্তিগত বারান্দা",
+    "dining_space": "ডাইনিং স্পেস",
+    "refrigerator": "রেফ্রিজারেটর সুবিধা",
+    "daily_meal_mess_system": "দৈনিক খাবার / মেস মিল ব্যবস্থা",
+    "rooftop_access": "ছাদে ওঠার সুবিধা",
+    "motorbike_parking": "মোটরবাইক পার্কিং",
+    "gas_pipeline_cylinder": "গ্যাস লাইন / সিলিন্ডার",
+    "elevator_lift": "লিফট সুবিধা"
+  },
+  "areas": {
+    "all_areas": "সকল এলাকা",
+    "kuet_gate_teligati": "কুয়েট গেট / টেলিগাতী",
+    "gallamari_zero_point_ku": "গল্লামারী / জিরো পয়েন্ট (খুবি)",
+    "sonadanga_r_a": "সোনাডাঙ্গা আ/এ",
+    "boyra": "বয়রা",
+    "mujgunni": "মুজগুন্নী",
+    "nirala_r_a": "নিরালা আ/এ",
+    "khalishpur": "খালিশপুর",
+    "daulatpur_bl_college": "দৌলতপুর (বিএল কলেজ)",
+    "choto_boyra": "ছোট বয়রা",
+    "shibbari_mor": "শিববাড়ী মোড়"
+  },
+  "furnished": {
+    "furnished": "সুসজ্জিত (ফার্নিশড)",
+    "semi_furnished": "আধা সুসজ্জিত (সেমি-ফার্নিশড)",
+    "unfurnished": "আনফার্নিশড"
+  },
+  "verification": {
+    "nid_verified": "এনআইডি যাচাইকৃত",
+    "ownership_verified": "মালিকানা যাচাইকৃত",
+    "phone_verified": "ফোন নম্বর যাচাইকৃত",
+    "in_person_checked": "সরেজমিনে পরিদর্শিত",
+    "student_verified": "শিক্ষার্থী আইডি যাচাইকৃত",
+    "owner_identity_verified": "মালিকানা যাচাইকৃত",
+    "availability_verified": "প্রাপ্যতা যাচাইকৃত",
+    "documents_verified": "কাগজপত্র যাচাইকৃত"
+  },
+  "bills": {
+    "electricity": "বিদ্যুৎ বিল",
+    "water": "পানি বিল",
+    "gas": "গ্যাস বিল",
+    "internet": "ইন্টারনেট বিল",
+    "service_charge": "সার্ভিস চার্জ",
+    "generator": "জেনারেটর বিল"
+  },
+  "adminStats": {
+    "pending": "অনুমোদনাধীন",
+    "total": "মোট",
+    "users": "ব্যবহারকারী",
+    "unresolved": "অমীমাংসিত",
+    "reviews": "রিভিউ",
+    "logs": "লগ"
   }
 }

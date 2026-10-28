@@ -180,7 +180,7 @@ function PropertyDetailsPage() {
   return (
     <AppShell>
       {/* Top Breadcrumb Navigation */}
-      <div className="border-b border-border bg-secondary/10 py-3.5">
+      <div className="border-b border-border bg-secondary/10 pt-5 pb-4">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <nav
             aria-label="Breadcrumb"
@@ -201,17 +201,20 @@ function PropertyDetailsPage() {
 
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:py-10">
         {/* Title Header with Action Badges */}
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-pill bg-foreground/90 px-3 py-1 text-xs font-semibold text-background">
+        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-2 mb-2.5">
+              <span className="rounded-full bg-foreground px-3 py-1 text-xs font-semibold text-background">
                 {property.propertyType}
               </span>
-              <span className="rounded-pill bg-secondary px-3 py-1 text-xs font-medium text-foreground">
-                {property.rentalType}
-              </span>
+              {property.rentalType &&
+                property.rentalType.toLowerCase() !== property.propertyType.toLowerCase() && (
+                  <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-foreground">
+                    {property.rentalType}
+                  </span>
+                )}
               <span
-                className={`rounded-pill px-3 py-1 text-xs font-semibold ${
+                className={`rounded-full px-3 py-1 text-xs font-semibold ${
                   property.availability === "Available"
                     ? "bg-primary/10 text-primary border border-primary/20"
                     : "bg-secondary text-muted-foreground"
@@ -221,7 +224,7 @@ function PropertyDetailsPage() {
               </span>
             </div>
 
-            <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl md:text-4xl">
+            <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl md:text-4xl">
               {isBn && property.banglaTitle ? property.banglaTitle : property.title}
             </h1>
 
@@ -235,12 +238,12 @@ function PropertyDetailsPage() {
             </p>
           </div>
 
-          {/* Action Buttons: Compare, Favorite, Share */}
-          <div className="flex items-center gap-2">
+          {/* Action Buttons: Compare, Favorite - Aligned with Title */}
+          <div className="flex items-center gap-2.5 shrink-0 self-start md:self-center">
             <button
               type="button"
               onClick={toggleCompare}
-              className={`inline-flex h-10 items-center gap-1.5 rounded-full border px-4 text-xs font-semibold transition-all ${
+              className={`inline-flex h-11 items-center gap-1.5 rounded-full border px-4 text-xs font-semibold transition-all ${
                 isCompared
                   ? "border-primary bg-primary text-primary-foreground shadow-xs"
                   : "border-border bg-surface text-foreground hover:bg-secondary"
@@ -261,7 +264,7 @@ function PropertyDetailsPage() {
             <button
               type="button"
               onClick={toggleFavorite}
-              className={`inline-flex h-10 items-center gap-1.5 rounded-full border px-4 text-xs font-semibold transition-all ${
+              className={`inline-flex h-11 items-center gap-1.5 rounded-full border px-4 text-xs font-semibold transition-all ${
                 isFavorite
                   ? "border-destructive bg-destructive text-destructive-foreground shadow-xs"
                   : "border-border bg-surface text-foreground hover:bg-secondary"
@@ -338,30 +341,30 @@ function PropertyDetailsPage() {
               <h2 className="text-lg font-bold text-foreground">
                 {isBn ? "ভাড়া ও আর্থিক শর্তাবলী" : "Financial Terms & Deposits"}
               </h2>
-              <div className="mt-4 grid gap-4 sm:grid-cols-3">
-                <div className="rounded-xl border border-border/80 bg-secondary/30 p-3.5">
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-xl border border-border/80 bg-secondary/30 p-3">
                   <span className="block text-xs text-muted-foreground">
                     {isBn ? "মাসিক ভাড়া" : "Monthly Rent"}
                   </span>
-                  <span className="mt-1 block text-xl font-bold text-foreground">
+                  <span className="mt-0.5 block text-lg sm:text-xl font-bold text-foreground">
                     ৳{property.rent.toLocaleString()}
                   </span>
                 </div>
 
-                <div className="rounded-xl border border-border/80 bg-secondary/30 p-3.5">
+                <div className="rounded-xl border border-border/80 bg-secondary/30 p-3">
                   <span className="block text-xs text-muted-foreground">
                     {isBn ? "অগ্রিম / জামানত" : "Advance Deposit"}
                   </span>
-                  <span className="mt-1 block text-xl font-bold text-foreground">
+                  <span className="mt-0.5 block text-lg sm:text-xl font-bold text-foreground">
                     ৳{property.advance.toLocaleString()}
                   </span>
                 </div>
 
-                <div className="rounded-xl border border-border/80 bg-secondary/30 p-3.5">
+                <div className="rounded-xl border border-border/80 bg-secondary/30 p-3">
                   <span className="block text-xs text-muted-foreground">
                     {isBn ? "সার্ভিস ও ইউটিলিটি" : "Additional Service"}
                   </span>
-                  <span className="mt-1 block text-xl font-bold text-foreground">
+                  <span className="mt-0.5 block text-lg sm:text-xl font-bold text-foreground">
                     ৳{property.additionalCharges.toLocaleString()}
                   </span>
                 </div>
@@ -375,7 +378,7 @@ function PropertyDetailsPage() {
                   {property.billsIncluded.map((bill) => (
                     <span
                       key={bill}
-                      className="inline-flex items-center gap-1 rounded-pill bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                      className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
                     >
                       <CheckCircle className="h-3.5 w-3.5" aria-hidden="true" />
                       <span>{bill}</span>
@@ -404,7 +407,7 @@ function PropertyDetailsPage() {
             </div>
 
             {/* Simulated Verifications Box with Clear Platform Label */}
-            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6">
+            <div className="rounded-2xl border border-border bg-surface p-6 shadow-xs">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="h-5 w-5 text-primary shrink-0" aria-hidden="true" />
                 <h2 className="text-base font-bold text-foreground">
@@ -413,7 +416,7 @@ function PropertyDetailsPage() {
                     : "Platform Simulated Verifications"}
                 </h2>
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1.5 text-xs font-medium text-foreground/85 leading-relaxed">
                 {isBn
                   ? "সতর্কতা: এটি ঠিকানা প্ল্যাটফর্মের অভ্যন্তরীণ সিমুলেটেড ডেটা, সরকারি প্রত্যয়ন নয়।"
                   : "Note: These represent platform-level simulated identity checks, not government certifications."}
@@ -481,7 +484,7 @@ function PropertyDetailsPage() {
                       }
                       setVisitModalOpen(true);
                     }}
-                    className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-90"
+                    className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-90 active:scale-[0.99]"
                   >
                     <CalendarCheck className="h-4 w-4" aria-hidden="true" />
                     <span>{isBn ? "সরাসরি ভিজিটের আবেদন" : "Schedule a Visit ↗"}</span>
@@ -532,7 +535,7 @@ function PropertyDetailsPage() {
                   </button>
                 )}
 
-                <div className="flex gap-2 pt-1">
+                <div className="flex gap-2.5 pt-1">
                   <button
                     type="button"
                     onClick={() => {
@@ -542,7 +545,7 @@ function PropertyDetailsPage() {
                       }
                       setReviewModalOpen(true);
                     }}
-                    className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-surface text-[11px] font-semibold text-foreground hover:bg-secondary transition-colors"
+                    className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-surface text-xs font-semibold text-foreground hover:bg-secondary transition-colors"
                   >
                     <Star className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
                     <span>{isBn ? "রিভিউ লিখুন" : "Write Review"}</span>
@@ -559,7 +562,7 @@ function PropertyDetailsPage() {
                       }
                       setReportModalOpen(true);
                     }}
-                    className="flex h-9 items-center justify-center gap-1.5 rounded-full border border-border bg-surface px-3.5 text-[11px] font-semibold text-destructive hover:bg-destructive/10 transition-colors"
+                    className="flex h-9 items-center justify-center gap-1.5 rounded-full border border-border bg-surface px-3.5 text-xs font-semibold text-destructive hover:bg-destructive/10 transition-colors"
                   >
                     <Flag className="h-3.5 w-3.5" aria-hidden="true" />
                     <span>{isBn ? "রিপোর্ট" : "Report"}</span>
@@ -568,7 +571,7 @@ function PropertyDetailsPage() {
               </div>
 
               {/* Landlord Profile & Privacy Setting */}
-              <div className="mt-6 border-t border-border pt-5">
+              <div className="mt-8 border-t border-border pt-6">
                 <span className="text-xs font-semibold text-foreground">
                   {isBn ? "বাড়ির মালিকের তথ্য" : "Landlord Overview"}
                 </span>
@@ -580,7 +583,7 @@ function PropertyDetailsPage() {
                   />
                   <div>
                     <h4 className="text-sm font-bold text-foreground">{property.landlord.name}</h4>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-xs text-muted-foreground">
                       {isBn
                         ? `সদস্য: ${property.landlord.memberSince}`
                         : `Member since: ${property.landlord.memberSince}`}
@@ -591,14 +594,27 @@ function PropertyDetailsPage() {
                 {/* Respect Landlord Contact Privacy Setting */}
                 <div className="mt-4 rounded-xl border border-border/80 bg-secondary/30 p-3 text-xs text-muted-foreground">
                   {property.landlord.publicContactVisible ? (
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       <div className="flex items-center gap-1.5 font-medium text-foreground">
-                        <Phone className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-                        <span>{property.landlord.phone}</span>
+                        <Phone className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden="true" />
+                        <a
+                          href={`tel:${property.landlord.phone}`}
+                          className="hover:underline focus-visible:outline-2 focus-visible:outline-ring rounded-xs"
+                        >
+                          {property.landlord.phone}
+                        </a>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Mail className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
-                        <span>{property.landlord.email}</span>
+                        <Mail
+                          className="h-3.5 w-3.5 text-muted-foreground shrink-0"
+                          aria-hidden="true"
+                        />
+                        <a
+                          href={`mailto:${property.landlord.email}`}
+                          className="text-muted-foreground hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-ring rounded-xs"
+                        >
+                          {property.landlord.email}
+                        </a>
                       </div>
                     </div>
                   ) : (

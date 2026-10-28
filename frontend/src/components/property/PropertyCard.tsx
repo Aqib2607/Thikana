@@ -170,7 +170,7 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
         </div>
 
         {/* Photo Count Pill */}
-        <div className="absolute bottom-3 right-3 rounded-full bg-foreground/75 px-2.5 py-0.5 text-[11px] font-medium text-background backdrop-blur-sm">
+        <div className="absolute bottom-3 right-3 rounded-full bg-foreground/75 px-2.5 py-0.5 text-xs font-medium text-background backdrop-blur-sm">
           {property.images.length} {isBn ? "ছবি" : "Photos"}
         </div>
 
@@ -244,7 +244,7 @@ export function PropertyCard({ property, featured }: PropertyCardProps) {
           <Link
             to="/properties/$propertyId"
             params={{ propertyId: property.id }}
-            className="inline-flex h-10 w-full items-center justify-center rounded-full bg-secondary text-xs font-bold text-foreground transition-all hover:bg-primary hover:text-primary-foreground focus-visible:outline-2 focus-visible:outline-primary"
+            className="inline-flex h-11 w-full items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-xs transition-all hover:opacity-90 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-ring"
           >
             {isBn ? "বিস্তারিত দেখুন ↗" : "View Details ↗"}
           </Link>

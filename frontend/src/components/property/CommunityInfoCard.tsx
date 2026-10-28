@@ -69,15 +69,17 @@ export function CommunityInfoCard({ community, areaName }: CommunityInfoCardProp
           return (
             <div
               key={item.title}
-              className="flex flex-col rounded-xl border border-border/70 bg-secondary/30 p-4 transition-colors hover:bg-secondary/60"
+              className="flex flex-col rounded-xl border border-border/70 bg-secondary/30 p-4 transition-colors hover:bg-secondary/60 h-full"
             >
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2.5 min-h-[44px]">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface text-primary shadow-xs">
                   <Icon className="h-4 w-4" aria-hidden="true" />
                 </span>
-                <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>
+                <h3 className="text-sm font-semibold text-foreground leading-snug">{item.title}</h3>
               </div>
-              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{item.desc}</p>
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground flex-1">
+                {item.desc}
+              </p>
             </div>
           );
         })}

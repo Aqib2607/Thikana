@@ -281,7 +281,7 @@ export function RoleLayout({
 
           {/* Accessible Subnavigation Bar (Scrollable on mobile, no horizontal overflow) */}
           <nav
-            aria-label="Role Portal Navigation"
+            aria-label={t("common.portalNav")}
             className="mt-6 -mb-6 flex gap-1 overflow-x-auto pb-2 scrollbar-none"
           >
             {navItems.map((item) => {

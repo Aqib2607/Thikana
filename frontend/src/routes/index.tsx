@@ -241,7 +241,7 @@ function Index() {
           <MotionReveal variant="fadeDown" duration={600}>
             <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface/90 px-4 py-1.5 text-xs font-semibold text-foreground shadow-sm backdrop-blur-sm">
               <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-              <span className="tracking-wide uppercase">
+              <span className="tracking-wide">
                 {isBn ? "খুলনার ভেরিফাইড রেন্টাল প্ল্যাটফর্ম" : "Smart Rental Discovery in Khulna"}
               </span>
             </div>
@@ -313,7 +313,9 @@ function Index() {
                     ))}
                     <span className="ml-1 text-foreground font-semibold">4.9 / 5</span>
                   </div>
-                  <p className="text-muted-foreground font-medium">10,000+ Happy Renters in Khulna</p>
+                  <p className="text-muted-foreground font-medium">
+                    10,000+ Happy Renters in Khulna
+                  </p>
                 </div>
               </div>
             </div>
@@ -389,7 +391,7 @@ function Index() {
               </form>
 
               {/* Quick Campus Zones Pills */}
-              <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border/60 pt-3 text-xs text-muted-foreground">
+              <div className="mt-2.5 flex flex-wrap items-center gap-2 border-t border-border/60 pt-2.5 text-xs text-muted-foreground">
                 <span className="font-semibold text-foreground">
                   {isBn ? "জনপ্রিয় এলাকা:" : "Popular Hubs:"}
                 </span>
@@ -404,7 +406,7 @@ function Index() {
                     key={hub.name}
                     type="button"
                     onClick={() => handleQuickArea(hub.name)}
-                    className="rounded-full bg-secondary/80 border border-border/60 px-3.5 py-1 text-[11px] font-semibold text-foreground transition-all hover:bg-primary hover:text-primary-foreground hover:border-transparent"
+                    className="rounded-full bg-secondary/80 border border-border/60 px-3.5 py-1 text-xs font-semibold text-foreground transition-all hover:bg-primary hover:text-primary-foreground hover:border-transparent cursor-pointer"
                   >
                     {hub.label}
                   </button>
@@ -428,9 +430,9 @@ function Index() {
                       <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
                       Verified Sonadanga Residency
                     </span>
-                    <h3 className="text-xl sm:text-3xl font-bold text-white tracking-tight">
+                    <h2 className="text-xl sm:text-3xl font-bold text-white tracking-tight">
                       Sonadanga Avenue 3-Bedroom Master Suite
-                    </h3>
+                    </h2>
                     <p className="text-xs sm:text-sm text-neutral-300 mt-1">
                       Walking distance to medical hub, generator power, reserved car parking.
                     </p>
@@ -460,7 +462,7 @@ function Index() {
       <section className="border-y border-border/70 bg-surface/50 py-10">
         <MotionReveal variant="fadeIn" duration={800}>
           <div className="mx-auto max-w-6xl px-5 text-center sm:px-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            <p className="text-xs font-semibold tracking-wider text-muted-foreground">
               {isBn
                 ? "খুলনার শীর্ষ শিক্ষা প্রতিষ্ঠান ও কমিউনিটির আস্থা"
                 : "Trusted by Students & Residents Across Top Institutions in Khulna"}
@@ -550,7 +552,7 @@ function Index() {
                             <Link
                               to="/properties"
                               search={{ propertyType: tab.propertyType }}
-                              className="inline-flex items-center gap-1 rounded-full bg-primary px-3.5 py-1 text-[11px] font-semibold text-primary-foreground hover:opacity-90"
+                              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90"
                             >
                               <span>{isBn ? "প্রপার্টি দেখুন" : "Explore Flats"}</span>
                               <ArrowUpRight className="h-3 w-3" />
@@ -576,7 +578,7 @@ function Index() {
                 {/* Floating pill badge */}
                 <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between rounded-full bg-black/75 px-5 py-3 text-white backdrop-blur-md">
                   <div>
-                    <span className="text-[11px] font-mono text-neutral-400 block">
+                    <span className="text-xs font-mono text-neutral-400 block">
                       {currentTab.num} / 05
                     </span>
                     <span className="text-sm font-bold">
@@ -614,10 +616,10 @@ function Index() {
               </div>
               <Link
                 to="/properties"
-                className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-primary hover:underline"
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-4 py-2 text-xs font-semibold text-foreground shadow-2xs hover:bg-secondary transition-all"
               >
                 <span>{isBn ? "সকল প্রপার্টি দেখুন" : "View Complete Directory"}</span>
-                <ArrowUpRight className="h-4 w-4" />
+                <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           </MotionReveal>
@@ -673,15 +675,19 @@ function Index() {
                       alt={col.title}
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex flex-col justify-end p-5 text-white">
-                      <span className="text-[11px] font-semibold text-neutral-300">
-                        {col.count} · {col.price}
-                      </span>
-                      <h3 className="mt-1 text-lg font-bold">{isBn ? col.titleBn : col.title}</h3>
-                      <p className="text-xs text-neutral-300 line-clamp-1">{col.sub}</p>
-                      <div className="mt-3 flex items-center gap-1 text-xs font-semibold text-white group-hover:translate-x-1 transition-transform">
-                        <span>Explore Collection</span>
-                        <ArrowUpRight className="h-3.5 w-3.5" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-5 text-white">
+                      <h3 className="text-lg font-bold leading-tight">
+                        {isBn ? col.titleBn : col.title}
+                      </h3>
+                      <p className="mt-1 text-xs text-neutral-300 line-clamp-1">{col.sub}</p>
+                      <div className="mt-3 flex items-center justify-between border-t border-white/20 pt-2.5">
+                        <span className="text-xs font-medium text-neutral-200">
+                          {col.count} · {col.price}
+                        </span>
+                        <div className="flex items-center gap-1 text-xs font-semibold text-white group-hover:translate-x-1 transition-transform">
+                          <span>Explore</span>
+                          <ArrowUpRight className="h-3.5 w-3.5" />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -698,29 +704,34 @@ function Index() {
       <section id="why-thikana" className="py-20 md:py-28">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-            {/* Left Big Editorial Column */}
-            <MotionReveal variant="slideInLeft" className="lg:col-span-5 space-y-6">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                {isBn ? "ঠিকানার বৈশিষ্ট্য" : "CURATED SPACES"}
-              </p>
-              <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-[1.12]">
-                {isBn ? "স্বচ্ছতা ও নিশ্চয়তার মেলবন্ধন" : "HOMES MADE FOR EVERY MOMENT"}
-              </h2>
-              <p className="text-sm sm:text-base leading-relaxed text-muted-foreground">
-                {isBn
-                  ? "ঠিকানায় প্রতিটি প্রপার্টি সরাসরি অডিট করা। সঠিক রুম সাইজ, ভেরিফাইড ইউটিলিটি বিল, কোনো দালাল ছাড়া মালিকের সাথে সরাসরি চুক্তি।"
-                  : "Every property on Thikana is verified on the ground. Transparent pricing, zero middleman cuts, verified security deposits, and legitimate landlord contacts."}
-              </p>
+            {/* Left Big Editorial Column (Balanced with adjacent cards) */}
+            <MotionReveal
+              variant="slideInLeft"
+              className="lg:col-span-5 flex flex-col justify-center space-y-6"
+            >
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                  {isBn ? "ঠিকানার বৈশিষ্ট্য" : "CURATED SPACES"}
+                </p>
+                <h2 className="mt-2 text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-[1.12]">
+                  {isBn ? "স্বচ্ছতা ও নিশ্চয়তার মেলবন্ধন" : "Homes Made for Every Moment"}
+                </h2>
+                <p className="mt-3 text-sm sm:text-base leading-relaxed text-muted-foreground">
+                  {isBn
+                    ? "ঠিকানায় প্রতিটি প্রপার্টি সরাসরি অডিট করা। সঠিক রুম সাইজ, ভেরিফাইড ইউটিলিটি বিল, কোনো দালাল ছাড়া মালিকের সাথে সরাসরি চুক্তি।"
+                    : "Every property on Thikana is verified on the ground. Transparent pricing, zero middleman cuts, verified security deposits, and legitimate landlord contacts."}
+                </p>
+              </div>
 
-              <div className="space-y-4 pt-2">
+              <div className="space-y-4 pt-1">
                 <div className="flex items-start gap-3">
                   <div className="rounded-full bg-primary/10 p-1 text-primary shrink-0 mt-0.5">
                     <Check className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-foreground">
+                    <h3 className="text-sm font-bold text-foreground">
                       {isBn ? "১০০% নিশ্চিত ভাড়ার হিসাব" : "100% Upfront Pricing"}
-                    </h4>
+                    </h3>
                     <p className="text-xs text-muted-foreground">
                       {isBn
                         ? "ভাড়া, সিকিউরিটি ডিপোজিট ও ইউটিলিটি রুলস শুরুতেই স্পষ্ট।"
@@ -734,9 +745,9 @@ function Index() {
                     <Check className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-foreground">
+                    <h3 className="text-sm font-bold text-foreground">
                       {isBn ? "সরাসরি ভিজিট ও বুকিং" : "Direct Scheduled Visits"}
-                    </h4>
+                    </h3>
                     <p className="text-xs text-muted-foreground">
                       {isBn
                         ? "প্ল্যাটফর্মের মাধ্যমেই পছন্দসই সময়ে বাসা পরিদর্শনের অনুরোধ পাঠান।"
@@ -744,9 +755,25 @@ function Index() {
                     </p>
                   </div>
                 </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="rounded-full bg-primary/10 p-1 text-primary shrink-0 mt-0.5">
+                    <Check className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-foreground">
+                      {isBn ? "নিরাপদ অগ্রিম জামানত" : "Verified Security Deposits"}
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      {isBn
+                        ? "খুলনার প্রচলিত নিয়মানুযায়ী স্বচ্ছ অগ্রিম শর্তাবলী ও রশিদ নিশ্চয়তা।"
+                        : "Standard Khulna residential advance terms with verified receipts."}
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div className="pt-4">
+              <div className="pt-2">
                 <Link
                   to="/properties"
                   className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 transition-all"
@@ -758,7 +785,11 @@ function Index() {
             </MotionReveal>
 
             {/* Right Property Highlights */}
-            <MotionReveal variant="slideInRight" delay={150} className="lg:col-span-7 grid gap-6 sm:grid-cols-2">
+            <MotionReveal
+              variant="slideInRight"
+              delay={150}
+              className="lg:col-span-7 grid gap-6 sm:grid-cols-2"
+            >
               {featuredListings.slice(0, 2).map((property) => (
                 <PropertyCard key={property.id} property={property} />
               ))}
@@ -825,7 +856,7 @@ function Index() {
                     />
                   </div>
                   <div className="p-6">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 px-3 py-0.5 text-[10px] font-bold dark:bg-emerald-950 dark:text-emerald-300">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 px-3 py-0.5 text-xs font-bold dark:bg-emerald-950 dark:text-emerald-300">
                       <ShieldCheck className="h-3.5 w-3.5" />
                       {person.badge}
                     </span>
@@ -904,8 +935,8 @@ function Index() {
                       className="h-10 w-10 rounded-full object-cover"
                     />
                     <div>
-                      <h4 className="text-xs font-bold text-foreground">{tItem.author}</h4>
-                      <p className="text-[11px] text-muted-foreground">{tItem.role}</p>
+                      <h3 className="text-xs font-bold text-foreground">{tItem.author}</h3>
+                      <p className="text-xs text-muted-foreground">{tItem.role}</p>
                     </div>
                   </div>
                 </div>
@@ -973,7 +1004,10 @@ function Index() {
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <div className="grid gap-10 lg:grid-cols-12 lg:items-start">
             {/* Left Inquiry Form */}
-            <MotionReveal variant="slideInLeft" className="lg:col-span-6 rounded-3xl border border-border/80 bg-surface p-8 sm:p-10 shadow-lg">
+            <MotionReveal
+              variant="slideInLeft"
+              className="lg:col-span-6 rounded-3xl border border-border/80 bg-surface p-8 sm:p-10 shadow-lg"
+            >
               <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-foreground">
                 <Mail className="h-3.5 w-3.5 text-primary" />
                 {isBn ? "সরাসরি রেন্টাল ইনকোয়ারি" : "Direct Rental Match"}
@@ -1139,9 +1173,9 @@ function Index() {
               {/* Landlord Fast Banner */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-3xl border border-border/80 bg-secondary/50 p-6 sm:p-8 hover-lift">
                 <div>
-                  <h4 className="text-base font-bold text-foreground">
+                  <h3 className="text-base font-bold text-foreground">
                     {isBn ? "আপনি কি বাড়িওয়ালা?" : "Are You a Khulna Landlord?"}
-                  </h4>
+                  </h3>
                   <p className="text-xs text-muted-foreground mt-1">
                     {isBn
                       ? "বিনা খরচে বিজ্ঞাপন দিন এবং সরাসরি নির্ভরযোগ্য ভাড়াটিয়া পান।"
@@ -1150,9 +1184,10 @@ function Index() {
                 </div>
                 <Link
                   to={user?.role === "landlord" ? "/landlord/dashboard" : "/register"}
-                  className="rounded-full bg-primary px-6 py-2.5 text-xs font-semibold text-primary-foreground shrink-0 hover:opacity-90 transition-opacity"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-xs font-semibold text-primary-foreground shrink-0 hover:opacity-90 transition-opacity shadow-xs"
                 >
-                  {isBn ? "বিজ্ঞাপন দিন ↗" : "List Free ↗"}
+                  <span>{isBn ? "বাড়ি লিস্টিং করুন" : "List Your Home"}</span>
+                  <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
             </MotionReveal>
