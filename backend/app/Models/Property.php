@@ -146,6 +146,67 @@ class Property extends Model
     }
 
     /**
+     * Tenant favorites recorded for this property.
+     *
+     * @return HasMany<Favorite, $this>
+     */
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    /**
+     * Tenants who have favorited this property.
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function favoritedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'property_id', 'user_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Comparisons including this property.
+     *
+     * @return HasMany<PropertyComparison, $this>
+     */
+    public function comparisons(): HasMany
+    {
+        return $this->hasMany(PropertyComparison::class);
+    }
+
+    /**
+     * All reviews submitted for this property.
+     *
+     * @return HasMany<Review, $this>
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Approved reviews visible for public discovery.
+     *
+     * @return HasMany<Review, $this>
+     */
+    public function approvedReviews(): HasMany
+    {
+        return $this->hasMany(Review::class)->where('status', 'approved');
+    }
+
+    /**
+     * Reports filed against this property listing.
+     *
+     * @return HasMany<PropertyReport, $this>
+     */
+    public function reports(): HasMany
+    {
+        return $this->hasMany(PropertyReport::class);
+    }
+
+    /**
      * Scope to only approved listings.
      */
     public function scopeApproved(Builder $query): Builder

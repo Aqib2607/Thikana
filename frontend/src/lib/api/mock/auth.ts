@@ -10,6 +10,10 @@ export interface User {
   phone: string;
   role: Role;
   verified: boolean;
+  avatar?: string | null;
+  status?: string;
+  createdAt?: string | null;
+  updatedAt?: string | null;
 }
 interface StoredUser extends User {
   password: string;

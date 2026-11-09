@@ -57,7 +57,8 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         <div className="absolute bottom-4 right-4 flex items-center gap-1.5 rounded-pill bg-foreground/80 px-3 py-1 text-xs font-medium text-background backdrop-blur-xs">
           <Images className="h-3.5 w-3.5" aria-hidden="true" />
           <span>
-            {toBnNumber(activeIndex + 1, i18n.language)} / {toBnNumber(galleryImages.length, i18n.language)}
+            {toBnNumber(activeIndex + 1, i18n.language)} /{" "}
+            {toBnNumber(galleryImages.length, i18n.language)}
           </span>
         </div>
 

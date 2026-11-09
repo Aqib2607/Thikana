@@ -11,6 +11,10 @@ export const Route = createFileRoute("/tenant/preferences")({
         name: "description",
         content: "Set your academic rental budget, locations, and amenities for tailored matching.",
       },
+      {
+        name: "robots",
+        content: "noindex, nofollow",
+      },
     ],
   }),
   component: TenantPreferencesPage,

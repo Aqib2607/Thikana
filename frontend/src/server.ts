@@ -44,18 +44,44 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+function applySecurityHeaders(response: Response, request: Request): Response {
+  const newHeaders = new Headers(response.headers);
+  newHeaders.set("X-Frame-Options", "DENY");
+  newHeaders.set("X-Content-Type-Options", "nosniff");
+  newHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  newHeaders.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(self)");
+  newHeaders.set(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https: wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+  );
+
+  const forwardedProto = request.headers.get("x-forwarded-proto");
+  const isHttps = forwardedProto === "https" || request.url.startsWith("https://");
+  if (isHttps) {
+    newHeaders.set("Strict-Transport-Security", "max-age=31536000");
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: newHeaders,
+  });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const handler = await getServerEntry();
-      const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      const rawResponse = await handler.fetch(request, env, ctx);
+      const normalizedResponse = await normalizeCatastrophicSsrResponse(rawResponse);
+      return applySecurityHeaders(normalizedResponse, request);
     } catch (error) {
       console.error(error);
-      return new Response(renderErrorPage(), {
+      const errorResponse = new Response(renderErrorPage(), {
         status: 500,
         headers: { "content-type": "text/html; charset=utf-8" },
       });
+      return applySecurityHeaders(errorResponse, request);
     }
   },
 };

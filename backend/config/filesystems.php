@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Property Images Storage Disk
+    |--------------------------------------------------------------------------
+    |
+    | Defines the filesystem disk used for storing property images.
+    | In local development and testing, this defaults to 'public'.
+    | In production (e.g., Render), configure 's3' (or Cloudflare R2).
+    |
+    */
+
+    'property_images_disk' => env('PROPERTY_IMAGES_DISK', 'public'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |

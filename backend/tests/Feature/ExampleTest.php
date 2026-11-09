@@ -2,17 +2,19 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    use RefreshDatabase;
-
-    public function test_returns_a_successful_response()
+    public function test_api_health_check_returns_successful_payload(): void
     {
-        $response = $this->get(route('home'));
+        $response = $this->getJson('/api/v1/health');
 
-        $response->assertOk();
+        $response->assertOk()
+            ->assertJson([
+                'status' => 'ok',
+                'service' => 'Thikana API',
+                'version' => '1.0.0',
+            ]);
     }
 }

@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { useAuth } from "@/lib/auth";
-import { mockLandlordApi } from "@/lib/api/mock/landlord";
+import { landlordApi } from "@/lib/api/landlord";
 import { toBnNumber } from "@/lib/i18n";
 import type { ConversationItem } from "@/lib/api/tenant";
 import {
@@ -41,7 +41,7 @@ function LandlordMessagesPage() {
   const loadConversations = useCallback(async () => {
     if (!user) return;
     try {
-      const data = await mockLandlordApi.getConversations(user.id);
+      const data = await landlordApi.getConversations(user.id);
       setConversations(data);
       const first = data[0];
       if (first && !activeConvId) {
@@ -71,7 +71,7 @@ function LandlordMessagesPage() {
 
     setSending(true);
     try {
-      await mockLandlordApi.sendMessage(activeConvId, user.id, user.name, replyText.trim());
+      await landlordApi.sendMessage(activeConvId, user.id, user.name, replyText.trim());
       setReplyText("");
       await loadConversations();
     } finally {

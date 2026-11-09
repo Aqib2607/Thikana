@@ -1,14 +1,43 @@
+# Thikana Robots Configuration
+# Allow public discovery of homepage, directory, and public property listings.
+# Explicitly disallow private authenticated portals, user dashboards, and API endpoints.
+
 User-agent: Googlebot
+Disallow: /tenant/
+Disallow: /landlord/
+Disallow: /admin/
+Disallow: /profile
+Disallow: /api/
 Allow: /
 
 User-agent: Bingbot
+Disallow: /tenant/
+Disallow: /landlord/
+Disallow: /admin/
+Disallow: /profile
+Disallow: /api/
 Allow: /
 
 User-agent: Twitterbot
+Disallow: /tenant/
+Disallow: /landlord/
+Disallow: /admin/
+Disallow: /profile
+Disallow: /api/
 Allow: /
 
 User-agent: facebookexternalhit
+Disallow: /tenant/
+Disallow: /landlord/
+Disallow: /admin/
+Disallow: /profile
+Disallow: /api/
 Allow: /
 
 User-agent: *
+Disallow: /tenant/
+Disallow: /landlord/
+Disallow: /admin/
+Disallow: /profile
+Disallow: /api/
 Allow: /

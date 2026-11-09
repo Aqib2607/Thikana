@@ -4,13 +4,7 @@ import { RoleLayout } from "@/components/layout/RoleLayout";
 import { mockAdminApi } from "@/lib/api/mock/admin";
 import type { AreaDemandStat } from "@/lib/api/admin";
 import { translateArea, translatePropertyType, toBnNumber } from "@/lib/i18n";
-import {
-  TrendingUp,
-  Building2,
-  Users,
-  CalendarCheck,
-  MapPin,
-} from "lucide-react";
+import { TrendingUp, Building2, Users, CalendarCheck, MapPin } from "lucide-react";
 
 export function AdminAnalyticsPage() {
   const { t, i18n } = useTranslation();
@@ -65,7 +59,9 @@ export function AdminAnalyticsPage() {
                 <TrendingUp className="h-4 w-4 text-primary" />
               </div>
               <p className="mt-2 text-xl font-bold text-foreground">
-                {translateArea(data.areaDemand[0]?.area || "KUET Gate / Teligati", i18n.language).split("/")[0]?.trim()}
+                {translateArea(data.areaDemand[0]?.area || "KUET Gate / Teligati", i18n.language)
+                  .split("/")[0]
+                  ?.trim()}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {t("admin.highestStudentInquiries")}
@@ -82,9 +78,7 @@ export function AdminAnalyticsPage() {
               <p className="mt-2 text-xl font-bold text-foreground">
                 ৳ {toBnNumber("5,800", i18n.language)}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {t("admin.perRoomSeat")}
-              </p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("admin.perRoomSeat")}</p>
             </div>
 
             <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
@@ -95,7 +89,11 @@ export function AdminAnalyticsPage() {
                 <Users className="h-4 w-4 text-indigo-500" />
               </div>
               <p className="mt-2 text-xl font-bold text-foreground">
-                {toBnNumber(Math.round((data.studentPreferenceRatio.studentsOnly / totalStudentPref) * 100), i18n.language)}%
+                {toBnNumber(
+                  Math.round((data.studentPreferenceRatio.studentsOnly / totalStudentPref) * 100),
+                  i18n.language,
+                )}
+                %
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {t("admin.explicitListingMention")}
@@ -112,9 +110,7 @@ export function AdminAnalyticsPage() {
               <p className="mt-2 text-xl font-bold text-foreground">
                 {toBnNumber(data.totalVisitsCompleted, i18n.language)}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {t("admin.verifiedVisits")}
-              </p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("admin.verifiedVisits")}</p>
             </div>
           </div>
 
@@ -125,9 +121,7 @@ export function AdminAnalyticsPage() {
                 <h2 className="text-base font-bold text-foreground">
                   {t("admin.areaDemandHeading")}
                 </h2>
-                <p className="text-xs text-muted-foreground">
-                  {t("admin.areaDemandDescription")}
-                </p>
+                <p className="text-xs text-muted-foreground">{t("admin.areaDemandDescription")}</p>
               </div>
             </div>
 
@@ -143,7 +137,9 @@ export function AdminAnalyticsPage() {
                       </div>
                       <div className="flex items-center gap-4 text-muted-foreground">
                         <span>
-                          {t("admin.avgRentLabel", { rent: toBnNumber(item.avgRent.toLocaleString(), i18n.language) })}
+                          {t("admin.avgRentLabel", {
+                            rent: toBnNumber(item.avgRent.toLocaleString(), i18n.language),
+                          })}
                         </span>
                         <span className="font-bold text-foreground">
                           {t("admin.listingAndInquiryFormat", {
@@ -210,7 +206,12 @@ export function AdminAnalyticsPage() {
                     <span className="text-primary font-bold">
                       {t("admin.countWithPercentage", {
                         count: toBnNumber(data.studentPreferenceRatio.studentsOnly, i18n.language),
-                        percentage: toBnNumber(Math.round((data.studentPreferenceRatio.studentsOnly / totalStudentPref) * 100), i18n.language),
+                        percentage: toBnNumber(
+                          Math.round(
+                            (data.studentPreferenceRatio.studentsOnly / totalStudentPref) * 100,
+                          ),
+                          i18n.language,
+                        ),
                       })}
                     </span>
                   </div>
@@ -232,7 +233,10 @@ export function AdminAnalyticsPage() {
                     <span className="text-foreground font-bold">
                       {t("admin.countWithPercentage", {
                         count: toBnNumber(data.studentPreferenceRatio.any, i18n.language),
-                        percentage: toBnNumber(Math.round((data.studentPreferenceRatio.any / totalStudentPref) * 100), i18n.language),
+                        percentage: toBnNumber(
+                          Math.round((data.studentPreferenceRatio.any / totalStudentPref) * 100),
+                          i18n.language,
+                        ),
                       })}
                     </span>
                   </div>
@@ -254,7 +258,12 @@ export function AdminAnalyticsPage() {
                     <span className="text-foreground font-bold">
                       {t("admin.countWithPercentage", {
                         count: toBnNumber(data.studentPreferenceRatio.familyOnly, i18n.language),
-                        percentage: toBnNumber(Math.round((data.studentPreferenceRatio.familyOnly / totalStudentPref) * 100), i18n.language),
+                        percentage: toBnNumber(
+                          Math.round(
+                            (data.studentPreferenceRatio.familyOnly / totalStudentPref) * 100,
+                          ),
+                          i18n.language,
+                        ),
                       })}
                     </span>
                   </div>

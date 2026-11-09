@@ -1,9 +1,8 @@
 import { USE_MOCK, type Role } from "./client";
 import { http, setAuthToken, getAuthToken } from "./http";
-import { mockAuth, type User, MOCK_CODE } from "./mock/auth";
+import { mockAuth, type User } from "./mock/auth";
 
 export type { User };
-export { MOCK_CODE };
 
 export interface AuthApi {
   session(): Promise<User | null>;
@@ -16,13 +15,17 @@ export interface AuthApi {
     role: Role;
   }): Promise<User>;
   logout(): Promise<void>;
+  updateProfile(input: { name: string; phone?: string }): Promise<User>;
   forgotPassword(email: string): Promise<{ message?: string } | void>;
   resetPassword(
     emailOrCode: string,
     codeOrPassword: string,
     maybePassword?: string,
   ): Promise<{ message?: string } | void>;
-  verifyEmail(code: string): Promise<User>;
+  /**
+   * @deprecated Verification uses cryptographically signed email links via GET /api/v1/auth/verify-email/{id}/{hash}
+   */
+  verifyEmail?(code: string): Promise<User>;
   resendCode(): Promise<{ message?: string } | void>;
 }
 
@@ -85,6 +88,16 @@ export const realAuth: AuthApi = {
     }
   },
 
+  async updateProfile(input: { name: string; phone?: string }): Promise<User> {
+    const res = await http.put<{
+      data: {
+        user: User;
+      };
+    }>("/auth/me", input);
+
+    return res.data.user;
+  },
+
   async forgotPassword(email: string): Promise<{ message: string }> {
     return http.post<{ message: string }>("/auth/forgot-password", { email });
   },
@@ -114,24 +127,13 @@ export const realAuth: AuthApi = {
     });
   },
 
-  async verifyEmail(code: string): Promise<User> {
-    const res = await http.post<{
-      message: string;
-      data?: { user: User };
-      user?: User;
-    }>("/auth/verify-email", {
-      code,
-    });
-    if (res.data?.user) {
-      return res.data.user;
-    }
-    if (res.user) {
-      return res.user;
-    }
-    // Re-sync session if user object wasn't in top level
+  /**
+   * @deprecated Verification uses cryptographically signed email links via GET /api/v1/auth/verify-email/{id}/{hash}
+   */
+  async verifyEmail(): Promise<User> {
     const sessionUser = await this.session();
     if (!sessionUser) {
-      throw new Error("Failed to reload session after email verification.");
+      throw new Error("Verification requires clicking the link sent to your email address.");
     }
     return sessionUser;
   },
@@ -143,6 +145,27 @@ export const realAuth: AuthApi = {
 
 const adaptedMockAuth: AuthApi = {
   ...mockAuth,
+  async updateProfile(input: { name: string; phone?: string }): Promise<User> {
+    const sessionUser = await mockAuth.session();
+    if (!sessionUser) {
+      throw { status: 401, message: "auth.errors.unauthenticated" };
+    }
+    const rawUsers = localStorage.getItem("thikana.mock.users");
+    const all = rawUsers ? JSON.parse(rawUsers) : [];
+    const idx = all.findIndex((x: { id: string }) => x.id === sessionUser.id);
+    if (idx >= 0) {
+      all[idx].name = input.name;
+      if (input.phone !== undefined) {
+        all[idx].phone = input.phone;
+      }
+      localStorage.setItem("thikana.mock.users", JSON.stringify(all));
+    }
+    return {
+      ...sessionUser,
+      name: input.name,
+      ...(input.phone !== undefined ? { phone: input.phone } : {}),
+    };
+  },
   async resetPassword(
     emailOrCode: string,
     codeOrPassword: string,

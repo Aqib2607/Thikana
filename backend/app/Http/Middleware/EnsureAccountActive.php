@@ -18,8 +18,11 @@ class EnsureAccountActive
         $user = $request->user();
 
         if ($user && $user->isSuspended()) {
-            // Revoke active token immediately on suspended access attempt
-            $request->user()->currentAccessToken()?->delete();
+            // Retrieve token and safely delete only if present (SEC-P2-04)
+            $token = $user->currentAccessToken();
+            if ($token !== null && method_exists($token, 'delete')) {
+                $token->delete();
+            }
 
             return response()->json([
                 'status' => 403,
@@ -30,4 +33,3 @@ class EnsureAccountActive
         return $next($request);
     }
 }
-

@@ -229,7 +229,7 @@ class ContactRequestTest extends TestCase
 
     public function test_public_property_endpoint_does_not_leak_private_contact(): void
     {
-        $response = $this->getJson("/api/v1/properties/{$this->property->id}");
+        $response = $this->withToken($this->tenantToken)->getJson("/api/v1/properties/{$this->property->id}");
 
         $response->assertStatus(200);
         $this->assertFalse($response->json('data.landlord.publicContactVisible'));

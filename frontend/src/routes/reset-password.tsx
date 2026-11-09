@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useTranslation } from "react-i18next";
 import { AuthCard, Field, FormAlert, SubmitButton } from "@/components/auth/AuthCard";
-import { authApi, MOCK_CODE } from "@/lib/api/auth";
+import { authApi } from "@/lib/api/auth";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 
 interface ResetPasswordSearch {
@@ -16,7 +16,9 @@ interface ResetPasswordSearch {
 export const Route = createFileRoute("/reset-password")({
   validateSearch: (search: Record<string, unknown>): ResetPasswordSearch => ({
     email: typeof search["email"] === "string" ? search["email"] : undefined,
-    code: typeof search["code"] === "string" ? search["code"] : undefined,
+    code:
+      (typeof search["code"] === "string" ? search["code"] : undefined) ||
+      (typeof search["token"] === "string" ? search["token"] : undefined),
   }),
   head: () => ({
     meta: [
@@ -30,10 +32,8 @@ export const Route = createFileRoute("/reset-password")({
 const resetSchema = z
   .object({
     email: z.string().email({ message: "auth.errors.invalidEmail" }),
-    code: z
-      .string()
-      .min(6, { message: "auth.errors.code" })
-      .max(6, { message: "auth.errors.code" }),
+    code: z.string().min(1, { message: "auth.errors.code" }),
+
     password: z.string().min(8, { message: "auth.errors.passwordMin8" }),
     confirmPassword: z.string().min(1, { message: "auth.errors.required" }),
   })
@@ -122,25 +122,11 @@ function ResetPasswordPage() {
         <Field
           label={t("auth.codeLabel")}
           placeholder={t("auth.codePlaceholder")}
-          inputMode="numeric"
-          maxLength={6}
+
           autoComplete="one-time-code"
           error={errors.code?.message ? t(errors.code.message) : undefined}
           {...register("code")}
         />
-
-        <div className="flex justify-start text-xs">
-          <button
-            type="button"
-            onClick={() => {
-              setValue("email", "tenant@demo.test", { shouldValidate: true });
-              setValue("code", MOCK_CODE, { shouldValidate: true });
-            }}
-            className="font-medium text-link underline hover:opacity-85"
-          >
-            অটো-ফিল কোড ({MOCK_CODE})
-          </button>
-        </div>
 
         <Field
           label={t("auth.newPasswordLabel")}

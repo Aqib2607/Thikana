@@ -24,9 +24,7 @@ function NotFoundComponent() {
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">{t("common.pageNotFound")}</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t("common.pageNotFoundDesc")}
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("common.pageNotFoundDesc")}</p>
         <div className="mt-6">
           <Link
             to="/"
@@ -54,9 +52,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           {t("common.pageLoadError")}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t("common.pageLoadErrorDesc")}
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("common.pageLoadErrorDesc")}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -84,7 +80,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Thikana — Rental homes in Bangladesh" },
+      { title: "খুলনায় বাসা ও মেস ভাড়া খুঁজুন | ঠিকানা" },
       { name: "description", content: "Bangla-first rental property discovery for Bangladesh." },
       { property: "og:title", content: "Thikana" },
       {
@@ -113,11 +109,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="bn">
+    <html lang="bn" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {children}
         <Toaster />
         <Scripts />
@@ -132,9 +128,10 @@ function RootComponent() {
 
   useEffect(() => {
     const isBn = i18n.language === "bn";
+    document.documentElement.lang = isBn ? "bn" : "en";
     document.title = isBn
-      ? "ঠিকানা — খুলনায় শিক্ষার্থী ও পরিবারের জন্য বিশ্বস্ত বাসা"
-      : "Thikana — Rental homes in Bangladesh";
+      ? "খুলনায় বাসা ও মেস ভাড়া খুঁজুন | ঠিকানা"
+      : "Find Rental Homes & Mess in Khulna | Thikana";
   }, [i18n.language]);
 
   return (

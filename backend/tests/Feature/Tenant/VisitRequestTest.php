@@ -15,13 +15,21 @@ class VisitRequestTest extends TestCase
     use RefreshDatabase;
 
     protected User $tenant;
+
     protected User $otherTenant;
+
     protected User $landlord;
+
     protected User $otherLandlord;
+
     protected Property $property;
+
     protected string $tenantToken;
+
     protected string $otherTenantToken;
+
     protected string $landlordToken;
+
     protected string $otherLandlordToken;
 
     protected function setUp(): void
@@ -104,6 +112,12 @@ class VisitRequestTest extends TestCase
         ]);
     }
 
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+        parent::tearDown();
+    }
+
     public function test_unauthenticated_user_cannot_create_or_view_visits(): void
     {
         $this->postJson("/api/v1/properties/{$this->property->id}/visits", [
@@ -123,7 +137,7 @@ class VisitRequestTest extends TestCase
             ->assertStatus(403);
 
         // Reset auth guard cache between requests in same test
-        auth('sanctum')->forgetUser();
+        app('auth')->forgetGuards();
 
         // Tenant cannot access landlord visits list
         $this->withToken($this->tenantToken)
@@ -338,7 +352,7 @@ class VisitRequestTest extends TestCase
             'property_id' => $this->property->id,
             'tenant_id' => $this->tenant->id,
             'landlord_id' => $this->landlord->id,
-            'visit_date' => Carbon::today()->toDateString(),
+            'visit_date' => Carbon::now('Asia/Dhaka')->toDateString(),
             'preferred_time_slot' => 'morning',
             'status' => 'pending',
         ]);
@@ -354,7 +368,7 @@ class VisitRequestTest extends TestCase
             'property_id' => $this->property->id,
             'tenant_id' => $this->tenant->id,
             'landlord_id' => $this->landlord->id,
-            'visit_date' => Carbon::yesterday()->toDateString(),
+            'visit_date' => Carbon::now('Asia/Dhaka')->subDay()->toDateString(),
             'preferred_time_slot' => 'morning',
             'status' => 'pending',
         ]);
@@ -362,6 +376,91 @@ class VisitRequestTest extends TestCase
         $response = $this->withToken($this->tenantToken)->patchJson("/api/v1/tenant/visits/{$visit->id}/cancel");
 
         $response->assertStatus(422);
+    }
+
+    public function test_tenant_can_cancel_visit_scheduled_tomorrow_in_bangladesh(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-11-10 14:00:00', 'Asia/Dhaka'));
+        $token = $this->tenant->createToken('test', ['role:tenant'])->plainTextToken;
+
+        $visit = VisitRequest::create([
+            'property_id' => $this->property->id,
+            'tenant_id' => $this->tenant->id,
+            'landlord_id' => $this->landlord->id,
+            'visit_date' => '2026-11-11',
+            'preferred_time_slot' => 'morning',
+            'status' => 'pending',
+        ]);
+
+        $response = $this->withToken($token)->patchJson("/api/v1/tenant/visits/{$visit->id}/cancel", [
+            'cancellation_reason' => 'Schedule conflict tomorrow.',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.status', 'Cancelled');
+    }
+
+    public function test_tenant_cannot_cancel_visit_scheduled_today_in_bangladesh(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-11-10 14:00:00', 'Asia/Dhaka'));
+        $token = $this->tenant->createToken('test', ['role:tenant'])->plainTextToken;
+
+        $visit = VisitRequest::create([
+            'property_id' => $this->property->id,
+            'tenant_id' => $this->tenant->id,
+            'landlord_id' => $this->landlord->id,
+            'visit_date' => '2026-11-10',
+            'preferred_time_slot' => 'morning',
+            'status' => 'pending',
+        ]);
+
+        $response = $this->withToken($token)->patchJson("/api/v1/tenant/visits/{$visit->id}/cancel");
+
+        $response->assertStatus(422)
+            ->assertJsonPath('message', 'Visits cannot be cancelled on or after the scheduled visit date.');
+    }
+
+    public function test_tenant_cannot_cancel_visit_scheduled_yesterday_in_bangladesh(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-11-10 14:00:00', 'Asia/Dhaka'));
+        $token = $this->tenant->createToken('test', ['role:tenant'])->plainTextToken;
+
+        $visit = VisitRequest::create([
+            'property_id' => $this->property->id,
+            'tenant_id' => $this->tenant->id,
+            'landlord_id' => $this->landlord->id,
+            'visit_date' => '2026-11-09',
+            'preferred_time_slot' => 'morning',
+            'status' => 'pending',
+        ]);
+
+        $response = $this->withToken($token)->patchJson("/api/v1/tenant/visits/{$visit->id}/cancel");
+
+        $response->assertStatus(422)
+            ->assertJsonPath('message', 'Visits cannot be cancelled on or after the scheduled visit date.');
+    }
+
+    public function test_tenant_cannot_cancel_visit_scheduled_today_when_utc_reports_previous_date(): void
+    {
+        // 2:30 AM on 2026-11-10 in Dhaka is 20:30 on 2026-11-09 in UTC.
+        // Under a UTC comparison, Carbon::today() would still be 2026-11-09 and allow cancellation.
+        // Under Asia/Dhaka business rules, 2026-11-10 is already today and cannot be cancelled.
+        Carbon::setTestNow(Carbon::parse('2026-11-10 02:30:00', 'Asia/Dhaka'));
+        $token = $this->tenant->createToken('test', ['role:tenant'])->plainTextToken;
+
+        $visit = VisitRequest::create([
+            'property_id' => $this->property->id,
+            'tenant_id' => $this->tenant->id,
+            'landlord_id' => $this->landlord->id,
+            'visit_date' => '2026-11-10',
+            'preferred_time_slot' => 'morning',
+            'status' => 'pending',
+        ]);
+
+        $response = $this->withToken($token)->patchJson("/api/v1/tenant/visits/{$visit->id}/cancel");
+
+        $response->assertStatus(422)
+            ->assertJsonPath('message', 'Visits cannot be cancelled on or after the scheduled visit date.');
     }
 
     public function test_invalid_status_transitions_are_rejected(): void
@@ -466,8 +565,8 @@ class VisitRequestTest extends TestCase
 
     public function test_public_property_and_contact_request_behavior_remains_unchanged(): void
     {
-        // Public property endpoint still redacts private contact details
-        $propRes = $this->getJson("/api/v1/properties/{$this->property->id}");
+        // Property endpoint still redacts private contact details for authenticated tenant
+        $propRes = $this->withToken($this->tenantToken)->getJson("/api/v1/properties/{$this->property->id}");
         $propRes->assertStatus(200);
         $this->assertFalse($propRes->json('data.landlord.publicContactVisible'));
         $this->assertNull($propRes->json('data.landlord.phone'));

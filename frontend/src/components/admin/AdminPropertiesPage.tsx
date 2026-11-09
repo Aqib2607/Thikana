@@ -56,11 +56,7 @@ export function AdminPropertiesPage() {
     if (!user) return;
     setSubmittingAction(true);
     try {
-      const updated = await adminApi.approveProperty(
-        property.id,
-        user.id,
-        user.name || "Admin",
-      );
+      const updated = await adminApi.approveProperty(property.id, user.id, user.name || "Admin");
       setProperties((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
       if (activeProperty?.id === property.id) {
         setActiveProperty(updated);
@@ -231,9 +227,7 @@ export function AdminPropertiesPage() {
             <p className="mt-3 text-base font-semibold text-foreground">
               {t("admin.noPropertiesTitle")}
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t("admin.noPropertiesDesc")}
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">{t("admin.noPropertiesDesc")}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -272,7 +266,9 @@ export function AdminPropertiesPage() {
                         />
                         <div className="min-w-0 max-w-xs">
                           <p className="truncate font-semibold text-foreground">
-                            {i18n.language.startsWith("bn") && p.banglaTitle ? p.banglaTitle : p.title}
+                            {i18n.language.startsWith("bn") && p.banglaTitle
+                              ? p.banglaTitle
+                              : p.title}
                           </p>
                           <p className="flex items-center gap-1 text-xs text-muted-foreground">
                             <MapPin className="h-3 w-3 shrink-0" />
@@ -349,7 +345,7 @@ export function AdminPropertiesPage() {
                             type="button"
                             onClick={() => handleApprove(p)}
                             disabled={submittingAction}
-                            className="inline-flex items-center gap-1 rounded-lg bg-success px-2.5 py-1.5 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                            className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50"
                           >
                             <CheckCircle2 className="h-3.5 w-3.5" />
                             <span>{t("admin.approve")}</span>
@@ -456,7 +452,8 @@ export function AdminPropertiesPage() {
               <div>
                 <span className="text-muted-foreground">{t("admin.roomsAndBathsLabel")}</span>
                 <p className="font-bold text-foreground text-sm">
-                  {toBnNumber(activeProperty.rooms, i18n.language)} {t("properties.rooms")} · {toBnNumber(activeProperty.bathrooms, i18n.language)} {t("properties.baths")}
+                  {toBnNumber(activeProperty.rooms, i18n.language)} {t("properties.rooms")} ·{" "}
+                  {toBnNumber(activeProperty.bathrooms, i18n.language)} {t("properties.baths")}
                 </p>
               </div>
               <div>
@@ -499,7 +496,8 @@ export function AdminPropertiesPage() {
                 <strong>{t("admin.transportLabel")}</strong> {activeProperty.community.transport}
               </p>
               <p className="mt-1 text-muted-foreground leading-relaxed">
-                <strong>{t("admin.waterloggingLabel")}</strong> {activeProperty.community.waterlogging}
+                <strong>{t("admin.waterloggingLabel")}</strong>{" "}
+                {activeProperty.community.waterlogging}
               </p>
               <p className="mt-1 text-muted-foreground leading-relaxed">
                 <strong>{t("admin.internetLabel")}</strong> {activeProperty.community.internet}
@@ -513,7 +511,7 @@ export function AdminPropertiesPage() {
                   type="button"
                   onClick={() => handleApprove(activeProperty)}
                   disabled={submittingAction}
-                  className="rounded-lg bg-success px-4 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                  className="inline-flex items-center justify-center rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50"
                 >
                   {t("admin.approve")}
                 </button>

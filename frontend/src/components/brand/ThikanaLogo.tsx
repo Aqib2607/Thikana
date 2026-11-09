@@ -19,7 +19,7 @@ export function ThikanaLogo({ className }: { className?: string }) {
       <ThikanaMark />
       <span className="flex flex-col leading-none">
         <span className="text-lg font-semibold tracking-tight">ঠিকানা</span>
-        <span className="text-xs font-medium tracking-[0.2em] text-muted-foreground">THIKANA</span>
+        <span className="text-xs font-semibold tracking-wider text-muted-foreground">Thikana</span>
       </span>
     </span>
   );

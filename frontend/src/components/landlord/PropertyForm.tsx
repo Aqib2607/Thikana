@@ -10,8 +10,9 @@ import {
   FURNISHED_STATUSES,
   TENANT_PREFERENCES,
   type PropertyItem,
+  propertyApi,
 } from "@/lib/api/properties";
-import { KHULNA_AREAS, ALL_AMENITIES } from "@/lib/api/mock/properties";
+import { useQuery } from "@tanstack/react-query";
 import {
   translatePropertyType,
   translateRentalType,
@@ -33,6 +34,8 @@ import {
   FileText,
   CheckCircle2,
   Info,
+  Loader2,
+  RefreshCw,
 } from "lucide-react";
 
 interface PropertyFormProps {
@@ -60,6 +63,31 @@ export function PropertyForm({
   const { t, i18n } = useTranslation();
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const {
+    data: areas = [],
+    isLoading: areasLoading,
+    isError: areasError,
+    refetch: refetchAreas,
+  } = useQuery({
+    queryKey: ["areas"],
+    queryFn: () => propertyApi.getAreas(),
+    staleTime: 1000 * 60 * 30,
+  });
+
+  const {
+    data: amenitiesList = [],
+    isLoading: amenitiesLoading,
+    isError: amenitiesError,
+    refetch: refetchAmenities,
+  } = useQuery({
+    queryKey: ["amenities"],
+    queryFn: () => propertyApi.getAmenities(),
+    staleTime: 1000 * 60 * 30,
+  });
+
+  const isCatalogLoading = areasLoading || amenitiesLoading;
+  const hasCatalogError = areasError || amenitiesError;
 
   const defaultValues: PropertyFormData = {
     title: initialData?.title || "",
@@ -162,12 +190,8 @@ export function PropertyForm({
             <Building2 className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-foreground">
-              {t("landlord.basicInfoTitle")}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {t("landlord.basicInfoDesc")}
-            </p>
+            <h3 className="text-base font-bold text-foreground">{t("landlord.basicInfoTitle")}</h3>
+            <p className="text-xs text-muted-foreground">{t("landlord.basicInfoDesc")}</p>
           </div>
         </div>
 
@@ -274,12 +298,8 @@ export function PropertyForm({
             <MapPin className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-foreground">
-              {t("landlord.locationTitle")}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {t("landlord.locationDesc")}
-            </p>
+            <h3 className="text-base font-bold text-foreground">{t("landlord.locationTitle")}</h3>
+            <p className="text-xs text-muted-foreground">{t("landlord.locationDesc")}</p>
           </div>
         </div>
 
@@ -321,15 +341,30 @@ export function PropertyForm({
           </div>
 
           <div className="sm:col-span-3">
-            <label className="block text-sm font-semibold text-foreground">
-              {t("landlord.areaSelectLabel")}
-              <span className="text-destructive ml-1">*</span>
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-semibold text-foreground">
+                {t("landlord.areaSelectLabel")}
+                <span className="text-destructive ml-1">*</span>
+              </label>
+              {areasError && (
+                <button
+                  type="button"
+                  onClick={() => refetchAreas()}
+                  className="inline-flex items-center gap-1 text-[11px] text-destructive hover:underline"
+                >
+                  <RefreshCw className="h-2.5 w-2.5" />
+                  Retry
+                </button>
+              )}
+            </div>
             <select
               {...register("area")}
-              className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              disabled={areasLoading}
+              className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-60"
             >
-              {KHULNA_AREAS.filter((a) => a !== "All Areas").map((area) => (
+              {areasLoading && <option disabled>{t("common.loadingAreas")}</option>}
+              {areasError && <option disabled>{t("common.failedToLoadAreas")}</option>}
+              {areas.map((area) => (
                 <option key={area} value={area}>
                   {translateArea(area, i18n.language)}
                 </option>
@@ -369,12 +404,8 @@ export function PropertyForm({
             <CircleDollarSign className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-foreground">
-              {t("landlord.pricingTitle")}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {t("landlord.pricingDesc")}
-            </p>
+            <h3 className="text-base font-bold text-foreground">{t("landlord.pricingTitle")}</h3>
+            <p className="text-xs text-muted-foreground">{t("landlord.pricingDesc")}</p>
           </div>
         </div>
 
@@ -467,12 +498,8 @@ export function PropertyForm({
             <Layers className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-foreground">
-              {t("landlord.specsTitle")}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {t("landlord.specsDesc")}
-            </p>
+            <h3 className="text-base font-bold text-foreground">{t("landlord.specsTitle")}</h3>
+            <p className="text-xs text-muted-foreground">{t("landlord.specsDesc")}</p>
           </div>
         </div>
 
@@ -598,22 +625,37 @@ export function PropertyForm({
 
       {/* 6. Amenities */}
       <section className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
-        <div className="flex items-center gap-2.5 mb-5 border-b border-border pb-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <Sparkles className="h-5 w-5" aria-hidden="true" />
+        <div className="flex items-center justify-between mb-5 border-b border-border pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Sparkles className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-foreground">{t("landlord.amenitiesTitle")}</h3>
+              <p className="text-xs text-muted-foreground">{t("landlord.amenitiesDesc")}</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-base font-bold text-foreground">
-              {t("landlord.amenitiesTitle")}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {t("landlord.amenitiesDesc")}
-            </p>
-          </div>
+          {amenitiesError && (
+            <button
+              type="button"
+              onClick={() => refetchAmenities()}
+              className="inline-flex items-center gap-1 text-[11px] text-destructive hover:underline"
+            >
+              <RefreshCw className="h-2.5 w-2.5" />
+              Retry
+            </button>
+          )}
         </div>
 
+        {amenitiesLoading && (
+          <div className="flex items-center space-x-2 py-4 text-xs text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>{t("common.loadingAmenities")}</span>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
-          {ALL_AMENITIES.map((amenity) => {
+          {amenitiesList.map((amenity) => {
             const isChecked = selectedAmenities.includes(amenity);
             return (
               <label
@@ -656,9 +698,7 @@ export function PropertyForm({
             <h3 className="text-base font-bold text-foreground">
               {t("landlord.contactPrivacyTitle")}
             </h3>
-            <p className="text-xs text-muted-foreground">
-              {t("landlord.contactPrivacyDesc")}
-            </p>
+            <p className="text-xs text-muted-foreground">{t("landlord.contactPrivacyDesc")}</p>
           </div>
         </div>
 
@@ -689,12 +729,8 @@ export function PropertyForm({
             <FileText className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-foreground">
-              {t("landlord.communityTitle")}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {t("landlord.communityDesc")}
-            </p>
+            <h3 className="text-base font-bold text-foreground">{t("landlord.communityTitle")}</h3>
+            <p className="text-xs text-muted-foreground">{t("landlord.communityDesc")}</p>
           </div>
         </div>
 
@@ -784,7 +820,7 @@ export function PropertyForm({
         </button>
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || isCatalogLoading || hasCatalogError}
           className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow hover:opacity-95 disabled:opacity-50 transition-all"
         >
           {submitting ? (
@@ -792,9 +828,7 @@ export function PropertyForm({
           ) : (
             <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
           )}
-          <span>
-            {isEditing ? t("landlord.saveChanges") : t("landlord.submitPending")}
-          </span>
+          <span>{isEditing ? t("landlord.saveChanges") : t("landlord.submitPending")}</span>
         </button>
       </div>
     </form>

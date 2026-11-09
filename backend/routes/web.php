@@ -15,4 +15,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [FrontendGatewayController::class, 'handle'])->name('home');
+Route::get('/login', [FrontendGatewayController::class, 'handle'])->name('login');
 Route::fallback([FrontendGatewayController::class, 'handle'])->name('frontend.fallback');

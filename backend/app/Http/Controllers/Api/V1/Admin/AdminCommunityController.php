@@ -40,15 +40,16 @@ class AdminCommunityController extends Controller
         $allAreaNames = array_unique(array_merge(self::DEFAULT_AREAS, $areas->keys()->all()));
 
         foreach ($allAreaNames as $areaName) {
+            /** @var \App\Models\CommunityInformation|null $info */
             $info = $areas->has($areaName) ? $areas[$areaName]->communityInformation : null;
 
             $result[$areaName] = [
-                'transport' => $info?->transport ?? '',
-                'waterlogging' => $info?->waterlogging ?? '',
-                'internet' => $info?->internet ?? '',
-                'noise' => $info?->noise ?? '',
-                'safety' => $info?->safety ?? '',
-                'general' => $info?->general ?? '',
+                'transport' => $info ? (string) $info->transport : '',
+                'waterlogging' => $info ? (string) $info->waterlogging : '',
+                'internet' => $info ? (string) $info->internet : '',
+                'noise' => $info ? (string) $info->noise : '',
+                'safety' => $info ? (string) $info->safety : '',
+                'general' => $info ? (string) $info->general : '',
             ];
         }
 

@@ -2,43 +2,34 @@
 
 namespace Tests\Unit;
 
-use PHPUnit\Framework\TestCase as BaseTestCase;
 use RuntimeException;
+use Tests\TestCase;
 
-class DatabaseSafetyGuardTest extends BaseTestCase
+class DatabaseSafetyGuardTest extends TestCase
 {
+    public function test_safety_guard_allows_execution_when_database_is_thikana_test(): void
+    {
+        config(['database.connections.mysql.database' => 'thikana_test']);
+
+        $this->assertSafeTestDatabase();
+        $this->assertEquals('thikana_test', config('database.connections.mysql.database'));
+    }
+
     public function test_safety_guard_aborts_when_database_is_development(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage("CRITICAL SAFETY VIOLATION");
+        $this->expectExceptionMessage('CRITICAL SAFETY VIOLATION');
 
-        $database = 'thikana';
-        if ($database !== 'thikana_test') {
-            throw new RuntimeException("CRITICAL SAFETY VIOLATION: Database '{$database}' is not 'thikana_test'.");
-        }
+        config(['database.connections.mysql.database' => 'thikana']);
+        $this->assertSafeTestDatabase();
     }
 
     public function test_safety_guard_aborts_when_database_is_production(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage("CRITICAL SAFETY VIOLATION");
+        $this->expectExceptionMessage('CRITICAL SAFETY VIOLATION');
 
-        $database = 'railway';
-        if ($database !== 'thikana_test') {
-            throw new RuntimeException("CRITICAL SAFETY VIOLATION: Database '{$database}' is not 'thikana_test'.");
-        }
-    }
-
-    public function test_safety_guard_allows_execution_when_database_is_thikana_test(): void
-    {
-        $database = 'thikana_test';
-        $aborted = false;
-
-        if ($database !== 'thikana_test') {
-            $aborted = true;
-        }
-
-        $this->assertFalse($aborted);
+        config(['database.connections.mysql.database' => 'railway']);
+        $this->assertSafeTestDatabase();
     }
 }
-

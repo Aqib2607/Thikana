@@ -20,15 +20,43 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $trustedProxiesEnv = $_SERVER['TRUSTED_PROXIES'] ?? $_ENV['TRUSTED_PROXIES'] ?? null;
+        $trustedProxies = is_string($trustedProxiesEnv) && $trustedProxiesEnv !== ''
+            ? (str_contains($trustedProxiesEnv, ',')
+                ? array_values(array_filter(array_map('trim', explode(',', $trustedProxiesEnv)), fn (string $ip) => $ip !== ''))
+                : $trustedProxiesEnv)
+            : ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16', '127.0.0.1', '::1'];
+
+        $middleware->trustProxies(
+            at: $trustedProxies,
+            headers: Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PROTO | Request::HEADER_X_FORWARDED_PORT,
+        );
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
             'active' => EnsureAccountActive::class,
         ]);
+
+        $middleware->redirectGuestsTo(function (Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return null;
+            }
+            return route('login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        $exceptions->render(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'status' => 429,
+                    'message' => 'auth.errors.tooManyAttempts',
+                ], 429, $e->getHeaders());
+            }
+        });
 
         $exceptions->render(function (ValidationException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
@@ -47,6 +75,8 @@ return Application::configure(basePath: dirname(__DIR__))
                     'message' => 'auth.errors.unauthenticated',
                 ], 401);
             }
+
+            return redirect()->guest(route('login'));
         });
 
         $exceptions->render(function (AuthorizationException $e, Request $request) {

@@ -16,10 +16,7 @@ export function setAuthToken(token: string | null): void {
   }
 }
 
-export async function httpRequest<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
+export async function httpRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const baseUrl = API_BASE_URL || "/api/v1";
   const normalizedEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
   const url = `${baseUrl.replace(/\/+$/, "")}${normalizedEndpoint}`;
@@ -43,6 +40,7 @@ export async function httpRequest<T>(
   try {
     response = await fetch(url, {
       ...options,
+      credentials: "same-origin",
       headers,
     });
   } catch (_networkError: unknown) {
@@ -58,7 +56,7 @@ export async function httpRequest<T>(
     return {} as T;
   }
 
-  let data: any = null;
+  let data: unknown = null;
   const contentType = response.headers.get("content-type");
   if (contentType && contentType.includes("application/json")) {
     try {
@@ -74,10 +72,23 @@ export async function httpRequest<T>(
       setAuthToken(null);
     }
 
+    const errObj =
+      typeof data === "object" && data !== null
+        ? (data as {
+            message?: unknown;
+            fieldErrors?: unknown;
+            errors?: unknown;
+          })
+        : null;
+    const message =
+      typeof errObj?.message === "string" ? errObj.message : `Error ${response.status}`;
+    const fieldErrors = (errObj?.fieldErrors ?? errObj?.errors) as
+      Record<string, string[]> | undefined;
+
     const error: ApiError = {
       status: response.status,
-      message: data?.message || `Error ${response.status}`,
-      fieldErrors: data?.fieldErrors || data?.errors || undefined,
+      message,
+      fieldErrors,
     };
     throw error;
   }
@@ -88,25 +99,24 @@ export async function httpRequest<T>(
 export const http = {
   get: <T>(endpoint: string, headers?: Record<string, string>) =>
     httpRequest<T>(endpoint, { method: "GET", headers }),
-  post: <T>(endpoint: string, body?: any, headers?: Record<string, string>) =>
+  post: <T>(endpoint: string, body?: unknown, headers?: Record<string, string>) =>
     httpRequest<T>(endpoint, {
       method: "POST",
-      body: body instanceof FormData ? body : JSON.stringify(body),
+      body: body instanceof FormData ? body : body !== undefined ? JSON.stringify(body) : undefined,
       headers,
     }),
-  put: <T>(endpoint: string, body?: any, headers?: Record<string, string>) =>
+  put: <T>(endpoint: string, body?: unknown, headers?: Record<string, string>) =>
     httpRequest<T>(endpoint, {
       method: "PUT",
-      body: body instanceof FormData ? body : JSON.stringify(body),
+      body: body instanceof FormData ? body : body !== undefined ? JSON.stringify(body) : undefined,
       headers,
     }),
-  patch: <T>(endpoint: string, body?: any, headers?: Record<string, string>) =>
+  patch: <T>(endpoint: string, body?: unknown, headers?: Record<string, string>) =>
     httpRequest<T>(endpoint, {
       method: "PATCH",
-      body: body instanceof FormData ? body : JSON.stringify(body),
+      body: body instanceof FormData ? body : body !== undefined ? JSON.stringify(body) : undefined,
       headers,
     }),
   delete: <T>(endpoint: string, headers?: Record<string, string>) =>
     httpRequest<T>(endpoint, { method: "DELETE", headers }),
 };
-

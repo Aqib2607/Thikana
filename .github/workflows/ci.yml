@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend Tests & Quality
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: thikana_test
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo, pdo_mysql, curl, dom
+          tools: composer:v2
+          coverage: none
+
+      - name: Install Composer Dependencies
+        working-directory: backend
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run Backend Syntax Checks
+        working-directory: backend
+        run: |
+          find app routes config tests -name "*.php" -exec php -l {} \;
+
+      - name: Run PHPStan Static Analysis
+        working-directory: backend
+        run: vendor/bin/phpstan analyse --memory-limit=1G
+
+      - name: Run Pest Test Suite
+        working-directory: backend
+        env:
+          APP_KEY: base64:eUdBc6qZ0Z7b4wE8PqL9nK2mJ5vX8yR1tO4wA7dC0eI=
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: thikana_test
+          DB_USERNAME: root
+          DB_PASSWORD: ''
+        run: php artisan test
+
+  frontend:
+    name: Frontend Tests & Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run TypeScript Typecheck
+        working-directory: frontend
+        run: npx tsc --noEmit
+
+      - name: Run Vitest Suite
+        working-directory: frontend
+        run: npm run test
+
+      - name: Run Production Build
+        working-directory: frontend
+        run: npm run build

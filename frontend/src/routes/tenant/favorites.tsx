@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { PropertyCard } from "@/components/property/PropertyCard";
-import { mockTenantApi, MOCK_PROPERTIES } from "@/lib/api/mock";
+import { tenantApi } from "@/lib/api/tenant";
 import type { PropertyItem } from "@/lib/api/properties";
 import { toBnNumber } from "@/lib/i18n";
-import { Heart, Search } from "lucide-react";
+import { Heart, Search, AlertCircle, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/tenant/favorites")({
   head: () => ({
@@ -16,28 +17,37 @@ export const Route = createFileRoute("/tenant/favorites")({
         name: "description",
         content: "View and manage your saved and favorited academic rental properties.",
       },
+      {
+        name: "robots",
+        content: "noindex, nofollow",
+      },
     ],
   }),
   component: TenantFavoritesPage,
 });
 
-function TenantFavoritesPage() {
+export function TenantFavoritesPage() {
   const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
-  const [favoriteProperties, setFavoriteProperties] = useState<PropertyItem[]>([]);
+  const queryClient = useQueryClient();
 
-  const loadFavorites = () => {
-    const ids = mockTenantApi.getFavoriteIds();
-    const matched = MOCK_PROPERTIES.filter((p) => ids.includes(p.id));
-    setFavoriteProperties(matched);
-  };
+  const {
+    data: favoriteProperties = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery<PropertyItem[]>({
+    queryKey: ["favorites"],
+    queryFn: () => tenantApi.getFavorites(),
+  });
 
   useEffect(() => {
-    loadFavorites();
-    const handleUpdate = () => loadFavorites();
+    const handleUpdate = () => {
+      queryClient.invalidateQueries({ queryKey: ["favorites"] });
+    };
     window.addEventListener("thikana.favorites.updated", handleUpdate);
     return () => window.removeEventListener("thikana.favorites.updated", handleUpdate);
-  }, []);
+  }, [queryClient]);
 
   return (
     <RoleLayout
@@ -50,7 +60,42 @@ function TenantFavoritesPage() {
       }
       activeTab="favorites"
     >
-      {favoriteProperties.length === 0 ? (
+      {isError && (
+        <div className="mb-6 flex items-center justify-between rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-xs font-semibold text-destructive">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>
+              {isBn
+                ? "পছন্দের বাসাগুলোর তালিকা লোড করতে সমস্যা হয়েছে।"
+                : "Failed to load saved properties. Please try again."}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground hover:bg-destructive/90"
+          >
+            <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+            <span>{isBn ? "পুনরায় চেষ্টা" : "Retry"}</span>
+          </button>
+        </div>
+      )}
+
+      {isLoading ? (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((n) => (
+            <div
+              key={n}
+              className="h-80 rounded-2xl border border-border bg-surface p-4 animate-pulse space-y-4"
+            >
+              <div className="h-44 rounded-xl bg-secondary/60" />
+              <div className="h-4 w-3/4 rounded bg-secondary/60" />
+              <div className="h-4 w-1/2 rounded bg-secondary/60" />
+              <div className="h-8 rounded bg-secondary/60" />
+            </div>
+          ))}
+        </div>
+      ) : favoriteProperties.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
           <Heart className="mx-auto h-12 w-12 text-muted-foreground/50" aria-hidden="true" />
           <h2 className="mt-4 text-base font-bold text-foreground">
@@ -73,7 +118,7 @@ function TenantFavoritesPage() {
         <div className="space-y-4">
           <p className="text-xs text-muted-foreground">
             {isBn
-              ? `মোট ${favoriteProperties.length}টি বাসা সংরক্ষিত আছে:`
+              ? `মোট ${toBnNumber(favoriteProperties.length, i18n.language)}টি বাসা সংরক্ষিত আছে:`
               : `Total ${favoriteProperties.length} properties saved:`}
           </p>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

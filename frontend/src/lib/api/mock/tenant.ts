@@ -158,6 +158,15 @@ export const mockTenantApi = {
     return data;
   },
 
+  async clearPreferences(): Promise<void> {
+    try {
+      localStorage.removeItem(STORAGE_KEYS.PREFS);
+      window.dispatchEvent(new Event("thikana.preferences.updated"));
+    } catch {
+      // Ignore
+    }
+  },
+
   // Visits
   async getVisits(): Promise<VisitRequestItem[]> {
     try {

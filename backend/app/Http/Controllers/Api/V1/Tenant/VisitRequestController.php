@@ -93,11 +93,14 @@ class VisitRequestController extends Controller
             ], 422);
         }
 
-        // Date Cutoff Guard: Prohibit cancellation on or after the scheduled visit date
-        $visitDate = Carbon::parse($visit->visit_date)->startOfDay();
-        $today = Carbon::today();
+        // Date Cutoff Guard: Prohibit cancellation on or after the scheduled visit date in Bangladesh business timezone (Asia/Dhaka)
+        $todayInDhaka = Carbon::now('Asia/Dhaka')->startOfDay();
+        $visitDateString = $visit->visit_date instanceof \DateTimeInterface
+            ? $visit->visit_date->format('Y-m-d')
+            : (string) $visit->visit_date;
+        $visitDateInDhaka = Carbon::parse($visitDateString, 'Asia/Dhaka')->startOfDay();
 
-        if ($visitDate->lessThanOrEqualTo($today)) {
+        if ($visitDateInDhaka->lessThanOrEqualTo($todayInDhaka)) {
             return response()->json([
                 'status' => 422,
                 'message' => 'Visits cannot be cancelled on or after the scheduled visit date.',
@@ -121,4 +124,3 @@ class VisitRequestController extends Controller
         ]);
     }
 }
-

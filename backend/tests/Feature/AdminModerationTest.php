@@ -212,7 +212,8 @@ class AdminModerationTest extends TestCase
         $property = $this->createProperty('Pending Approval');
 
         // Initially not discoverable
-        $publicBefore = $this->getJson('/api/v1/properties');
+        $publicBefore = $this->withHeader('Authorization', 'Bearer ' . $this->adminToken)
+            ->getJson('/api/v1/properties');
         $publicBefore->assertStatus(200);
         $this->assertCount(0, $publicBefore->json('data'));
 
@@ -238,8 +239,9 @@ class AdminModerationTest extends TestCase
             'target_id' => (string) $property->id,
         ]);
 
-        // Now discoverable publicly
-        $publicAfter = $this->getJson('/api/v1/properties');
+        // Now discoverable by authenticated user
+        $publicAfter = $this->withHeader('Authorization', 'Bearer ' . $this->adminToken)
+            ->getJson('/api/v1/properties');
         $publicAfter->assertStatus(200);
         $this->assertCount(1, $publicAfter->json('data'));
         $this->assertEquals((string) $property->id, $publicAfter->json('data.0.id'));

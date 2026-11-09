@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { RoleLayout } from "@/components/layout/RoleLayout";
 import { tenantApi, VISIT_STATUSES, type VisitRequestItem, type VisitStatus } from "@/lib/api/tenant";
@@ -14,6 +15,7 @@ import {
   CheckCircle,
   AlertCircle,
   BadgeCheck,
+  RefreshCw,
 } from "lucide-react";
 
 export const Route = createFileRoute("/tenant/visits")({
@@ -24,32 +26,35 @@ export const Route = createFileRoute("/tenant/visits")({
         name: "description",
         content: "Track and manage your scheduled property visits and approvals.",
       },
+      {
+        name: "robots",
+        content: "noindex, nofollow",
+      },
     ],
   }),
   component: TenantVisitsPage,
 });
 
-function TenantVisitsPage() {
+export function TenantVisitsPage() {
   const { t, i18n } = useTranslation();
   const isBn = i18n.language === "bn";
-  const [visits, setVisits] = useState<VisitRequestItem[]>([]);
+  const queryClient = useQueryClient();
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  const loadVisits = async () => {
-    try {
-      const list = await tenantApi.getVisits();
-      setVisits(list);
-    } catch {
-      // In live or mock mode, keep visits resilient
-    }
-  };
-
-  useEffect(() => {
-    loadVisits();
-  }, []);
+  const {
+    data: visits = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery<VisitRequestItem[]>({
+    queryKey: ["tenantVisits"],
+    queryFn: () => tenantApi.getVisits(),
+  });
 
   const handleCancel = async (visitId: string) => {
+    setActionError(null);
     if (
       !confirm(
         isBn
@@ -59,16 +64,23 @@ function TenantVisitsPage() {
     ) {
       return;
     }
+
+    const reason = window.prompt(
+      isBn ? "বাতিলের কারণ উল্লেখ করুন (ঐচ্ছিক):" : "Cancellation reason (optional):",
+    );
+
     try {
-      await tenantApi.cancelVisit(visitId);
-      setActionSuccess(
-        t("tenant.visitCancelledSuccess"),
-      );
-      loadVisits();
-      setTimeout(() => setActionSuccess(null), 3000);
+      await tenantApi.cancelVisit(visitId, reason || undefined);
+      setActionSuccess(t("tenant.visitCancelledSuccess"));
+      queryClient.invalidateQueries({ queryKey: ["tenantVisits"] });
+      queryClient.invalidateQueries({ queryKey: ["tenantDashboardStats"] });
+      setTimeout(() => setActionSuccess(null), 4000);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : null;
-      alert(msg || (isBn ? "অনুরোধ বাতিল করতে সমস্যা হয়েছে।" : "Failed to cancel visit request."));
+      setActionError(
+        msg ||
+          (isBn ? "অনুরোধ বাতিল করতে সমস্যা হয়েছে।" : "Failed to cancel visit request."),
+      );
     }
   };
 
@@ -135,6 +147,30 @@ function TenantVisitsPage() {
         </div>
       )}
 
+      {(isError || actionError) && (
+        <div className="mb-4 flex items-center justify-between rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-xs font-semibold text-destructive">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>
+              {actionError ||
+                (isBn
+                  ? "পরিদর্শন তালিকা লোড করতে সমস্যা হয়েছে।"
+                  : "Failed to load visit requests. Please try again.")}
+            </span>
+          </div>
+          {isError && (
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground hover:bg-destructive/90"
+            >
+              <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+              <span>{isBn ? "পুনরায় চেষ্টা" : "Retry"}</span>
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Filter Tabs */}
       <div className="mb-6 flex flex-wrap gap-2 border-b border-border pb-3">
         {["All", ...VISIT_STATUSES].map((st) => (
@@ -153,7 +189,26 @@ function TenantVisitsPage() {
         ))}
       </div>
 
-      {filteredVisits.length === 0 ? (
+      {isLoading ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map((n) => (
+            <div
+              key={n}
+              className="h-28 rounded-2xl border border-border bg-surface p-5 animate-pulse flex items-center justify-between"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-20 w-24 rounded-xl bg-secondary/60 shrink-0" />
+                <div className="space-y-2">
+                  <div className="h-4 w-48 rounded bg-secondary/60" />
+                  <div className="h-3 w-32 rounded bg-secondary/60" />
+                  <div className="h-3 w-40 rounded bg-secondary/60" />
+                </div>
+              </div>
+              <div className="h-9 w-24 rounded-xl bg-secondary/60" />
+            </div>
+          ))}
+        </div>
+      ) : filteredVisits.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
           <Calendar className="mx-auto h-12 w-12 text-muted-foreground/40" aria-hidden="true" />
           <h2 className="mt-4 text-base font-bold text-foreground">

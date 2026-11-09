@@ -2,15 +2,16 @@
 
 namespace Tests\Unit;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Property;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    use RefreshDatabase;
-
-    public function test_that_true_is_true()
+    public function test_property_generates_slug_from_title(): void
     {
-        $this->assertTrue(true);
+        $slug = Property::generateSlug('Modern Apartment in Khulna');
+
+        $this->assertStringStartsWith('modern-apartment-in-khulna-', $slug);
+        $this->assertMatchesRegularExpression('/^modern-apartment-in-khulna-[a-z0-9]{6}$/', $slug);
     }
 }

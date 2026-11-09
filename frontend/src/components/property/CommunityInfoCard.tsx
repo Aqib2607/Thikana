@@ -57,9 +57,7 @@ export function CommunityInfoCard({ community, areaName }: CommunityInfoCardProp
         >
           {t("community.heading", { area: translateArea(areaName, i18n.language) })}
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t("community.subtitle")}
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">{t("community.subtitle")}</p>
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

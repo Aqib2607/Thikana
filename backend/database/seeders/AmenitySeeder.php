@@ -96,4 +96,3 @@ class AmenitySeeder extends Seeder
         }
     }
 }
-

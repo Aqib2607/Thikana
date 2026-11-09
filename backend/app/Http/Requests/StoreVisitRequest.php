@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Property;
 use App\Models\VisitRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class StoreVisitRequest extends FormRequest
 {
@@ -33,7 +34,7 @@ class StoreVisitRequest extends FormRequest
     /**
      * Configure the validator instance.
      */
-    public function withValidator($validator): void
+    public function withValidator(Validator $validator): void
     {
         $validator->after(function ($validator) {
             // Validate and normalize time slot
@@ -47,8 +48,9 @@ class StoreVisitRequest extends FormRequest
                 $canonicalSlot = 'evening';
             }
 
-            if (!$canonicalSlot) {
+            if (! $canonicalSlot) {
                 $validator->errors()->add('preferred_time_slot', 'Select a valid time slot (morning, afternoon, or evening).');
+
                 return;
             }
 
@@ -58,19 +60,28 @@ class StoreVisitRequest extends FormRequest
                 ->orWhere('slug', $propertyId)
                 ->first();
 
-            if (!$property) {
+            if (! $property) {
                 $validator->errors()->add('property', 'Property not found.');
+
                 return;
             }
 
             if ($property->approval_status !== 'Approved') {
                 $validator->errors()->add('property', 'Property is not eligible for visit bookings.');
+
+                return;
+            }
+
+            if ($property->availability !== 'Available') {
+                $validator->errors()->add('property', 'Visits can only be scheduled for currently available properties.');
+
                 return;
             }
 
             // Self-booking guard
             if ((int) $property->landlord_id === (int) $this->user()->id) {
                 $validator->errors()->add('property', 'Landlords cannot schedule visits for their own property.');
+
                 return;
             }
 
@@ -86,4 +97,3 @@ class StoreVisitRequest extends FormRequest
         });
     }
 }
-

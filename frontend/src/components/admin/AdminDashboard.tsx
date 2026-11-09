@@ -151,66 +151,122 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      {/* KPI Overview Grid */}
+      {/* KPI Overview Grid - Interactive Operational Summaries */}
       <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">
+        <Link
+          to="/admin/properties/pending"
+          className="group flex flex-col justify-between rounded-2xl border border-border bg-surface p-5 shadow-sm transition-all hover:border-warning/50 hover:shadow-md focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          <div>
+            <div className="flex items-center justify-between">
+              <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/15 text-warning">
+                <AlertTriangle className="h-4.5 w-4.5" aria-hidden="true" />
+              </div>
+            </div>
+            <p className="mt-3 text-xs font-semibold text-muted-foreground group-hover:text-foreground">
               {t("dashboard.pendingApprovals")}
-            </span>
-            <AlertTriangle className="h-4 w-4 text-warning" aria-hidden="true" />
+            </p>
+            <p className="mt-1 text-2xl font-extrabold tracking-tight text-foreground">
+              {loading ? "..." : toBnNumber(stats?.pendingProperties ?? 0, i18n.language)}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{t("admin.listingsPending")}</p>
           </div>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-foreground">
-            {loading ? "..." : toBnNumber(stats?.pendingProperties ?? 0, i18n.language)}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">{t("admin.listingsPending")}</p>
-        </div>
+          <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-xs font-semibold text-warning">
+            <span>{t("common.viewDetails")}</span>
+            <ArrowRight
+              className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1"
+              aria-hidden="true"
+            />
+          </div>
+        </Link>
 
-        <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">
+        <Link
+          to="/admin/properties"
+          className="group flex flex-col justify-between rounded-2xl border border-border bg-surface p-5 shadow-sm transition-all hover:border-emerald-500/50 hover:shadow-md focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          <div>
+            <div className="flex items-center justify-between">
+              <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="h-4.5 w-4.5" aria-hidden="true" />
+              </div>
+            </div>
+            <p className="mt-3 text-xs font-semibold text-muted-foreground group-hover:text-foreground">
               {t("admin.approvedProperties")}
-            </span>
-            <CheckCircle2 className="h-4 w-4 text-success" aria-hidden="true" />
+            </p>
+            <p className="mt-1 text-2xl font-extrabold tracking-tight text-foreground">
+              {loading ? "..." : toBnNumber(stats?.approvedProperties ?? 0, i18n.language)}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{t("admin.outOfTotal")}</p>
           </div>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-foreground">
-            {loading ? "..." : toBnNumber(stats?.approvedProperties ?? 0, i18n.language)}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">{t("admin.outOfTotal")}</p>
-        </div>
+          <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            <span>{t("common.viewDetails")}</span>
+            <ArrowRight
+              className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1"
+              aria-hidden="true"
+            />
+          </div>
+        </Link>
 
-        <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">
+        <Link
+          to="/admin/users"
+          className="group flex flex-col justify-between rounded-2xl border border-border bg-surface p-5 shadow-sm transition-all hover:border-primary/50 hover:shadow-md focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          <div>
+            <div className="flex items-center justify-between">
+              <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Users className="h-4.5 w-4.5" aria-hidden="true" />
+              </div>
+            </div>
+            <p className="mt-3 text-xs font-semibold text-muted-foreground group-hover:text-foreground">
               {t("admin.totalUsers")}
-            </span>
-            <Users className="h-4 w-4 text-primary" aria-hidden="true" />
+            </p>
+            <p className="mt-1 text-2xl font-extrabold tracking-tight text-foreground">
+              {loading ? "..." : toBnNumber(stats?.totalUsers ?? 0, i18n.language)}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground truncate">
+              {stats
+                ? t("admin.userStatsFormat", {
+                    tenants: toBnNumber(stats.tenantUsers, i18n.language),
+                    landlords: toBnNumber(stats.landlordUsers, i18n.language),
+                  })
+                : "..."}
+            </p>
           </div>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-foreground">
-            {loading ? "..." : toBnNumber(stats?.totalUsers ?? 0, i18n.language)}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {stats
-              ? t("admin.userStatsFormat", {
-                  tenants: toBnNumber(stats.tenantUsers, i18n.language),
-                  landlords: toBnNumber(stats.landlordUsers, i18n.language),
-                })
-              : "..."}
-          </p>
-        </div>
+          <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-xs font-semibold text-primary">
+            <span>{t("common.viewDetails")}</span>
+            <ArrowRight
+              className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1"
+              aria-hidden="true"
+            />
+          </div>
+        </Link>
 
-        <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">
+        <Link
+          to="/admin/reports"
+          className="group flex flex-col justify-between rounded-2xl border border-border bg-surface p-5 shadow-sm transition-all hover:border-destructive/50 hover:shadow-md focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          <div>
+            <div className="flex items-center justify-between">
+              <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-destructive/15 text-destructive">
+                <AlertTriangle className="h-4.5 w-4.5" aria-hidden="true" />
+              </div>
+            </div>
+            <p className="mt-3 text-xs font-semibold text-muted-foreground group-hover:text-foreground">
               {t("admin.unresolvedReports")}
-            </span>
-            <AlertTriangle className="h-4 w-4 text-destructive" aria-hidden="true" />
+            </p>
+            <p className="mt-1 text-2xl font-extrabold tracking-tight text-foreground">
+              {loading ? "..." : toBnNumber(stats?.pendingReports ?? 0, i18n.language)}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{t("admin.moderationNeeded")}</p>
           </div>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-foreground">
-            {loading ? "..." : toBnNumber(stats?.pendingReports ?? 0, i18n.language)}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">{t("admin.moderationNeeded")}</p>
-        </div>
+          <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-xs font-semibold text-destructive">
+            <span>{t("common.viewDetails")}</span>
+            <ArrowRight
+              className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1"
+              aria-hidden="true"
+            />
+          </div>
+        </Link>
       </div>
 
       {/* Admin Modules Navigation */}
@@ -224,7 +280,7 @@ export function AdminDashboard() {
             <article
               key={c.href}
               className={`flex flex-col justify-between rounded-2xl border bg-surface p-6 shadow-sm transition-all hover:border-border-strong hover:shadow-md ${
-                c.highlight ? "border-warning/60 ring-1 ring-warning/30" : "border-border"
+                c.highlight ? "border-amber-500/50 ring-1 ring-amber-500/20" : "border-border"
               }`}
             >
               <div>
@@ -234,10 +290,10 @@ export function AdminDashboard() {
                   </div>
                   {c.badge && (
                     <span
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold tracking-tight shadow-2xs ${
                         c.highlight
-                          ? "bg-warning/20 text-warning-foreground"
-                          : "bg-secondary text-muted-foreground"
+                          ? "border border-amber-500/40 bg-amber-500 text-white dark:bg-amber-600 dark:text-white"
+                          : "border border-border/80 bg-surface text-foreground font-semibold"
                       }`}
                     >
                       {c.badge}
@@ -250,7 +306,7 @@ export function AdminDashboard() {
               <div className="mt-6 border-t border-border pt-4">
                 <Link
                   to={c.href}
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-foreground hover:text-link"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring rounded-xs"
                 >
                   <span>{c.cta}</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />

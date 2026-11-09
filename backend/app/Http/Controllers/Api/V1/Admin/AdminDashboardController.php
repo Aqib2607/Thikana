@@ -7,6 +7,8 @@ use App\Http\Resources\AdminDashboardStatsResource;
 use App\Http\Resources\AuditLogResource;
 use App\Models\AuditLog;
 use App\Models\Property;
+use App\Models\PropertyReport;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -39,8 +41,8 @@ class AdminDashboardController extends Controller
             'totalUsers' => $totalUsers,
             'tenantUsers' => $tenantUsers,
             'landlordUsers' => $landlordUsers,
-            'pendingReports' => 0,
-            'totalReviews' => 0,
+            'pendingReports' => PropertyReport::where('status', 'pending')->count(),
+            'totalReviews' => Review::count(),
             'auditLogsCount' => $auditLogsCount,
         ];
 

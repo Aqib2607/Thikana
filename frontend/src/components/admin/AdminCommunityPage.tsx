@@ -5,17 +5,9 @@ import { useAuth } from "@/lib/auth";
 import { adminApi } from "@/lib/api/admin";
 import { translateArea } from "@/lib/i18n";
 import type { CommunityInfo } from "@/lib/api/properties";
-import { KHULNA_AREAS } from "@/lib/api/mock/properties";
-import {
-  Bus,
-  Droplets,
-  Wifi,
-  Volume2,
-  ShieldAlert,
-  Info,
-  Save,
-  MapPin,
-} from "lucide-react";
+import { propertyApi } from "@/lib/api/properties";
+import { useQuery } from "@tanstack/react-query";
+import { Bus, Droplets, Wifi, Volume2, ShieldAlert, Info, Save, MapPin, Loader2, RefreshCw } from "lucide-react";
 
 const DEFAULT_COMMUNITY_INFO: CommunityInfo = {
   transport: "Easy access to local transit and rickshaws.",
@@ -30,12 +22,27 @@ export function AdminCommunityPage() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [communityMap, setCommunityMap] = useState<Record<string, CommunityInfo>>({});
-  const [selectedArea, setSelectedArea] = useState<string>("KUET Gate / Teligati");
+  const [selectedArea, setSelectedArea] = useState<string>("Sonadanga R/A");
   const [formData, setFormData] = useState<CommunityInfo>(DEFAULT_COMMUNITY_INFO);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
-  const areas = KHULNA_AREAS.slice(1); // Exclude "All Areas"
+  const {
+    data: areas = [],
+    isLoading: areasLoading,
+    isError: areasError,
+    refetch: refetchAreas,
+  } = useQuery({
+    queryKey: ["areas"],
+    queryFn: () => propertyApi.getAreas(),
+    staleTime: 1000 * 60 * 30,
+  });
+
+  useEffect(() => {
+    if (areas.length > 0 && !areas.includes(selectedArea)) {
+      setSelectedArea(areas[0]);
+    }
+  }, [areas, selectedArea]);
 
   useEffect(() => {
     let mounted = true;
@@ -98,6 +105,27 @@ export function AdminCommunityPage() {
             </h2>
 
             <div className="mt-3 flex flex-col gap-1 max-h-[500px] overflow-y-auto">
+              {areasLoading && (
+                <div className="flex items-center space-x-2 p-3 text-xs text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>{t("common.loadingAreas")}</span>
+                </div>
+              )}
+              {areasError && (
+                <div className="flex items-center justify-between p-3 text-xs text-destructive">
+                  <span>{t("common.failedToLoadAreas")}</span>
+                  <button
+                    type="button"
+                    onClick={() => refetchAreas()}
+                    className="inline-flex items-center gap-1 hover:underline"
+                  >
+                    <RefreshCw className="h-3 w-3" /> {t("common.retry")}
+                  </button>
+                </div>
+              )}
+              {!areasLoading && !areasError && areas.length === 0 && (
+                <p className="p-3 text-xs text-muted-foreground">{t("common.noAreasAvailable")}</p>
+              )}
               {areas.map((area) => {
                 const isSelected = selectedArea === area;
                 return (

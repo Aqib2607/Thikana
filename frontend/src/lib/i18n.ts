@@ -6,10 +6,20 @@ import en from "@/locales/en.json";
 export const LANG_KEY = "thikana.lang";
 export type Lang = "bn" | "en";
 
+export function getInitialLanguage(): Lang {
+  if (typeof window === "undefined") return "bn";
+  try {
+    const saved = localStorage.getItem(LANG_KEY);
+    return saved === "en" || saved === "bn" ? saved : "bn";
+  } catch {
+    return "bn";
+  }
+}
+
 if (!i18n.isInitialized) {
   i18n.use(initReactI18next).init({
     resources: { bn: { translation: bn }, en: { translation: en } },
-    lng: "bn",
+    lng: getInitialLanguage(),
     fallbackLng: "bn",
     interpolation: { escapeValue: false },
   });

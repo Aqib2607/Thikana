@@ -6,6 +6,7 @@ use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -23,6 +24,25 @@ class ImageManagementService
      * Minimum required photos per property.
      */
     public const MIN_IMAGES = 1;
+
+    /**
+     * Get the configured storage disk for property images.
+     */
+    public function getStorageDisk(): string
+    {
+        return (string) config('filesystems.property_images_disk', 'public');
+    }
+
+    /**
+     * Get the concrete filesystem adapter for property images with strict typing for IDEs.
+     */
+    protected function disk(?string $name = null): FilesystemAdapter
+    {
+        /** @var FilesystemAdapter $disk */
+        $disk = Storage::disk($name ?? $this->getStorageDisk());
+
+        return $disk;
+    }
 
     /**
      * Add multiple image URLs to a property.
@@ -95,9 +115,10 @@ class ImageManagementService
                     ]);
                 }
 
-                // Store file to public storage disk
-                $storedDiskPath = $file->store("properties/{$lockedProperty->id}", 'public');
-                $publicUrl = Storage::disk('public')->url($storedDiskPath);
+                // Store file to configured storage disk
+                $disk = $this->getStorageDisk();
+                $storedDiskPath = $file->store("properties/{$lockedProperty->id}", $disk);
+                $publicUrl = $this->disk($disk)->url($storedDiskPath);
 
                 $hasFeatured = $lockedProperty->images()->where('is_featured', true)->exists();
                 $isFeatured = !$hasFeatured || $currentCount === 0;
@@ -117,7 +138,8 @@ class ImageManagementService
             // Failure-safe cleanup: purge uploaded file if transaction rolled back
             if ($storedDiskPath !== null) {
                 try {
-                    Storage::disk('public')->delete($storedDiskPath);
+                    $disk = $this->getStorageDisk();
+                    $this->disk($disk)->delete($storedDiskPath);
                 } catch (\Throwable $storageError) {
                     Log::warning("Orphan image file cleanup failed: {$storedDiskPath}", [
                         'error' => $storageError->getMessage(),
@@ -133,9 +155,10 @@ class ImageManagementService
      */
     public function deleteImage(Property $property, User $user, int $imageId): void
     {
-        $localPathToDelete = null;
+        $diskPathToDelete = null;
+        $targetDisk = null;
 
-        DB::transaction(function () use ($property, $user, $imageId, &$localPathToDelete) {
+        DB::transaction(function () use ($property, $user, $imageId, &$diskPathToDelete, &$targetDisk) {
             /** @var Property $lockedProperty */
             $lockedProperty = Property::where('id', $property->id)->lockForUpdate()->firstOrFail();
 
@@ -151,10 +174,13 @@ class ImageManagementService
             /** @var PropertyImage $image */
             $image = $lockedProperty->images()->where('id', $imageId)->firstOrFail();
 
-            // Check if local file to purge post-commit
-            $parsedPath = $this->extractLocalPublicPath($image->image_url);
-            if ($parsedPath !== null) {
-                $localPathToDelete = $parsedPath;
+            // Check if disk file and resolve storage provenance
+            $parsedPath = $this->extractDiskPath($image->image_url, (string) $lockedProperty->id);
+            $resolvedDisk = $parsedPath !== null ? $this->resolveDiskForUrl($image->image_url, (string) $lockedProperty->id) : null;
+
+            if ($parsedPath !== null && $resolvedDisk !== null) {
+                $diskPathToDelete = $parsedPath;
+                $targetDisk = $resolvedDisk;
             }
 
             $wasFeatured = (bool) $image->is_featured;
@@ -174,12 +200,12 @@ class ImageManagementService
             $this->ensureFeaturedImage($lockedProperty);
         });
 
-        // Clean up disk asset after successful commit
-        if ($localPathToDelete !== null) {
+        // Clean up disk asset after successful commit using resolved provenance disk
+        if ($diskPathToDelete !== null && $targetDisk !== null) {
             try {
-                Storage::disk('public')->delete($localPathToDelete);
+                $this->disk($targetDisk)->delete($diskPathToDelete);
             } catch (\Throwable $e) {
-                Log::warning("Failed to delete public storage image file: {$localPathToDelete}", [
+                Log::warning("Failed to delete storage image file from disk [{$targetDisk}]: {$diskPathToDelete}", [
                     'error' => $e->getMessage(),
                 ]);
             }
@@ -247,6 +273,114 @@ class ImageManagementService
             $first = $property->images()->orderBy('display_order')->first();
             $first?->update(['is_featured' => true]);
         }
+    }
+
+    /**
+     * Strictly extract and validate property storage disk path from URL.
+     * Enforces path to match properties/{propertyId}/{filename} with no path traversal.
+     */
+    public function extractDiskPath(string $url, string $propertyId): ?string
+    {
+        $parsedPath = parse_url($url, PHP_URL_PATH);
+        $pathString = is_string($parsedPath) ? $parsedPath : $url;
+
+        // Normalize directory separators
+        $normalized = str_replace('\\', '/', $pathString);
+
+        // Security check: reject directory traversal attempts
+        if (str_contains($normalized, '..') || str_contains($normalized, './')) {
+            return null;
+        }
+
+        // Strict prefix matching for properties/{propertyId}/
+        $expectedPrefix = "properties/{$propertyId}/";
+        $pos = strpos($normalized, $expectedPrefix);
+        if ($pos === false) {
+            return null;
+        }
+
+        $candidatePath = substr($normalized, $pos);
+
+        // Must match exact format: properties/{propertyId}/{filename}
+        $escapedPropertyId = preg_quote($propertyId, '#');
+        if (!preg_match("#^properties/{$escapedPropertyId}/[a-zA-Z0-9_\-\.]+$#", $candidatePath)) {
+            return null;
+        }
+
+        // Strictly verify segment count (only properties/{propertyId}/filename allowed)
+        $segments = explode('/', $candidatePath);
+        if (count($segments) !== 3 || $segments[0] !== 'properties' || $segments[1] !== $propertyId || $segments[2] === '') {
+            return null;
+        }
+
+        return $candidatePath;
+    }
+
+    /**
+     * Safely resolve the storage disk provenance for an image URL.
+     * Returns null if origin cannot be established safely (e.g. external or untrusted URLs).
+     */
+    public function resolveDiskForUrl(string $url, string $propertyId): ?string
+    {
+        $diskPath = $this->extractDiskPath($url, $propertyId);
+        if ($diskPath === null) {
+            return null;
+        }
+
+        $parsed = parse_url($url);
+        if ($parsed === false) {
+            return null;
+        }
+
+        $host = isset($parsed['host']) ? strtolower((string) $parsed['host']) : null;
+        $path = $parsed['path'] ?? '';
+
+        // 1. Check if URL matches configured S3 / Cloudflare R2 / Custom CDN
+        $s3Url = config('filesystems.disks.s3.url');
+        $s3CdnHost = is_string($s3Url) ? strtolower((string) parse_url($s3Url, PHP_URL_HOST)) : null;
+
+        $s3Endpoint = config('filesystems.disks.s3.endpoint');
+        $s3EndpointHost = is_string($s3Endpoint) ? strtolower((string) parse_url($s3Endpoint, PHP_URL_HOST)) : null;
+
+        $s3Bucket = config('filesystems.disks.s3.bucket');
+        $s3BucketLower = is_string($s3Bucket) ? strtolower((string) $s3Bucket) : null;
+
+        if ($host !== null) {
+            if ($s3CdnHost !== null && $host === $s3CdnHost) {
+                return 's3';
+            }
+            if ($s3EndpointHost !== null && $host === $s3EndpointHost) {
+                return 's3';
+            }
+            if (str_contains($host, '.s3.') || str_ends_with($host, '.amazonaws.com') || str_contains($host, '.r2.cloudflarestorage.com')) {
+                return 's3';
+            }
+            if ($s3BucketLower !== null && $s3BucketLower !== '' && str_starts_with($host, $s3BucketLower . '.')) {
+                return 's3';
+            }
+        }
+
+        // 2. Check if URL matches local public disk
+        $appUrl = config('app.url');
+        $appHost = is_string($appUrl) ? strtolower((string) parse_url($appUrl, PHP_URL_HOST)) : null;
+
+        $isLocalHost = ($host === null) ||
+            ($appHost !== null && $host === $appHost) ||
+            in_array($host, ['localhost', '127.0.0.1', '::1'], true);
+
+        if ($isLocalHost && str_starts_with($path, "/storage/properties/{$propertyId}/")) {
+            // In testing environments where Storage::fake('s3') is active, fake S3 generates /storage/ paths.
+            // If the file exists on the s3 fake disk, resolve to 's3'; otherwise it is legacy 'public'.
+            if (config('filesystems.property_images_disk') === 's3' && $this->disk('s3')->exists($diskPath)) {
+                return 's3';
+            }
+
+            return 'public';
+        }
+
+        // 3. Untrusted or external URL (e.g. unsplash.com, arbitrary domain with /storage/):
+        // Return null to prevent unintended disk deletion.
+        return null;
     }
 
     /**

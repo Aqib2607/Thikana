@@ -76,7 +76,7 @@ class LandlordVisitRequestController extends Controller
             'accepted' => ['completed'],
         ];
 
-        if (!isset($allowedTransitions[$currentStatus]) || !in_array($newStatus, $allowedTransitions[$currentStatus], true)) {
+        if (! array_key_exists($currentStatus, $allowedTransitions) || ! in_array($newStatus, $allowedTransitions[$currentStatus], true)) {
             return response()->json([
                 'status' => 422,
                 'message' => "Invalid status transition from '{$visit->status}' to '{$request->input('status')}'.",

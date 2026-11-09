@@ -109,9 +109,7 @@ export function AdminPendingPropertiesPage() {
               {t("admin.pendingReviewHeader")}
             </span>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {t("admin.pendingReviewNotice")}
-          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{t("admin.pendingReviewNotice")}</p>
         </div>
         <Link
           to="/admin/properties"
@@ -134,9 +132,7 @@ export function AdminPendingPropertiesPage() {
           <h2 className="mt-4 text-lg font-bold text-foreground">
             {t("admin.allPendingReviewedTitle")}
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("admin.allPendingReviewedDesc")}
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{t("admin.allPendingReviewedDesc")}</p>
           <div className="mt-6">
             <Link
               to="/admin/properties"
@@ -187,10 +183,13 @@ export function AdminPendingPropertiesPage() {
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                          {translatePropertyType(p.propertyType, i18n.language)} · {translateRentalType(p.rentalType, i18n.language)}
+                          {translatePropertyType(p.propertyType, i18n.language)} ·{" "}
+                          {translateRentalType(p.rentalType, i18n.language)}
                         </span>
                         <h2 className="mt-1 text-lg font-bold text-foreground">
-                          {i18n.language.startsWith("bn") && p.banglaTitle ? p.banglaTitle : p.title}
+                          {i18n.language.startsWith("bn") && p.banglaTitle
+                            ? p.banglaTitle
+                            : p.title}
                         </h2>
                         {p.banglaTitle && !i18n.language.startsWith("bn") && (
                           <p className="text-sm font-medium text-muted-foreground">
@@ -215,7 +214,8 @@ export function AdminPendingPropertiesPage() {
                     {/* Specs Tags */}
                     <div className="mt-4 flex flex-wrap gap-2 text-xs">
                       <span className="rounded-lg bg-secondary px-2.5 py-1 font-medium text-foreground">
-                        {toBnNumber(p.rooms, i18n.language)} {t("properties.rooms")} · {toBnNumber(p.bathrooms, i18n.language)} {t("properties.baths")}
+                        {toBnNumber(p.rooms, i18n.language)} {t("properties.rooms")} ·{" "}
+                        {toBnNumber(p.bathrooms, i18n.language)} {t("properties.baths")}
                       </span>
                       <span className="rounded-lg bg-secondary px-2.5 py-1 font-medium text-foreground">
                         {toBnNumber(p.size, i18n.language)} {t("properties.sqft")}
@@ -224,10 +224,12 @@ export function AdminPendingPropertiesPage() {
                         {translateFurnished(p.furnishedStatus, i18n.language)}
                       </span>
                       <span className="rounded-lg bg-secondary px-2.5 py-1 font-medium text-foreground">
-                        {t("admin.advanceDepositLabel")}: ৳{toBnNumber(p.advance?.toLocaleString() || 0, i18n.language)}
+                        {t("admin.advanceDepositLabel")}: ৳
+                        {toBnNumber(p.advance?.toLocaleString() || 0, i18n.language)}
                       </span>
                       <span className="rounded-lg bg-primary/10 px-2.5 py-1 font-semibold text-primary">
-                        {t("admin.preferredTenantLabel")}: {translateTenantPreference(p.preferredTenant, i18n.language)}
+                        {t("admin.preferredTenantLabel")}:{" "}
+                        {translateTenantPreference(p.preferredTenant, i18n.language)}
                       </span>
                     </div>
 
@@ -260,7 +262,7 @@ export function AdminPendingPropertiesPage() {
                         setRejectReason("");
                       }}
                       disabled={processingId === p.id}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-2 text-xs font-semibold text-destructive hover:bg-destructive/20 disabled:opacity-50"
+                      className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/10 px-4 text-xs font-semibold text-destructive hover:bg-destructive/20 disabled:opacity-50"
                     >
                       <XCircle className="h-4 w-4" />
                       <span>{t("admin.rejectAndSendReason")}</span>
@@ -269,7 +271,7 @@ export function AdminPendingPropertiesPage() {
                       type="button"
                       onClick={() => handleApprove(p)}
                       disabled={processingId === p.id}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-success px-5 py-2 text-xs font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-50"
+                      className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-emerald-600 px-5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50"
                     >
                       <CheckCircle2 className="h-4 w-4" />
                       <span>{t("admin.approveAndGoLive")}</span>

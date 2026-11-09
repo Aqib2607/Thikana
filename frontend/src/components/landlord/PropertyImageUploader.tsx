@@ -2,7 +2,15 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toBnNumber } from "@/lib/i18n";
 import { landlordApi } from "@/lib/api/landlord";
-import { Star, Trash2, Plus, AlertCircle, Image as ImageIcon, Sparkles, Upload } from "lucide-react";
+import {
+  Star,
+  Trash2,
+  Plus,
+  AlertCircle,
+  Image as ImageIcon,
+  Sparkles,
+  Upload,
+} from "lucide-react";
 
 interface PropertyImageUploaderProps {
   images: string[];
@@ -99,8 +107,18 @@ export function PropertyImageUploader({
         };
         reader.readAsDataURL(file);
       }
-    } catch (err: any) {
-      setLimitWarning(err?.message || (isBn ? "ছবি আপলোড ব্যর্থ হয়েছে" : "Failed to upload photo"));
+    } catch (err: unknown) {
+      const fallback = isBn ? "ছবি আপলোড ব্যর্থ হয়েছে" : "Failed to upload photo";
+      const message =
+        err instanceof Error
+          ? err.message
+          : typeof err === "object" &&
+              err !== null &&
+              "message" in err &&
+              typeof (err as { message: unknown }).message === "string"
+            ? (err as { message: string }).message
+            : fallback;
+      setLimitWarning(message);
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -261,7 +279,15 @@ export function PropertyImageUploader({
 
         <label className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted cursor-pointer transition-all disabled:opacity-50">
           <Upload className="h-4 w-4" aria-hidden="true" />
-          <span>{uploading ? (isBn ? "আপলোড হচ্ছে..." : "Uploading...") : isBn ? "ফাইল আপলোড" : "Upload File"}</span>
+          <span>
+            {uploading
+              ? isBn
+                ? "আপলোড হচ্ছে..."
+                : "Uploading..."
+              : isBn
+                ? "ফাইল আপলোড"
+                : "Upload File"}
+          </span>
           <input
             type="file"
             accept="image/*"

@@ -3,6 +3,15 @@ import { http } from "./http";
 import { USE_MOCK } from "./client";
 import { mockProperties, KHULNA_AREAS, ALL_AMENITIES } from "./mock/properties";
 
+export interface AmenityCatalogItem {
+  name: string;
+  bangla_name?: string;
+  icon?: string;
+}
+
+export const DEFAULT_KHULNA_AREAS: readonly string[] = [];
+export const DEFAULT_AMENITIES: readonly string[] = [];
+
 export const PROPERTY_TYPES = [
   "Apartment / Flat",
   "House",
@@ -63,6 +72,8 @@ export interface MatchBreakdown {
   budgetScore: number; // Max 25
   propertyTypeScore: number; // Max 15
   roomsAndBathsScore: number; // Max 10
+  roomsScore?: number; // Max 5
+  bathroomsScore?: number; // Max 5
   amenitiesScore: number; // Max 15
   availabilityScore: number; // Max 5
   hasTenantPreferences: boolean;
@@ -132,6 +143,9 @@ export interface PropertyItem {
   // Reviews Summary
   rating: number; // 0 - 5
   reviewCount: number;
+
+  // Server-Side Match (Tenants only)
+  match?: MatchBreakdown | null;
 
   createdAt: string;
   updatedAt: string;
@@ -204,10 +218,19 @@ export const realPropertyApi: PropertyApi = {
 
   async getById(idOrSlug: string): Promise<PropertyItem | null> {
     try {
-      const res = await http.get<{ data: PropertyItem }>(`/properties/${encodeURIComponent(idOrSlug)}`);
+      const res = await http.get<{ data: PropertyItem }>(
+        `/properties/${encodeURIComponent(idOrSlug)}`,
+      );
       return res.data;
-    } catch (err: any) {
-      if (err?.status === 404) return null;
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "status" in err &&
+        (err as { status: unknown }).status === 404
+      ) {
+        return null;
+      }
       throw err;
     }
   },

@@ -26,11 +26,11 @@ export function LanguageSwitcher() {
     <button
       type="button"
       onClick={toggle}
+      title={current === "bn" ? "Switch to English" : "বাংলায় পরিবর্তন করুন"}
       aria-label={t("lang.label")}
-      className="inline-flex h-10 items-center gap-2 rounded-pill border border-border bg-surface px-4 text-sm font-medium transition-colors hover:bg-muted"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/80 bg-surface/90 text-xs font-bold text-foreground transition-all duration-180 hover:bg-secondary active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-ring"
     >
-      <Languages className="h-4 w-4" aria-hidden="true" />
-      {current === "bn" ? t("lang.en") : t("lang.bn")}
+      <span aria-hidden="true">{current === "bn" ? "EN" : "বাং"}</span>
     </button>
   );
 }

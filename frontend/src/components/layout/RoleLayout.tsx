@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useAuth, ROLE_HOME } from "@/lib/auth";
@@ -23,6 +23,7 @@ import {
   FileText,
   BarChart3,
   ScrollText,
+  ChevronDown,
 } from "lucide-react";
 
 interface RoleLayoutProps {
@@ -43,6 +44,27 @@ export function RoleLayout({
   const { t } = useTranslation();
   const { user, ready } = useAuth();
   const navigate = useNavigate();
+
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!moreMenuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target as Node)) {
+        setMoreMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMoreMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [moreMenuOpen]);
 
   if (!ready) {
     return (
@@ -163,12 +185,6 @@ export function RoleLayout({
       icon: Building2,
     },
     {
-      key: "new",
-      href: "/landlord/properties/new",
-      label: t("dashboard.newProperty"),
-      icon: PlusCircle,
-    },
-    {
       key: "requests",
       href: "/landlord/contact-requests",
       label: t("dashboard.contactRequests"),
@@ -244,9 +260,29 @@ export function RoleLayout({
   const navItems =
     requiredRole === "tenant" ? tenantNav : requiredRole === "landlord" ? landlordNav : adminNav;
 
+  const hasOverflowNav = requiredRole === "admin";
+  const primaryNavCount = 5;
+  let visibleNavItems = hasOverflowNav ? navItems.slice(0, primaryNavCount) : navItems;
+  let moreNavItems = hasOverflowNav ? navItems.slice(primaryNavCount) : [];
+
+  // Promote activeTab to visibleNavItems if it is currently in moreNavItems
+  const activeMoreIdx = moreNavItems.findIndex((item) => item.key === activeTab);
+  if (activeMoreIdx !== -1) {
+    const promoted = moreNavItems[activeMoreIdx];
+    const demoted = visibleNavItems[visibleNavItems.length - 1];
+    visibleNavItems = [...visibleNavItems.slice(0, -1), promoted];
+    moreNavItems = [
+      ...moreNavItems.slice(0, activeMoreIdx),
+      demoted,
+      ...moreNavItems.slice(activeMoreIdx + 1),
+    ];
+  }
+
+  const isMoreNavActive = moreNavItems.some((item) => item.key === activeTab);
+
   return (
-    <AppShell>
-      <div className="border-b border-border bg-surface">
+    <AppShell hideDashboardButton>
+      <div className="relative z-30 border-b border-border bg-surface">
         <div className="mx-auto max-w-6xl px-4 py-6 sm:px-5">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -262,52 +298,111 @@ export function RoleLayout({
             {requiredRole === "tenant" && (
               <Link
                 to="/properties"
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90"
+                className="inline-flex h-9 items-center gap-2 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground shadow-sm transition-all duration-180 hover:opacity-95 hover-lift-sm active:scale-95 focus-visible:outline-2 focus-visible:outline-ring"
               >
                 <Search className="h-4 w-4" aria-hidden="true" />
-                {t("dashboard.searchProperties")}
+                <span>{t("dashboard.searchProperties")}</span>
               </Link>
             )}
             {requiredRole === "landlord" && (
               <Link
                 to="/landlord/properties/new"
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90"
+                className="inline-flex h-9 items-center gap-2 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground shadow-sm transition-all duration-180 hover:opacity-95 hover-lift-sm active:scale-95 focus-visible:outline-2 focus-visible:outline-ring"
               >
                 <PlusCircle className="h-4 w-4" aria-hidden="true" />
-                {t("dashboard.newProperty")}
+                <span>{t("dashboard.newProperty")}</span>
               </Link>
             )}
           </div>
 
-          {/* Accessible Subnavigation Bar (Scrollable on mobile, no horizontal overflow) */}
-          <nav
-            aria-label={t("common.portalNav")}
-            className="mt-6 -mb-6 flex gap-1 overflow-x-auto pb-2 scrollbar-none"
-          >
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.key;
-              return (
-                <Link
-                  key={item.key}
-                  to={item.href}
-                  className={`inline-flex items-center gap-2 whitespace-nowrap border-b-2 px-3.5 py-2.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring ${
-                    isActive
-                      ? "border-primary text-foreground"
-                      : "border-transparent text-muted-foreground hover:border-border-strong hover:text-foreground"
-                  }`}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  <Icon className="h-4 w-4" aria-hidden="true" />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
+          {/* Accessible Subnavigation Bar with More menu & scroll affordance */}
+          <div className="relative mt-6 -mb-6">
+            <nav aria-label={t("common.portalNav")} className="flex items-center gap-1">
+              <div className="min-w-0 flex-1 flex gap-1 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-border hover:scrollbar-thumb-muted-foreground">
+                {visibleNavItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.key;
+                  return (
+                    <Link
+                      key={item.key}
+                      to={item.href}
+                      className={`inline-flex items-center gap-2 whitespace-nowrap border-b-2 px-3.5 py-2.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring ${
+                        isActive
+                          ? "border-primary text-foreground font-semibold bg-transparent"
+                          : "border-transparent text-muted-foreground bg-transparent hover:border-border-strong hover:text-foreground"
+                      }`}
+                      aria-current={isActive ? "page" : undefined}
+                    >
+                      <Icon className="h-4 w-4" aria-hidden="true" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {hasOverflowNav && moreNavItems.length > 0 && (
+                <div className="relative inline-flex shrink-0 pb-2" ref={moreMenuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+                    aria-expanded={moreMenuOpen}
+                    aria-haspopup="true"
+                    aria-label={t("common.more")}
+                    className={`inline-flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3.5 py-2.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring cursor-pointer ${
+                      isMoreNavActive
+                        ? "border-primary text-foreground font-semibold bg-transparent"
+                        : "border-transparent text-muted-foreground bg-transparent hover:border-border-strong hover:text-foreground"
+                    }`}
+                  >
+                    <span>{t("common.more")}</span>
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform duration-200 ${
+                        moreMenuOpen ? "rotate-180" : ""
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  {moreMenuOpen && (
+                    <div
+                      role="menu"
+                      aria-orientation="vertical"
+                      className="absolute right-0 top-full z-50 mt-1 min-w-56 rounded-xl border border-border bg-surface p-1.5 shadow-xl animate-in fade-in zoom-in-95 duration-150 origin-top-right"
+                    >
+                      {moreNavItems.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = activeTab === item.key;
+                        return (
+                          <Link
+                            key={item.key}
+                            to={item.href}
+                            role="menuitem"
+                            onClick={() => setMoreMenuOpen(false)}
+                            className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                              isActive
+                                ? "bg-primary/10 text-primary font-bold"
+                                : "text-foreground hover:bg-secondary"
+                            }`}
+                            aria-current={isActive ? "page" : undefined}
+                          >
+                            <Icon
+                              className="h-4 w-4 shrink-0 text-muted-foreground"
+                              aria-hidden="true"
+                            />
+                            <span>{item.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </nav>
+          </div>
         </div>
       </div>
 
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-5">{children}</main>
+      <div className="relative z-10 mx-auto max-w-6xl px-4 py-8 sm:px-5">{children}</div>
     </AppShell>
   );
 }

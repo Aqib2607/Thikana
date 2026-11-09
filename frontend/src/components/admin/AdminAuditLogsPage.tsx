@@ -71,9 +71,7 @@ export function AdminAuditLogsPage() {
             <ShieldCheck className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-foreground">
-              {t("admin.immutableBannerTitle")}
-            </h2>
+            <h2 className="text-sm font-bold text-foreground">{t("admin.immutableBannerTitle")}</h2>
             <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
               {t("admin.immutableBannerDesc")}
             </p>

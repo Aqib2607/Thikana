@@ -125,9 +125,7 @@ export function AdminVerificationsPage() {
           <h2 className="text-base font-bold text-foreground">
             {t("admin.verificationsListHeader")}
           </h2>
-          <p className="text-xs text-muted-foreground">
-            {t("admin.verificationsListDesc")}
-          </p>
+          <p className="text-xs text-muted-foreground">{t("admin.verificationsListDesc")}</p>
         </div>
 
         <div className="relative min-w-[260px]">
@@ -203,7 +201,9 @@ export function AdminVerificationsPage() {
                         />
                         <div className="min-w-0 max-w-xs">
                           <p className="truncate font-semibold text-foreground">
-                            {i18n.language.startsWith("bn") && p.banglaTitle ? p.banglaTitle : p.title}
+                            {i18n.language.startsWith("bn") && p.banglaTitle
+                              ? p.banglaTitle
+                              : p.title}
                           </p>
                           <p className="flex items-center gap-1 text-xs text-muted-foreground">
                             <MapPin className="h-3 w-3 shrink-0" />
@@ -247,7 +247,8 @@ export function AdminVerificationsPage() {
 
                     <td className="px-4 py-3.5 text-right whitespace-nowrap">
                       <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
-                        {toBnNumber(p.verifications.length, i18n.language)} / {toBnNumber(4, i18n.language)}
+                        {toBnNumber(p.verifications.length, i18n.language)} /{" "}
+                        {toBnNumber(4, i18n.language)}
                       </span>
                     </td>
                   </tr>

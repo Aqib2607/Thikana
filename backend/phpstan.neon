@@ -1,8 +1,19 @@
 includes:
+    - phpstan-baseline.neon
     - vendor/larastan/larastan/extension.neon
     - vendor/nesbot/carbon/extension.neon
 
 parameters:
+    # treatPhpDocTypesAsCertain: false
+    # Context (SEC-P2-05): In PHPStan Level 7, PHPStan by default treats PHPDoc type annotations as
+    # 100% certain. In Laravel applications using Larastan, Eloquent model relationships, dynamic
+    # properties, and magic attributes may be null or uninitialized at runtime even when PHPDoc
+    # declarations indicate a concrete model class. Disabling this flag allows defensive runtime
+    # null-checks (e.g., checking if an optional relation or authenticated token exists) without
+    # PHPStan erroneously flagging them as dead code or impossible conditions. This setting must
+    # NOT be used to justify inaccurate PHPDoc annotations in application code.
+    treatPhpDocTypesAsCertain: false
+
     paths:
         - app/
         - bootstrap/app.php

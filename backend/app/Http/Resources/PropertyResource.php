@@ -5,6 +5,9 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin \App\Models\Property
+ */
 class PropertyResource extends JsonResource
 {
     /**
@@ -14,6 +17,7 @@ class PropertyResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        /** @var \App\Models\User|null $currentUser */
         $currentUser = $request->user() ?? auth('sanctum')->user();
         $canViewPrivateContact = (bool) $this->public_contact_visible
             || ($currentUser !== null && ($currentUser->hasRole('admin') || (int) $currentUser->id === (int) $this->landlord_id));
@@ -102,9 +106,9 @@ class PropertyResource extends JsonResource
 
             'rating' => (float) $this->rating,
             'reviewCount' => (int) $this->review_count,
+            'match' => $this->resource instanceof \App\Models\Property ? $this->resource->getAttribute('match_breakdown') : null,
             'createdAt' => $this->created_at?->toISOString() ?? now()->toISOString(),
             'updatedAt' => $this->updated_at?->toISOString() ?? now()->toISOString(),
         ];
     }
 }
-

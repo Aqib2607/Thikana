@@ -1,15 +1,20 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, act, fireEvent } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { getSafeRedirectUrl } from "@/routes/login";
 import { mockAuth, MOCK_CODE } from "@/lib/api/mock/auth";
 import { authApi, realAuth } from "@/lib/api/auth";
 import { http, setAuthToken } from "@/lib/api/http";
 import { realPropertyApi } from "@/lib/api/properties";
 import { AuthCard, Field, FormAlert } from "@/components/auth/AuthCard";
 import { RoleLayout } from "@/components/layout/RoleLayout";
-import { AuthProvider } from "@/lib/auth";
+import { SiteHeader } from "@/components/layout/AppShell";
+import { AuthProvider, useAuth, type User } from "@/lib/auth";
 import "@/lib/i18n";
+import { ProfilePage } from "@/routes/profile";
 
 vi.mock("@tanstack/react-router", () => ({
+  createFileRoute: () => () => ({}),
   Link: ({
     children,
     to,
@@ -281,5 +286,526 @@ describe("Phase 5 Remediation Cycle 5C-R1 Contracts", () => {
       data: null,
     });
     expect(await realPropertyApi.getAmenities()).toEqual([]);
+  });
+});
+
+describe("Phase 3 Cycle 1: Login Redirect Security & Cache Purging", () => {
+  it("getSafeRedirectUrl accepts valid internal paths", () => {
+    expect(getSafeRedirectUrl("/properties")).toBe("/properties");
+    expect(getSafeRedirectUrl("/properties/flat-123")).toBe("/properties/flat-123");
+    expect(getSafeRedirectUrl("/properties?area=Sonadanga&minRent=5000")).toBe(
+      "/properties?area=Sonadanga&minRent=5000",
+    );
+  });
+
+  it("getSafeRedirectUrl strictly rejects open-redirect vectors and protocol attacks", () => {
+    expect(getSafeRedirectUrl("https://evil.com")).toBeNull();
+    expect(getSafeRedirectUrl("http://evil.com/path")).toBeNull();
+    expect(getSafeRedirectUrl("//evil.com")).toBeNull();
+    expect(getSafeRedirectUrl("/\\evil.com")).toBeNull();
+    expect(getSafeRedirectUrl("javascript:alert(1)")).toBeNull();
+    expect(getSafeRedirectUrl("data:text/html,evil")).toBeNull();
+    expect(getSafeRedirectUrl("")).toBeNull();
+    expect(getSafeRedirectUrl(undefined)).toBeNull();
+  });
+
+  it("getSafeRedirectUrl avoids redirect loops to auth routes", () => {
+    expect(getSafeRedirectUrl("/login")).toBeNull();
+    expect(getSafeRedirectUrl("/register")).toBeNull();
+  });
+
+  it("AuthProvider logout purges in-memory QueryClient cache", async () => {
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(["testQuery"], { sensitive: "data" });
+    expect(queryClient.getQueryData(["testQuery"])).toEqual({ sensitive: "data" });
+
+    function TestLogoutComponent() {
+      const { logout } = useAuth();
+      return (
+        <button type="button" onClick={() => logout()}>
+          Log Out
+        </button>
+      );
+    }
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TestLogoutComponent />
+        </AuthProvider>
+      </QueryClientProvider>,
+    );
+
+    const btn = screen.getByRole("button", { name: /Log Out/i });
+    await act(async () => {
+      btn.click();
+    });
+
+    expect(queryClient.getQueryData(["testQuery"])).toBeUndefined();
+  });
+
+  it("same-account login/setUser does not unnecessarily clear query cache", async () => {
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(["tenantData"], { profile: "tenant-1" });
+
+    const tenantUser: User = {
+      id: "u-tenant",
+      name: "Tenant Demo",
+      email: "tenant@demo.test",
+      phone: "01700000001",
+      role: "tenant",
+      verified: true,
+    };
+
+    function TestUserComponent() {
+      const { setUser } = useAuth();
+      return (
+        <button type="button" onClick={() => setUser(tenantUser)}>
+          Set Same User
+        </button>
+      );
+    }
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TestUserComponent />
+        </AuthProvider>
+      </QueryClientProvider>,
+    );
+
+    const btn = screen.getByRole("button", { name: /Set Same User/i });
+    await act(async () => {
+      btn.click();
+    });
+
+    // Query data must remain intact because the identity did not change
+    expect(queryClient.getQueryData(["tenantData"])).toEqual({ profile: "tenant-1" });
+  });
+
+  it("different-account transition clears the previous account query cache", async () => {
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(["privateTenantData"], { secret: "tenant-doc" });
+
+    const tenantUser: User = {
+      id: "u-tenant",
+      name: "Tenant Demo",
+      email: "tenant@demo.test",
+      phone: "01700000001",
+      role: "tenant",
+      verified: true,
+    };
+
+    const landlordUser: User = {
+      id: "u-landlord",
+      name: "Landlord Demo",
+      email: "landlord@demo.test",
+      phone: "01700000002",
+      role: "landlord",
+      verified: true,
+    };
+
+    function TestAccountSwitchComponent() {
+      const { ready, setUser } = useAuth();
+      if (!ready) return <div>Loading...</div>;
+      return (
+        <div>
+          <button type="button" onClick={() => setUser(tenantUser)}>
+            Log in Tenant
+          </button>
+          <button type="button" onClick={() => setUser(landlordUser)}>
+            Switch to Landlord
+          </button>
+        </div>
+      );
+    }
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TestAccountSwitchComponent />
+        </AuthProvider>
+      </QueryClientProvider>,
+    );
+
+    // Wait for hydration
+    const tenantBtn = await screen.findByRole("button", { name: /Log in Tenant/i });
+
+    // Initial login as Tenant
+    await act(async () => {
+      tenantBtn.click();
+    });
+    // Cache was seeded before tenant switch, but let's re-seed for tenant session
+    queryClient.setQueryData(["privateTenantData"], { secret: "tenant-doc" });
+    expect(queryClient.getQueryData(["privateTenantData"])).toEqual({ secret: "tenant-doc" });
+
+    // Transition directly to Landlord
+    await act(async () => {
+      screen.getByRole("button", { name: /Switch to Landlord/i }).click();
+    });
+
+    // Query cache must be wiped clean upon account transition
+    expect(queryClient.getQueryData(["privateTenantData"])).toBeUndefined();
+  });
+
+  it("initial authentication hydration preserves existing cache without unnecessary clearing", async () => {
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(["publicProperties"], [{ id: "prop-1", title: "Flat" }]);
+
+    function TestHydrationComponent() {
+      const { ready } = useAuth();
+      if (!ready) return <div>Hydrating...</div>;
+      return <div>Ready!</div>;
+    }
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TestHydrationComponent />
+        </AuthProvider>
+      </QueryClientProvider>,
+    );
+
+    await screen.findByText("Ready!");
+
+    // Cache must remain untouched across hydration
+    expect(queryClient.getQueryData(["publicProperties"])).toEqual([{ id: "prop-1", title: "Flat" }]);
+  });
+
+  it("failed authentication does not alter user session or purge cache", async () => {
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(["activeSessionData"], { valid: true });
+
+    const tenantUser: User = {
+      id: "u-tenant",
+      name: "Tenant Demo",
+      email: "tenant@demo.test",
+      phone: "01700000001",
+      role: "tenant",
+      verified: true,
+    };
+
+    function TestActiveSessionComponent() {
+      const { ready, user, setUser } = useAuth();
+      if (!ready) return <div>Hydrating...</div>;
+      return (
+        <div>
+          <span data-testid="user-display">{user ? user.email : "guest"}</span>
+          <button type="button" onClick={() => setUser(tenantUser)}>Set Tenant</button>
+        </div>
+      );
+    }
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TestActiveSessionComponent />
+        </AuthProvider>
+      </QueryClientProvider>,
+    );
+
+    const setTenantBtn = await screen.findByRole("button", { name: /Set Tenant/i });
+    await act(async () => {
+      setTenantBtn.click();
+    });
+    expect(screen.getByTestId("user-display").textContent).toBe("tenant@demo.test");
+
+    // Failed login attempt throws without reaching setUser
+    await expect(authApi.login("tenant@demo.test", "InvalidPass!")).rejects.toBeDefined();
+
+    // Cache and user session remain untouched
+    expect(queryClient.getQueryData(["activeSessionData"])).toEqual({ valid: true });
+    expect(screen.getByTestId("user-display").textContent).toBe("tenant@demo.test");
+  });
+
+  it("renders generic person icon and omits all personal identifiers in authenticated header", async () => {
+    const queryClient = new QueryClient();
+    const authenticatedUser: User = {
+      id: "u-tenant-01",
+      name: "Tariqul Islam",
+      email: "tariqul@example.com",
+      phone: "01712345678",
+      role: "tenant",
+      verified: true,
+    };
+
+    function HeaderWrapper() {
+      const { ready, setUser } = useAuth();
+      if (!ready) return <div>Loading...</div>;
+      return (
+        <div>
+          <button type="button" onClick={() => setUser(authenticatedUser)}>Log In</button>
+          <SiteHeader />
+        </div>
+      );
+    }
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <HeaderWrapper />
+        </AuthProvider>
+      </QueryClientProvider>,
+    );
+
+    const loginBtn = await screen.findByRole("button", { name: "Log In" });
+    await act(async () => {
+      loginBtn.click();
+    });
+
+    // 1. Account / Dashboard navigation is present
+    const dashboardLink = screen.getByRole("link", { name: /account|অ্যাকাউন্ট|dashboard|ড্যাশবোর্ড/i });
+    expect(dashboardLink).toBeInTheDocument();
+
+    // 2. Profile link is present, links to /profile, and has accessible title/label
+    const profileLink = screen.getByRole("link", { name: /profile|প্রোফাইল/i });
+    expect(profileLink).toBeInTheDocument();
+    expect(profileLink.getAttribute("href")).toBe("/profile");
+
+    // 3. No user personal identifiers (name, username, email, phone) exist in the header
+    expect(screen.queryByText("Tariqul Islam")).toBeNull();
+    expect(screen.queryByText("tariqul@example.com")).toBeNull();
+    expect(screen.queryByText("01712345678")).toBeNull();
+
+    // 4. Notification control remains present and functional
+    const bellBtn = screen.getByRole("button", { name: /notification|বিজ্ঞপ্তি/i });
+    expect(bellBtn).toBeInTheDocument();
+
+    // 5. Logout control is present
+    const logoutBtn = screen.getByRole("button", { name: /logout|লগআউট/i });
+    expect(logoutBtn).toBeInTheDocument();
+
+    // 6. Verify DOM child order inside the action island:
+    // [Dashboard Link, Language Selector, Notification Bell, Person Icon (Profile Link), Logout Button]
+    const actionIsland = logoutBtn.parentElement;
+    expect(actionIsland).not.toBeNull();
+    const children = Array.from(actionIsland!.children);
+    const dashboardIndex = children.findIndex((el) => el.contains(dashboardLink));
+    const bellIndex = children.findIndex((el) => el.contains(bellBtn));
+    const profileIndex = children.findIndex((el) => el.contains(profileLink));
+    const logoutIndex = children.findIndex((el) => el.contains(logoutBtn));
+
+    expect(dashboardIndex).toBeGreaterThanOrEqual(0);
+    expect(bellIndex).toBeGreaterThan(dashboardIndex);
+    expect(profileIndex).toBeGreaterThan(bellIndex);
+    expect(logoutIndex).toBeGreaterThan(profileIndex);
+  });
+
+  describe("Universal Profile Page", () => {
+    it("renders tenant profile with role-specific shortcuts and read-only email/role", async () => {
+      const queryClient = new QueryClient();
+      const tenantUser: User = {
+        id: "u-tenant-test",
+        name: "Rahim Tenant",
+        email: "rahim@example.com",
+        phone: "01711223344",
+        role: "tenant",
+        verified: true,
+      };
+
+      function ProfileWrapper() {
+        const { ready, setUser } = useAuth();
+        if (!ready) return <div>Loading...</div>;
+        return (
+          <div>
+            <button type="button" onClick={() => setUser(tenantUser)}>Set User</button>
+            <ProfilePage />
+          </div>
+        );
+      }
+
+      render(
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <ProfileWrapper />
+          </AuthProvider>
+        </QueryClientProvider>,
+      );
+
+      const setBtn = await screen.findByRole("button", { name: "Set User" });
+      await act(async () => {
+        setBtn.click();
+      });
+
+      // Role and user information rendered
+      expect(screen.getByText("Rahim Tenant")).toBeInTheDocument();
+      expect(screen.getByText("rahim@example.com")).toBeInTheDocument();
+
+      // Tenant-specific shortcuts rendered
+      expect(screen.getByRole("link", { name: /rental preferences|ভাড়ার পছন্দসমূহ/i })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /saved homes|সংরক্ষিত বাড়ি/i })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /scheduled visits|নির্ধারিত পরিদর্শন/i })).toBeInTheDocument();
+
+      // Email and role inputs are read-only
+      const emailInput = screen.getByLabelText(/email address|ইমেইল ঠিকানা/i);
+      expect(emailInput).toHaveAttribute("readonly");
+      expect(emailInput).toBeDisabled();
+
+      const roleInput = screen.getByLabelText(/account role|অ্যাকাউন্টের ভূমিকা/i);
+      expect(roleInput).toHaveAttribute("readonly");
+      expect(roleInput).toBeDisabled();
+    });
+
+    it("renders landlord profile with landlord-specific shortcuts", async () => {
+      const queryClient = new QueryClient();
+      const landlordUser: User = {
+        id: "u-landlord-test",
+        name: "Karim Landlord",
+        email: "karim@example.com",
+        phone: "01811223344",
+        role: "landlord",
+        verified: true,
+      };
+
+      function ProfileWrapper() {
+        const { ready, setUser } = useAuth();
+        if (!ready) return <div>Loading...</div>;
+        return (
+          <div>
+            <button type="button" onClick={() => setUser(landlordUser)}>Set User</button>
+            <ProfilePage />
+          </div>
+        );
+      }
+
+      render(
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <ProfileWrapper />
+          </AuthProvider>
+        </QueryClientProvider>,
+      );
+
+      const setBtn = await screen.findByRole("button", { name: "Set User" });
+      await act(async () => {
+        setBtn.click();
+      });
+
+      // Landlord shortcuts rendered
+      expect(screen.getByRole("link", { name: /my listed properties|আমার তালিকাভুক্ত সম্পত্তি/i })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /contact requests|যোগাযোগের অনুরোধ/i })).toBeInTheDocument();
+    });
+
+    it("renders admin profile with administration shortcuts", async () => {
+      const queryClient = new QueryClient();
+      const adminUser: User = {
+        id: "u-admin-test",
+        name: "Super Admin",
+        email: "admin@example.com",
+        phone: "01911223344",
+        role: "admin",
+        verified: true,
+      };
+
+      function ProfileWrapper() {
+        const { ready, setUser } = useAuth();
+        if (!ready) return <div>Loading...</div>;
+        return (
+          <div>
+            <button type="button" onClick={() => setUser(adminUser)}>Set User</button>
+            <ProfilePage />
+          </div>
+        );
+      }
+
+      render(
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <ProfileWrapper />
+          </AuthProvider>
+        </QueryClientProvider>,
+      );
+
+      const setBtn = await screen.findByRole("button", { name: "Set User" });
+      await act(async () => {
+        setBtn.click();
+      });
+
+      // Admin shortcuts rendered
+      expect(screen.getByRole("link", { name: /admin dashboard|অ্যাডমিন ড্যাশবোর্ড/i })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /audit logs|সিস্টেম অডিট লগ/i })).toBeInTheDocument();
+    });
+
+    it("validates required name field and supports editing and resetting profile fields", async () => {
+      const queryClient = new QueryClient();
+      const testUser: User = {
+        id: "u-edit-test",
+        name: "Initial Name",
+        email: "edit@example.com",
+        phone: "01700000099",
+        role: "tenant",
+        verified: true,
+      };
+
+      function ProfileWrapper() {
+        const { ready, setUser } = useAuth();
+        if (!ready) return <div>Loading...</div>;
+        return (
+          <div>
+            <button type="button" onClick={() => setUser(testUser)}>Set User</button>
+            <ProfilePage />
+          </div>
+        );
+      }
+
+      render(
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <ProfileWrapper />
+          </AuthProvider>
+        </QueryClientProvider>,
+      );
+
+      const setBtn = await screen.findByRole("button", { name: "Set User" });
+      await act(async () => {
+        setBtn.click();
+      });
+
+      const nameInput = screen.getByLabelText(/full name|পুরো নাম/i);
+      const phoneInput = screen.getByLabelText(/phone number|ফোন নম্বর/i);
+      const saveBtn = screen.getByRole("button", { name: /save changes|পরিবর্তন সংরক্ষণ করুন/i });
+      const cancelBtn = screen.getByRole("button", { name: /cancel|বাতিল/i });
+
+      // Populated correctly
+      expect((nameInput as HTMLInputElement).value).toBe("Initial Name");
+      expect((phoneInput as HTMLInputElement).value).toBe("01700000099");
+
+      // Clear name and attempt save -> validation error displayed
+      fireEvent.change(nameInput, { target: { value: "" } });
+      await act(async () => {
+        saveBtn.click();
+      });
+      expect(screen.getByText(/full name is required|পুরো নাম প্রদান করা আবশ্যক/i)).toBeInTheDocument();
+
+      // Cancel button resets to initial persisted values
+      await act(async () => {
+        cancelBtn.click();
+      });
+      expect((nameInput as HTMLInputElement).value).toBe("Initial Name");
+      expect(screen.queryByText(/full name is required|পুরো নাম প্রদান করা আবশ্যক/i)).toBeNull();
+
+      // Mock updateProfile API call
+      const updateSpy = vi.spyOn(authApi, "updateProfile").mockResolvedValue({
+        ...testUser,
+        name: "Successfully Renamed",
+        phone: "01799887766",
+      });
+
+      fireEvent.change(nameInput, { target: { value: "Successfully Renamed" } });
+      fireEvent.change(phoneInput, { target: { value: "01799887766" } });
+
+      await act(async () => {
+        saveBtn.click();
+      });
+
+      expect(updateSpy).toHaveBeenCalledWith({
+        name: "Successfully Renamed",
+        phone: "01799887766",
+      });
+
+      // Feedback message appears
+      expect(await screen.findByRole("status")).toBeInTheDocument();
+      updateSpy.mockRestore();
+    });
   });
 });

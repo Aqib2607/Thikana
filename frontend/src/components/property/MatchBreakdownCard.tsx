@@ -32,12 +32,8 @@ export function MatchBreakdownCard({ breakdown }: MatchBreakdownCardProps) {
               <Percent className="h-5 w-5 text-primary" aria-hidden="true" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-foreground">
-                {t("matching.scoreTitle")}
-              </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {t("matching.loginPrompt")}
-              </p>
+              <h3 className="text-sm font-bold text-foreground">{t("matching.scoreTitle")}</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">{t("matching.loginPrompt")}</p>
             </div>
           </div>
           <Link
@@ -60,12 +56,8 @@ export function MatchBreakdownCard({ breakdown }: MatchBreakdownCardProps) {
               <AlertCircle className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-foreground">
-                {t("matching.setPrefsTitle")}
-              </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {t("matching.setPrefsPrompt")}
-              </p>
+              <h3 className="text-sm font-bold text-foreground">{t("matching.setPrefsTitle")}</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">{t("matching.setPrefsPrompt")}</p>
             </div>
           </div>
           <Link
@@ -134,13 +126,13 @@ export function MatchBreakdownCard({ breakdown }: MatchBreakdownCardProps) {
           <h2 id="match-breakdown-heading" className="text-lg font-bold text-foreground">
             {t("matching.analysisTitle")}
           </h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {t("matching.analysisSubtitle")}
-          </p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{t("matching.analysisSubtitle")}</p>
         </div>
         <div className="flex items-center gap-1.5 rounded-2xl bg-primary/10 px-4 py-2 text-primary">
           <Percent className="h-5 w-5" aria-hidden="true" />
-          <span className="text-2xl font-black">{toBnNumber(breakdown.overallPercentage, i18n.language)}%</span>
+          <span className="text-2xl font-black">
+            {toBnNumber(breakdown.overallPercentage, i18n.language)}%
+          </span>
         </div>
       </div>
 
@@ -154,7 +146,9 @@ export function MatchBreakdownCard({ breakdown }: MatchBreakdownCardProps) {
                 <span className="flex items-center gap-1.5 font-medium text-foreground">
                   <Icon className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
                   <span>{dim.label}</span>
-                  <span className="text-xs text-muted-foreground">({toBnNumber(dim.weight, i18n.language)})</span>
+                  <span className="text-xs text-muted-foreground">
+                    ({toBnNumber(dim.weight, i18n.language)})
+                  </span>
                 </span>
                 <span className="font-semibold text-foreground">
                   {toBnNumber(dim.score, i18n.language)}/{toBnNumber(dim.max, i18n.language)}

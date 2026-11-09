@@ -11,8 +11,11 @@ import {
   Star,
   Info,
 } from "lucide-react";
-import { mockNotificationApi } from "@/lib/api/mock/notifications";
-import type { NotificationItem, NotificationType } from "@/lib/api/notifications";
+import {
+  notificationApi,
+  type NotificationItem,
+  type NotificationType,
+} from "@/lib/api/notifications";
 import { useAuth } from "@/lib/auth";
 
 function getNotificationIcon(type: NotificationType) {
@@ -43,9 +46,9 @@ export function NotificationBell() {
   const loadNotifications = useCallback(async () => {
     if (!user) return;
     try {
-      const items = await mockNotificationApi.getNotifications(user.id);
+      const items = await notificationApi.getNotifications(user.id);
       setNotifications(items);
-      const count = await mockNotificationApi.getUnreadCount(user.id);
+      const count = await notificationApi.getUnreadCount(user.id);
       setUnreadCount(count);
     } catch {
       // ignore
@@ -72,13 +75,13 @@ export function NotificationBell() {
   }, [open]);
 
   const handleMarkAsRead = async (id: string) => {
-    await mockNotificationApi.markAsRead(id);
+    await notificationApi.markAsRead(id);
     await loadNotifications();
   };
 
   const handleMarkAllRead = async () => {
     if (!user) return;
-    await mockNotificationApi.markAllAsRead(user.id);
+    await notificationApi.markAllAsRead(user.id);
     await loadNotifications();
   };
 
@@ -96,7 +99,7 @@ export function NotificationBell() {
         }}
         aria-label={t("notifications.bellLabel")}
         aria-expanded={open}
-        className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-foreground transition-colors hover:bg-secondary focus-visible:outline-2 focus-visible:outline-ring"
+        className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/80 bg-surface/80 text-foreground transition-all duration-180 hover:bg-secondary focus-visible:outline-2 focus-visible:outline-ring"
       >
         <Bell className="h-4 w-4" aria-hidden="true" />
         {unreadCount > 0 && (
@@ -118,9 +121,7 @@ export function NotificationBell() {
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border bg-surface/90 px-4 py-3">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-foreground">
-                {t("notifications.title")}
-              </h3>
+              <h3 className="text-sm font-semibold text-foreground">{t("notifications.title")}</h3>
               {unreadCount > 0 && (
                 <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-primary">
                   {unreadCount} {t("notifications.unread")}

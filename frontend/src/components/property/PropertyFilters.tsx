@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Filter, RotateCcw, Check } from "lucide-react";
 import {
@@ -6,9 +7,16 @@ import {
   FURNISHED_STATUSES,
   AVAILABILITY_STATUSES,
   type PropertyFilter,
+  DEFAULT_KHULNA_AREAS,
+  DEFAULT_AMENITIES,
 } from "@/lib/api/properties";
-import { KHULNA_AREAS, ALL_AMENITIES } from "@/lib/api/mock/properties";
-import { translatePropertyType, translateRentalType, translateFurnished, translateArea, translateAmenity } from "@/lib/i18n";
+import {
+  translatePropertyType,
+  translateRentalType,
+  translateFurnished,
+  translateArea,
+  translateAmenity,
+} from "@/lib/i18n";
 
 interface PropertyFiltersProps {
   filters: PropertyFilter;
@@ -33,9 +41,19 @@ export function PropertyFilters({
   const areasList =
     availableAreas && availableAreas.length > 0
       ? ["All Areas", ...availableAreas.filter((a) => a !== "All Areas")]
-      : KHULNA_AREAS;
+      : ["All Areas", ...DEFAULT_KHULNA_AREAS];
   const amenitiesList =
-    availableAmenities && availableAmenities.length > 0 ? availableAmenities : ALL_AMENITIES;
+    availableAmenities && availableAmenities.length > 0 ? availableAmenities : DEFAULT_AMENITIES;
+
+  const [showAllAmenities, setShowAllAmenities] = useState(false);
+  const INITIAL_AMENITIES_COUNT = 5;
+  const hasSelectedHiddenAmenity = (filters.amenities || []).some((selected) =>
+    amenitiesList.slice(INITIAL_AMENITIES_COUNT).includes(selected),
+  );
+  const isAmenitiesExpanded = showAllAmenities || hasSelectedHiddenAmenity;
+  const displayedAmenities = isAmenitiesExpanded
+    ? amenitiesList
+    : amenitiesList.slice(0, INITIAL_AMENITIES_COUNT);
 
   const handleAreaChange = (val: string) => {
     onChange({ ...filters, area: val === "All Areas" ? undefined : val, page: 1 });
@@ -93,11 +111,11 @@ export function PropertyFilters({
   };
 
   const field =
-    "h-11 w-full rounded-lg border border-input bg-surface px-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-primary";
+    "h-11 w-full rounded-xl border border-input bg-surface px-3 text-sm text-foreground placeholder:text-muted-foreground transition-all duration-180 focus:border-primary/50 focus:ring-2 focus:ring-primary/10 focus-visible:outline-none";
 
   return (
     <aside
-      className={`rounded-2xl border border-border bg-surface p-5 shadow-xs ${className}`}
+      className={`rounded-3xl border border-border bg-surface p-5 shadow-xs transition-all duration-200 ${className}`}
       aria-label={t("properties.filterProperties")}
     >
       <div className="flex items-center justify-between border-b border-border pb-4">
@@ -108,9 +126,12 @@ export function PropertyFilters({
         <button
           type="button"
           onClick={onReset}
-          className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="group inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
-          <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+          <RotateCcw
+            className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-rotate-90"
+            aria-hidden="true"
+          />
           <span>{t("properties.reset")}</span>
         </button>
       </div>
@@ -255,18 +276,25 @@ export function PropertyFilters({
           </label>
         </div>
 
-        {/* Amenities Checklist */}
+        {/* Amenities Checklist with Progressive Disclosure */}
         <div>
-          <span className="text-xs font-semibold text-foreground">
-            {t("properties.keyAmenities")}
-          </span>
-          <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto pr-1">
-            {amenitiesList.map((amenity) => {
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-foreground">
+              {t("properties.keyAmenities")}
+            </span>
+            {filters.amenities && filters.amenities.length > 0 && (
+              <span className="text-[11px] font-medium text-primary">
+                ({filters.amenities.length} {t("properties.selected")})
+              </span>
+            )}
+          </div>
+          <div className="mt-2 space-y-1.5">
+            {displayedAmenities.map((amenity) => {
               const checked = filters.amenities?.includes(amenity) || false;
               return (
                 <label
                   key={amenity}
-                  className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-foreground transition-colors hover:bg-secondary"
+                  className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-foreground transition-all duration-150 hover:bg-secondary active:scale-[0.99]"
                 >
                   <input
                     type="checkbox"
@@ -279,6 +307,20 @@ export function PropertyFilters({
               );
             })}
           </div>
+          {amenitiesList.length > INITIAL_AMENITIES_COUNT && (
+            <button
+              type="button"
+              onClick={() => setShowAllAmenities(!isAmenitiesExpanded)}
+              aria-expanded={isAmenitiesExpanded}
+              className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline cursor-pointer"
+            >
+              <span>
+                {isAmenitiesExpanded
+                  ? t("properties.showLess")
+                  : `+${amenitiesList.length - INITIAL_AMENITIES_COUNT} ${t("properties.showMore")}`}
+              </span>
+            </button>
+          )}
         </div>
       </div>
     </aside>

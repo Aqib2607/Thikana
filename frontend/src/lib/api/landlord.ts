@@ -144,7 +144,8 @@ export interface LandlordApi {
   ): Promise<VisitRequestItem>;
 
   // Messaging
-  getConversations(landlordId: string): Promise<ConversationItem[]>;
+  getConversations(landlordId?: string): Promise<ConversationItem[]>;
+  getConversation?(id: string): Promise<ConversationItem>;
   sendMessage(
     conversationId: string,
     senderId: string,
@@ -165,8 +166,15 @@ export const realLandlordApi: LandlordApi = {
         `/landlord/properties/${encodeURIComponent(id)}`,
       );
       return res.data;
-    } catch (err: any) {
-      if (err?.status === 404) return null;
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "status" in err &&
+        (err as { status: unknown }).status === 404
+      ) {
+        return null;
+      }
       throw err;
     }
   },
@@ -316,9 +324,29 @@ export const realLandlordApi: LandlordApi = {
     return res.data;
   },
 
-  // Messaging delegated to mock
-  getConversations: (id) => mockLandlordApi.getConversations(id),
-  sendMessage: (cId, sId, sName, text) => mockLandlordApi.sendMessage(cId, sId, sName, text),
+  // Messaging (Live Integration)
+  async getConversations(_landlordId?: string): Promise<ConversationItem[]> {
+    const res = await http.get<{ data: ConversationItem[] }>("/conversations");
+    return res.data ?? [];
+  },
+  async getConversation(id: string): Promise<ConversationItem> {
+    const res = await http.get<{ data: ConversationItem }>(
+      `/conversations/${encodeURIComponent(id)}`,
+    );
+    return res.data;
+  },
+  async sendMessage(
+    conversationId: string,
+    _senderId: string,
+    _senderName: string,
+    text: string,
+  ): Promise<MessageItem> {
+    const res = await http.post<{ data: MessageItem }>(
+      `/conversations/${encodeURIComponent(conversationId)}/messages`,
+      { text },
+    );
+    return res.data;
+  },
 };
 
 const mockLandlordWithImages: LandlordApi = {

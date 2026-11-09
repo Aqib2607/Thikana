@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { ThikanaLogo } from "@/components/brand/ThikanaLogo";
@@ -20,78 +20,123 @@ import {
 
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 
-export function SiteHeader() {
+export function SiteHeader({ hideDashboardButton }: { hideDashboardButton?: boolean }) {
   const { t } = useTranslation();
-
   const { user, logout } = useAuth();
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const shouldHideDashboard =
+    hideDashboardButton ||
+    Boolean(
+      typeof window !== "undefined" && user && window.location.pathname === ROLE_HOME[user.role],
+    );
+
+  const closeMobileMenu = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setMobileMenuOpen(false);
+      setIsClosing(false);
+    }, 200);
+  };
+
+  const toggleMobileMenu = () => {
+    if (mobileMenuOpen) {
+      closeMobileMenu();
+    } else {
+      setMobileMenuOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeMobileMenu();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileMenuOpen]);
 
   return (
-    <header className="sticky top-4 z-40 px-3 sm:px-6 mb-4 transition-all">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 rounded-full border border-border/80 bg-surface/90 px-4 sm:px-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] backdrop-blur-md">
+    <header className="sticky top-4 z-40 px-4 sm:px-5 mb-4 transition-all">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 rounded-full bg-glass-nav px-4 sm:px-5 transition-all duration-200">
         {/* Brand */}
-
-        <Link to="/" aria-label="Thikana" className="shrink-0 transition-opacity hover:opacity-85">
+        <Link
+          to="/"
+          aria-label="Thikana"
+          className="shrink-0 transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]"
+        >
           <ThikanaLogo />
         </Link>
 
         {/* Center Navigation Links (Editorial style) */}
-
         <nav
           aria-label="Main"
-          className="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+          className="hidden md:flex items-center gap-4 text-xs font-medium text-muted-foreground"
         >
-          <Link to="/properties" className="transition-colors hover:text-foreground">
+          <Link
+            to="/properties"
+            className="px-3 py-1.5 rounded-full transition-all duration-200 hover:text-foreground hover:bg-secondary/60"
+          >
             {t("nav.properties")}
           </Link>
 
-          <a href="#why-thikana" className="transition-colors hover:text-foreground">
+          <a
+            href="#why-thikana"
+            className="px-3 py-1.5 rounded-full transition-all duration-200 hover:text-foreground hover:bg-secondary/60"
+          >
             {t("nav.why")}
           </a>
 
-          <a href="#contact" className="transition-colors hover:text-foreground">
+          <a
+            href="#contact"
+            className="px-3 py-1.5 rounded-full transition-all duration-200 hover:text-foreground hover:bg-secondary/60"
+          >
             {t("nav.contact")}
           </a>
         </nav>
 
         {/* Right Action Island */}
-
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2">
           {user ? (
             <>
-              <Link
-                to={ROLE_HOME[user.role]}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-secondary/80 px-3.5 py-1.5 text-xs font-semibold text-foreground transition-all hover:bg-secondary focus-visible:outline-2 focus-visible:outline-ring"
-              >
-                <LayoutDashboard
-                  className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
-                  aria-hidden="true"
-                />
+              {!shouldHideDashboard && (
+                <Link
+                  to={ROLE_HOME[user.role]}
+                  aria-label={`${t("auth.dashboard")} (${t(`roles.${user.role}`)})`}
+                  title={`${t("auth.dashboard")} (${t(`roles.${user.role}`)})`}
+                  className="inline-flex h-9 items-center gap-2 rounded-full border border-border/80 bg-surface/90 px-3.5 text-xs font-semibold text-foreground transition-all duration-180 hover:bg-secondary active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-ring"
+                >
+                  <LayoutDashboard
+                    className="h-3.5 w-3.5 shrink-0 text-primary"
+                    aria-hidden="true"
+                  />
 
-                <span className="hidden sm:inline">{t("auth.dashboard")}</span>
+                  <span className="hidden sm:inline font-semibold">{t("auth.dashboard")}</span>
+                </Link>
+              )}
 
-                <span className="rounded-full bg-surface px-2 py-0.5 text-xs font-bold text-foreground">
-                  {t(`roles.${user.role}`)}
-                </span>
-              </Link>
+              <div className="hidden sm:block">
+                <LanguageSwitcher />
+              </div>
 
               <NotificationBell />
 
-              <div className="hidden lg:flex items-center gap-1.5 text-xs text-muted-foreground">
-                <UserIcon className="h-3.5 w-3.5" aria-hidden="true" />
-
-                <span className="max-w-[100px] truncate font-medium text-foreground">
-                  {user.name}
-                </span>
-              </div>
+              <Link
+                to="/profile"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/80 bg-surface/90 text-muted-foreground transition-all duration-180 hover:text-foreground hover:bg-secondary active:scale-[0.95] focus-visible:outline-2 focus-visible:outline-ring"
+                title={t("nav.profile")}
+                aria-label={t("nav.profile")}
+              >
+                <UserIcon className="h-4 w-4" aria-hidden="true" />
+              </Link>
 
               <button
                 type="button"
-
                 onClick={() => logout()}
-                className="inline-flex items-center gap-1 rounded-full p-2 text-muted-foreground transition-colors hover:text-destructive hover:bg-secondary focus-visible:outline-2 focus-visible:outline-ring"
-
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/80 bg-surface/90 text-muted-foreground transition-all duration-180 hover:text-destructive hover:bg-secondary active:scale-[0.95] focus-visible:outline-2 focus-visible:outline-ring cursor-pointer"
                 title={t("auth.logout")}
                 aria-label={t("auth.logout")}
               >
@@ -102,31 +147,29 @@ export function SiteHeader() {
             <>
               <Link
                 to="/login"
-                className="hidden sm:inline-flex items-center rounded-full px-3.5 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-secondary focus-visible:outline-2 focus-visible:outline-ring"
+                className="hidden sm:inline-flex h-9 items-center rounded-full px-3.5 text-xs font-semibold text-foreground transition-all duration-180 hover:bg-secondary active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-ring"
               >
                 {t("nav.login")}
               </Link>
 
               <Link
                 to="/register"
-                className="inline-flex items-center rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-ring"
+                className="inline-flex h-9 items-center rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground shadow-sm transition-all duration-180 hover:bg-primary/90 hover-lift-sm active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-ring"
               >
                 {t("nav.register")}
               </Link>
+
+              <div className="hidden sm:block">
+                <LanguageSwitcher />
+              </div>
             </>
           )}
 
-          <div className="hidden sm:block">
-            <LanguageSwitcher />
-          </div>
-
           {/* Mobile hamburger button */}
-
           <button
             type="button"
-
-            onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="md:hidden inline-flex items-center justify-center rounded-full p-1.5 text-foreground hover:bg-secondary focus-visible:outline-2 focus-visible:outline-ring"
+            onClick={toggleMobileMenu}
+            className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-surface/80 p-1.5 text-foreground hover:bg-secondary active:scale-95 transition-all duration-180 cursor-pointer"
             aria-expanded={mobileMenuOpen}
             aria-label={t("nav.toggleMenu")}
           >
@@ -136,33 +179,35 @@ export function SiteHeader() {
       </div>
 
       {/* Mobile Drawer Menu */}
-
       {mobileMenuOpen && (
-        <div className="md:hidden mt-2 mx-auto max-w-5xl rounded-3xl border border-border/80 bg-surface/98 p-5 shadow-xl backdrop-blur-xl transition-all">
+        <div
+          className={`md:hidden mt-2 mx-auto max-w-5xl rounded-3xl border border-border/80 bg-surface/98 p-5 shadow-xl backdrop-blur-xl ${
+            isClosing
+              ? "animate-out fade-out slide-out-to-top-2 duration-200 ease-in"
+              : "animate-in fade-in slide-in-from-top-2 duration-250 ease-out"
+          }`}
+        >
           <nav className="flex flex-col gap-3 text-sm font-medium">
             <Link
               to="/properties"
-
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-xl hover:bg-secondary text-foreground"
+              onClick={closeMobileMenu}
+              className="px-3 py-2 rounded-xl hover:bg-secondary text-foreground transition-colors duration-150"
             >
               {t("nav.properties")}
             </Link>
 
             <a
               href="#why-thikana"
-
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-xl hover:bg-secondary text-foreground"
+              onClick={closeMobileMenu}
+              className="px-3 py-2 rounded-xl hover:bg-secondary text-foreground transition-colors duration-150"
             >
               {t("nav.why")}
             </a>
 
             <a
               href="#contact"
-
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-xl hover:bg-secondary text-foreground"
+              onClick={closeMobileMenu}
+              className="px-3 py-2 rounded-xl hover:bg-secondary text-foreground transition-colors duration-150"
             >
               {t("nav.contact")}
             </a>
@@ -173,9 +218,8 @@ export function SiteHeader() {
               {!user && (
                 <Link
                   to="/login"
-
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-xs font-semibold px-4 py-2 rounded-full border border-border hover:bg-secondary"
+                  onClick={closeMobileMenu}
+                  className="text-xs font-semibold px-4 py-2 rounded-full border border-border hover:bg-secondary transition-colors duration-150"
                 >
                   {t("nav.login")}
                 </Link>
@@ -197,12 +241,12 @@ export function SiteFooter() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 select-none text-[8rem] sm:text-[13rem] md:text-[16rem] font-black uppercase tracking-tighter text-white/[0.03] leading-none whitespace-nowrap"
+        className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 select-none text-8xl sm:text-9xl font-black uppercase tracking-tighter text-white/[0.03] leading-none whitespace-nowrap"
       >
         THIKANA
       </div>
 
-      <div className="relative z-10 mx-auto max-w-6xl px-5 pt-16 pb-12 sm:px-8">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 pt-16 pb-12 sm:px-5">
         {/* Rebalanced Editorial Contact Header */}
 
         <div className="border-b border-neutral-800 pb-10">
@@ -214,11 +258,11 @@ export function SiteFooter() {
 
               <a
                 href="mailto:hello@thikana.com.bd"
-                className="group mt-2 inline-flex items-center gap-2 text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-white hover:text-neutral-300 transition-colors"
+                className="group mt-2 inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-white hover:text-neutral-300 transition-colors"
               >
                 <span>hello@thikana.com.bd</span>
 
-                <ArrowUpRight className="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 text-neutral-400 group-hover:text-white" />
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-neutral-400 group-hover:text-white" />
               </a>
 
               <p className="mt-2 text-xs sm:text-sm text-neutral-400 max-w-xl">
@@ -248,12 +292,12 @@ export function SiteFooter() {
             <div className="flex items-center gap-2 text-white">
               <Building2 className="h-5 w-5 text-neutral-400" />
 
-              <span className="font-bold tracking-wider text-base">ঠিকানা / THIKANA</span>
+              <span className="font-bold tracking-tight text-base text-white">
+                ঠিকানা <span className="text-neutral-400 font-medium text-sm">/ Thikana</span>
+              </span>
             </div>
 
-            <p className="text-xs leading-relaxed text-neutral-400">
-              {t("footer.brandBio")}
-            </p>
+            <p className="text-xs leading-relaxed text-neutral-400">{t("footer.brandBio")}</p>
 
             <div className="pt-2 flex items-center gap-2 text-xs text-neutral-400">
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
@@ -427,55 +471,54 @@ export function SiteFooter() {
                   support@thikana.com.bd
                 </a>
               </li>
-
-              <li className="pt-2">
-                <Link
-                  to="/register"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-black shadow-sm transition-all hover:bg-neutral-200 focus-visible:outline-2 focus-visible:outline-white"
-                >
-                  <span>{t("nav.listHome")}</span>
-
-                  <ArrowUpRight className="h-3.5 w-3.5" />
-                </Link>
-              </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom copyright row */}
+        {/* Bottom copyright & legal row */}
 
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 text-xs text-neutral-500 sm:flex-row">
-          <p>© {new Date().getFullYear()} Thikana Technologies Ltd. {t("footer.rights")}</p>
-
-          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-6">
+        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-neutral-900 pt-8 text-xs text-neutral-500 sm:flex-row">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 sm:justify-start">
+            <p>
+              © {new Date().getFullYear()} Thikana Technologies Ltd. {t("footer.rights")}
+            </p>
+            <span className="hidden sm:inline text-neutral-700" aria-hidden="true">
+              ·
+            </span>
             <a href="#why-thikana" className="hover:text-white transition-colors py-1">
               {t("footer.privacy")}
             </a>
-
+            <span className="hidden sm:inline text-neutral-700" aria-hidden="true">
+              ·
+            </span>
             <a href="#why-thikana" className="hover:text-white transition-colors py-1">
               {t("footer.terms")}
             </a>
-
-            <button
-              type="button"
-
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              className="hover:text-white transition-colors py-1 cursor-pointer flex items-center gap-1"
-            >
-              <span>{t("footer.backToTop")}</span>
-
-              <span aria-hidden="true">↑</span>
-            </button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="hover:text-white transition-colors py-1 cursor-pointer flex items-center gap-1 shrink-0"
+            aria-label={t("footer.backToTop")}
+          >
+            <span>{t("footer.backToTop")}</span>
+            <span aria-hidden="true">↑</span>
+          </button>
         </div>
       </div>
     </footer>
   );
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
+interface AppShellProps {
+  children: ReactNode;
+  hideDashboardButton?: boolean;
+}
+
+export function AppShell({ children, hideDashboardButton }: AppShellProps) {
   const { t } = useTranslation();
 
   return (
@@ -487,7 +530,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         {t("nav.skip")}
       </a>
 
-      <SiteHeader />
+      <SiteHeader hideDashboardButton={hideDashboardButton} />
 
       <main id="main" className="flex-1">
         {children}

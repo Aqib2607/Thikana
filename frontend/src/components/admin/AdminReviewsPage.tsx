@@ -5,15 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { mockAdminApi } from "@/lib/api/mock/admin";
 import { toBnNumber } from "@/lib/i18n";
 import type { PropertyReviewItem } from "@/lib/api/tenant";
-import {
-  Star,
-  Trash2,
-  ShieldCheck,
-  Search,
-  MessageSquare,
-  Clock,
-  X,
-} from "lucide-react";
+import { Star, Trash2, ShieldCheck, Search, MessageSquare, Clock, X } from "lucide-react";
 
 export function AdminReviewsPage() {
   const { t, i18n } = useTranslation();
@@ -40,9 +32,7 @@ export function AdminReviewsPage() {
 
   const handleDelete = async (review: PropertyReviewItem) => {
     if (!user) return;
-    const ok = window.confirm(
-      t("admin.deleteReviewConfirm", { name: review.tenantName }),
-    );
+    const ok = window.confirm(t("admin.deleteReviewConfirm", { name: review.tenantName }));
     if (!ok) return;
 
     setDeletingId(review.id);
@@ -89,9 +79,7 @@ export function AdminReviewsPage() {
           <h2 className="text-base font-bold text-foreground">
             {t("admin.totalReviewsHeader", { count: toBnNumber(reviews.length, i18n.language) })}
           </h2>
-          <p className="text-xs text-muted-foreground">
-            {t("admin.reviewsHeaderDesc")}
-          </p>
+          <p className="text-xs text-muted-foreground">{t("admin.reviewsHeaderDesc")}</p>
         </div>
 
         <div className="relative min-w-[260px]">
@@ -127,9 +115,7 @@ export function AdminReviewsPage() {
       ) : filtered.length === 0 ? (
         <div className="rounded-2xl border border-border bg-surface p-12 text-center shadow-sm">
           <MessageSquare className="mx-auto h-10 w-10 text-muted-foreground/60" />
-          <h2 className="mt-3 text-base font-bold text-foreground">
-            {t("admin.noReviewsTitle")}
-          </h2>
+          <h2 className="mt-3 text-base font-bold text-foreground">{t("admin.noReviewsTitle")}</h2>
         </div>
       ) : (
         <div className="grid gap-4">
@@ -148,9 +134,7 @@ export function AdminReviewsPage() {
                         <span>{t("tenant.visitedBadge")}</span>
                       </span>
                     )}
-                    <span className="text-xs text-muted-foreground">
-                      ID: {r.propertyId}
-                    </span>
+                    <span className="text-xs text-muted-foreground">ID: {r.propertyId}</span>
                   </div>
 
                   {/* Stars Rating Display */}
@@ -174,9 +158,18 @@ export function AdminReviewsPage() {
                   <p className="mt-3 text-sm leading-relaxed text-foreground">"{r.comment}"</p>
 
                   <div className="mt-3 flex flex-wrap gap-3 text-[11px] text-muted-foreground">
-                    <span>{t("admin.accuracyRatingLabel")} {toBnNumber(r.accuracyRating, i18n.language)}/5</span>
-                    <span>{t("admin.landlordRatingLabel")} {toBnNumber(r.landlordBehaviorRating, i18n.language)}/5</span>
-                    <span>{t("admin.locationRatingLabel")} {toBnNumber(r.locationRating, i18n.language)}/5</span>
+                    <span>
+                      {t("admin.accuracyRatingLabel")} {toBnNumber(r.accuracyRating, i18n.language)}
+                      /5
+                    </span>
+                    <span>
+                      {t("admin.landlordRatingLabel")}{" "}
+                      {toBnNumber(r.landlordBehaviorRating, i18n.language)}/5
+                    </span>
+                    <span>
+                      {t("admin.locationRatingLabel")} {toBnNumber(r.locationRating, i18n.language)}
+                      /5
+                    </span>
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {new Date(r.createdAt).toLocaleDateString()}

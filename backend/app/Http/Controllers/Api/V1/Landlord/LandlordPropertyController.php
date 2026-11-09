@@ -10,8 +10,10 @@ use App\Http\Requests\UpdatePropertyRequest;
 use App\Http\Resources\LandlordStatsResource;
 use App\Http\Resources\PropertyResource;
 use App\Models\Amenity;
+use App\Models\ContactRequest;
 use App\Models\Property;
 use App\Models\PropertyLocation;
+use App\Models\VisitRequest;
 use App\Services\ImageManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -187,15 +189,23 @@ class LandlordPropertyController extends Controller
             $property->update($updateData);
 
             // Update location if present
+            $mapping = [
+                'division' => 'division',
+                'district' => 'district',
+                'city' => 'city',
+                'area' => 'area',
+                'exactAddress' => 'exact_address',
+                'lat' => 'lat',
+                'lng' => 'lng',
+            ];
+            /** @var array<string, mixed> $locData */
             $locData = [];
-            foreach (['division', 'district', 'city', 'area', 'exactAddress' => 'exact_address', 'lat', 'lng'] as $reqK => $colK) {
-                $field = is_string($reqK) ? $reqK : $colK;
-                $targetCol = is_string($reqK) ? $colK : $reqK;
-                if ($request->has($field)) {
-                    $locData[$targetCol] = $request->input($field);
+            foreach ($mapping as $reqField => $colField) {
+                if ($request->has($reqField)) {
+                    $locData[$colField] = $request->input($reqField);
                 }
             }
-            if (!empty($locData)) {
+            if ($locData !== []) {
                 $property->location()->updateOrCreate(['property_id' => $property->id], $locData);
             }
 
@@ -278,13 +288,21 @@ class LandlordPropertyController extends Controller
         $approved = Property::where('landlord_id', $userId)->where('approval_status', 'Approved')->count();
         $pending = Property::where('landlord_id', $userId)->where('approval_status', 'Pending Approval')->count();
 
+        $activeVisits = VisitRequest::where('landlord_id', $userId)
+            ->whereIn('status', ['pending', 'accepted'])
+            ->count();
+
+        $pendingContactRequests = ContactRequest::where('landlord_id', $userId)
+            ->where('status', 'pending')
+            ->count();
+
         return response()->json([
             'data' => new LandlordStatsResource([
                 'totalListings' => $total,
                 'approvedListings' => $approved,
                 'pendingListings' => $pending,
-                'activeVisits' => 0,
-                'pendingContactRequests' => 0,
+                'activeVisits' => $activeVisits,
+                'pendingContactRequests' => $pendingContactRequests,
             ]),
         ]);
     }

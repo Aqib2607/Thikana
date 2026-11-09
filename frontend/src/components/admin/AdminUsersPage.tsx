@@ -166,9 +166,7 @@ export function AdminUsersPage() {
             <p className="mt-3 text-base font-semibold text-foreground">
               {t("admin.noUsersTitle")}
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t("admin.noUsersDesc")}
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">{t("admin.noUsersDesc")}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -261,10 +259,10 @@ export function AdminUsersPage() {
                             type="button"
                             onClick={() => handleToggleStatus(u)}
                             disabled={processingId === u.id}
-                            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
+                            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
                               u.status === "active"
                                 ? "border border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20"
-                                : "bg-success text-white hover:opacity-90"
+                                : "bg-emerald-600 text-white shadow-xs hover:bg-emerald-700 active:scale-[0.98]"
                             }`}
                           >
                             {u.status === "active" ? (

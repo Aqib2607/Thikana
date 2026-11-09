@@ -30,7 +30,8 @@ Rental information in Bangladesh can be scattered across physical searches, adve
 
 Academic success is measured by demonstrable completion of the core workflows:
 
-- A tenant can authenticate and search properties.
+- A visitor can discover approved properties in Khulna without authentication.
+- A tenant can authenticate, search, filter, and sort properties.
 - A tenant can filter and sort properties.
 - A tenant can save rental preferences and receive an explainable match score.
 - A tenant can compare up to three properties.
@@ -102,6 +103,7 @@ Academic success is measured by demonstrable completion of the core workflows:
 As a tenant, I want to register and log in using my email or phone number and password so that I can use protected rental features.
 
 Acceptance:
+
 - Registration validates required fields.
 - Login accepts email or phone identifier.
 - Password is mandatory.
@@ -110,19 +112,41 @@ Acceptance:
 
 ### Property Discovery
 
-As a tenant, I want to search and filter properties so that I can find suitable rentals.
+As a guest or tenant, I want to search and filter approved properties using live database catalogs so that I can find suitable rentals.
+
+User journeys:
+
+- **Guest journey:**
+  1. Open Thikana.
+  2. Browse approved property listings.
+  3. Filter listings using database-backed catalogs.
+  4. View approved property details and public reviews.
+  5. Register or log in to access personalized matching and tenant functionality.
+- **Tenant journey:**
+  1. Authenticate.
+  2. Browse approved listings.
+  3. Receive personalized matching information when applicable.
+  4. Manage favorites and comparisons.
+  5. Use protected contact and visit-request workflows.
 
 Acceptance:
+
+- Visitors can browse approved rental properties without authentication.
+- Unapproved, pending, or rejected properties are strictly hidden from public discovery.
+- Public responses never expose private landlord contact information (phone, email).
+- Registration or login is required for personalized tenant matching and protected tenant interactions.
 - Search supports location, property type, title, and description.
-- Filters include rent, rooms, bathrooms, amenities, furnished status, and availability.
+- Filters query live database areas and amenities catalogs.
 - Sorting includes relevance, newest, lowest rent, and highest rent.
 - Results support list and map presentation.
+- Suspended accounts receive HTTP 403 without token deletion on read-only discovery.
 
 ### Matching
 
 As a tenant, I want to save rental preferences and see an explainable match score.
 
 Acceptance:
+
 - Preferences are persisted.
 - Matching uses fixed weights.
 - Score totals 100%.
@@ -134,6 +158,7 @@ Acceptance:
 As a tenant, I want to compare up to three properties.
 
 Acceptance:
+
 - Only authenticated users can compare.
 - Maximum three properties can be selected.
 - Comparison includes approved property attributes and match score.
@@ -144,6 +169,7 @@ Acceptance:
 As a landlord, I want to publish structured property information.
 
 Acceptance:
+
 - Landlord can create and edit owned listings.
 - Maximum five images.
 - First image is featured.
@@ -156,6 +182,7 @@ Acceptance:
 As a tenant, I want to contact a landlord before messaging.
 
 Acceptance:
+
 - Tenant can send a contact request.
 - Landlord can respond.
 - Messaging becomes available after the approved interaction state.
@@ -166,6 +193,7 @@ Acceptance:
 As a tenant, I want to request a property visit.
 
 Acceptance:
+
 - Tenant supplies preferred date and time.
 - Landlord accepts or rejects.
 - Status supports Pending, Accepted, Rejected, Cancelled, Completed.
@@ -176,6 +204,7 @@ Acceptance:
 As a logged-in tenant, I want to review a property.
 
 Acceptance:
+
 - Logged-in tenants may submit reviews.
 - Completed visits can produce a Visited indicator.
 - Review contains overall rating/text and detailed approved criteria.
@@ -186,6 +215,7 @@ Acceptance:
 As a user, I want to report problematic properties.
 
 Acceptance:
+
 - Report reasons are structured.
 - Other includes a description.
 - Admin can review reports.
@@ -259,4 +289,5 @@ Every major UI flow must define loading, empty, error, success, and permission-d
 None required for the approved academic scope. Implementation-level unknowns must be explicitly recorded rather than invented.
 
 ## Source Basis
+
 This document is project-specific and follows the approved Thikana proposal and the 15-prompt methodology in Vibe Coding Preparation.pdf. Where the proposal does not define an implementation detail, this document preserves the approved academic-scope decision rather than inventing production requirements.

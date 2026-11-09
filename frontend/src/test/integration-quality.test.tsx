@@ -177,7 +177,35 @@ describe("Phase 7: Integration, Quality & Notifications Suite", () => {
   describe("TenantReviewsPage Component", () => {
     it("renders TenantReviewsPage with submitted review and visited badge", async () => {
       const { TenantReviewsPage } = await import("@/components/tenant/TenantReviewsPage");
-      render(<TenantReviewsPage />);
+      const { QueryClient, QueryClientProvider } = await import("@tanstack/react-query");
+      const { tenantApi } = await import("@/lib/api/tenant");
+
+      vi.spyOn(tenantApi, "getReviews").mockResolvedValue([
+        {
+          id: "rev-test-1",
+          propertyId: "1",
+          tenantId: "u-tenant",
+          tenantName: "রাফি আহমেদ",
+          visitedVerified: true,
+          overallRating: 5,
+          accuracyRating: 5,
+          landlordBehaviorRating: 5,
+          locationRating: 5,
+          overallExperienceRating: 5,
+          comment: "দারুণ বাসা ও পরিবেশ।",
+          status: "approved",
+          createdAt: "2026-11-01T10:00:00.000Z",
+        },
+      ]);
+
+      const queryClient = new QueryClient({
+        defaultOptions: { queries: { retry: false } },
+      });
+      render(
+        <QueryClientProvider client={queryClient}>
+          <TenantReviewsPage />
+        </QueryClientProvider>,
+      );
 
       // Should display heading level 1
       const heading = await screen.findByRole("heading", { level: 1 });

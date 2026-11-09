@@ -186,22 +186,23 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
       label: t("tenant.fieldVerification"),
       render: (p: PropertyItem) => (
         <div className="space-y-1">
-          <div className="flex flex-wrap gap-1">
-            {(p.verifications || []).map((v) => (
-              <span
-                key={v}
-                className="inline-flex items-center gap-1 rounded bg-secondary px-1.5 py-0.5 text-[10px] text-foreground font-medium"
-              >
-                <ShieldCheck className="h-3 w-3 text-primary" aria-hidden="true" />
-                <span>{v}</span>
-              </span>
-            ))}
-          </div>
-          <p className="text-[10px] text-muted-foreground">
-            {isBn
-              ? "*প্ল্যাটফর্ম-স্তরের সিমুলেটেড তথ্য যাচাই"
-              : "*Platform-level simulated verification"}
-          </p>
+          {p.verifications && p.verifications.length > 0 ? (
+            <div className="flex flex-wrap gap-1">
+              {p.verifications.map((v) => (
+                <span
+                  key={v}
+                  className="inline-flex items-center gap-1 rounded bg-secondary px-1.5 py-0.5 text-[10px] text-foreground font-medium"
+                >
+                  <ShieldCheck className="h-3 w-3 text-primary" aria-hidden="true" />
+                  <span>{translateVerification(v, i18n.language)}</span>
+                </span>
+              ))}
+            </div>
+          ) : (
+            <span className="text-xs text-muted-foreground">
+              {isBn ? "যাচাইকরণ নেই" : "Unverified"}
+            </span>
+          )}
         </div>
       ),
     },
@@ -221,12 +222,21 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
     {
       id: "matching",
       label: t("tenant.fieldMatch"),
-      render: () => {
-        const score = 88;
+      render: (p: PropertyItem) => {
+        const extra = p as unknown as { matchPercentage?: number; matchScore?: number };
+        const rawScore = p.match?.overallPercentage ?? extra.matchPercentage ?? extra.matchScore;
+        const score = typeof rawScore === "number" ? rawScore : null;
+        if (score === null) {
+          return (
+            <span className="text-xs text-muted-foreground">
+              {isBn ? "প্রযোজ্য নয়" : "N/A"}
+            </span>
+          );
+        }
         return (
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-foreground">{score}%</span>
+              <span className="font-bold text-foreground">{toBnNumber(score, i18n.language)}%</span>
               <span className="text-[10px] text-muted-foreground">
                 {t("tenant.fieldWeights")}
               </span>
@@ -234,7 +244,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ properties, on
             <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
               <div
                 className="h-full bg-primary transition-all rounded-full"
-                style={{ width: `${score}%` }}
+                style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
               />
             </div>
           </div>

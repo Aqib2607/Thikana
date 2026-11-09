@@ -82,11 +82,32 @@ Specifications must explicitly exclude:
 
 ## Core Specifications
 
-### Property Search
+### Property Discovery
 
-Given an authenticated user with valid search input,
-when the user submits a search,
-then the API returns authorized property results matching the supported filters and sorting rules.
+**Given** an unauthenticated visitor requests the property listing endpoint,
+**When** the request is valid,
+**Then** the API returns approved properties and does not expose personalized matching information.
+
+**Given** an active authenticated tenant requests the same endpoint,
+**When** the tenant has applicable rental preferences,
+**Then** the API returns approved properties with the applicable matching information.
+
+**Given** an authenticated landlord requests the endpoint,
+**When** the request is valid,
+**Then** the API returns approved properties without tenant-specific matching information.
+
+**Given** a suspended authenticated user requests public discovery,
+**When** the middleware resolves the account,
+**Then** the API returns HTTP 403 without modifying the user's personal access token.
+
+#### Endpoint Specifications & Privacy Contracts
+
+- `GET /api/v1/properties`: Public discovery via `OptionalSanctumAuth`. Returns `{"data": PropertyResource[], "total": int, "page": int, "limit": int, "totalPages": int, "areas": string[]}`.
+- `GET /api/v1/properties/{idOrSlug}`: Public detail via `OptionalSanctumAuth`. Returns `{"data": PropertyResource}`. Landlord private phone/email redacted.
+- `GET /api/v1/properties/{idOrSlug}/reviews`: Public reviews via `OptionalSanctumAuth`. Only approved reviews visible.
+- `GET /api/v1/properties/areas`: Public metadata. Returns `{"data": string[]}` from `areas` table (11 areas).
+- `GET /api/v1/properties/amenities`: Public metadata. Returns `{"data": AmenityItem[]}` from `amenities` table.
+- Unauthenticated API failures return RFC JSON 401 `{"status": 401, "message": "auth.errors.unauthenticated"}` regardless of Accept header.
 
 ### Matching
 
@@ -131,4 +152,5 @@ A rejected listing can be corrected and resubmitted according to the approved wo
 - Tests map to acceptance criteria.
 
 ## Source Basis
+
 This document is project-specific and follows the approved Thikana proposal and the 15-prompt methodology in Vibe Coding Preparation.pdf. Where the proposal does not define an implementation detail, this document preserves the approved academic-scope decision rather than inventing production requirements.

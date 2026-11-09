@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { createFileRoute, Link, useParams, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -8,7 +8,7 @@ import {
   Bath,
   Maximize2,
   Building,
-  ShieldCheck,
+  ShieldCheck,  ShieldAlert,
   Calendar,
   Layers,
   Heart,
@@ -33,9 +33,8 @@ import { MatchBreakdownCard } from "@/components/property/MatchBreakdownCard";
 import { VisitRequestModal } from "@/components/tenant/VisitRequestModal";
 import { ReviewFormModal } from "@/components/tenant/ReviewFormModal";
 import { ReportPropertyModal } from "@/components/tenant/ReportPropertyModal";
-import { mockTenantApi } from "@/lib/api/mock";
+import { tenantApi } from "@/lib/api/tenant";
 import { propertyApi } from "@/lib/api/properties";
-import { calculateMatchBreakdown } from "@/lib/api/mock/properties";
 import { translatePropertyType, translateRentalType, translateAvailability, translateArea, translateBill, translateAmenity, translateVerification, toBnNumber } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 
@@ -56,8 +55,21 @@ export const Route = createFileRoute("/properties/$propertyId")({
 function PropertyDetailsPage() {
   const { propertyId } = useParams({ from: "/properties/$propertyId" });
   const { t, i18n } = useTranslation();
-  const { user } = useAuth();
+  const { user, ready } = useAuth();
+  const navigate = useNavigate();
   const isBn = i18n.language === "bn";
+
+  useEffect(() => {
+    if (ready && !user) {
+      const returnUrl = typeof window !== "undefined"
+        ? window.location.pathname + window.location.search
+        : `/properties/${propertyId}`;
+      navigate({
+        to: "/login",
+        search: { redirect: returnUrl },
+      });
+    }
+  }, [ready, user, navigate, propertyId]);
 
   const [visitModalOpen, setVisitModalOpen] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
@@ -73,6 +85,7 @@ function PropertyDetailsPage() {
   } = useQuery({
     queryKey: ["property", propertyId],
     queryFn: () => propertyApi.getById(propertyId),
+    enabled: Boolean(user),
   });
 
   const [isFavorite, setIsFavorite] = useState(() => {
@@ -135,6 +148,51 @@ function PropertyDetailsPage() {
     }
   };
 
+  if (!ready) {
+    return (
+      <AppShell>
+        <div className="mx-auto max-w-6xl px-4 py-16 text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="mt-3 text-sm text-muted-foreground">{t("home.loginNote")}</p>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (!user) {
+    const returnUrl = typeof window !== "undefined"
+      ? window.location.pathname + window.location.search
+      : `/properties/${propertyId}`;
+    return (
+      <AppShell>
+        <div className="mx-auto max-w-md px-4 py-20 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
+            <ShieldAlert className="h-7 w-7 text-destructive" aria-hidden="true" />
+          </div>
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight">
+            {t("dashboard.unauthorizedTitle")}
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t("dashboard.unauthorizedDesc")}</p>
+          <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
+            <Link
+              to="/login"
+              search={{ redirect: returnUrl }}
+              className="inline-flex h-11 items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground hover:opacity-90"
+            >
+              {t("nav.login")}
+            </Link>
+            <Link
+              to="/"
+              className="inline-flex h-11 items-center justify-center rounded-lg border border-border px-5 text-sm font-medium hover:bg-secondary"
+            >
+              {t("dashboard.backHome")}
+            </Link>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
+
   if (isLoading) {
     return (
       <AppShell>
@@ -168,10 +226,8 @@ function PropertyDetailsPage() {
     );
   }
 
-  // Matching Score calculation
-  const tenantPrefs =
-    user?.role === "tenant" ? { maxBudget: 10000, preferredArea: property.area } : null;
-  const matchBreakdown = calculateMatchBreakdown(property, tenantPrefs);
+  // Server-side match score for authenticated tenants
+  const matchBreakdown = property.match;
 
   return (
     <AppShell>
@@ -426,7 +482,9 @@ function PropertyDetailsPage() {
             <CommunityInfoCard community={property.community} areaName={property.area} />
 
             {/* Match Breakdown Card */}
-            <MatchBreakdownCard breakdown={matchBreakdown} />
+            {user?.role === "tenant" && matchBreakdown && matchBreakdown.hasTenantPreferences && (
+              <MatchBreakdownCard breakdown={matchBreakdown} />
+            )}
           </div>
 
           {/* Sticky Action Sidebar */}
@@ -493,7 +551,7 @@ function PropertyDetailsPage() {
                       }
                       setContactSubmitting(true);
                       try {
-                        await mockTenantApi.sendContactRequest({
+                        await tenantApi.sendContactRequest({
                           propertyId: property.id,
                           message: `Hello ${property.landlord.name}, I am interested in renting this listing.`,
                         });

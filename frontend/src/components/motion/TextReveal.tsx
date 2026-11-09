@@ -1,11 +1,13 @@
-import { type ReactNode, type HTMLAttributes } from "react";
+import { useState, useEffect, type ReactNode, type HTMLAttributes, type ElementType } from "react";
 import { useInView } from "@/hooks/use-in-view";
 import { cn } from "@/lib/utils";
 
-interface TextRevealProps extends HTMLAttributes<HTMLDivElement> {
+type AllowedTag = "h1" | "h2" | "h3" | "h4" | "p" | "div" | "span";
+
+interface TextRevealProps extends HTMLAttributes<HTMLElement> {
   lines?: string[];
   children?: ReactNode;
-  as?: "h1" | "h2" | "h3" | "h4" | "p" | "div" | "span";
+  as?: AllowedTag;
   delay?: number;
   delayMs?: number;
   duration?: number;
@@ -27,17 +29,34 @@ export function TextReveal({
 }: TextRevealProps) {
   const effectiveDelay = delay ?? delayMs ?? 0;
   const effectiveDuration = duration ?? durationMs ?? 900;
-  const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.1, triggerOnce: true });
+  const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.1, triggerOnce: true });
+  const Tag = Component as ElementType;
+
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    if (!isInView) {
+      return undefined;
+    }
+    const timer = setTimeout(() => {
+      setRevealed(true);
+    }, effectiveDelay + effectiveDuration + 50);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isInView, effectiveDelay, effectiveDuration]);
 
   if (lines && lines.length > 0) {
     return (
-      <Component
-        ref={ref as any}
-        className={cn("block tracking-tight", className)}
-        {...(props as any)}
-      >
+      <Tag ref={ref} className={cn("block", className)} {...props}>
         {lines.map((line, i) => (
-          <span key={i} className="block overflow-hidden pb-1 -mb-1">
+          <span
+            key={i}
+            className={cn(
+              "block transition-all",
+              revealed ? "overflow-visible" : "overflow-hidden pt-5 pb-5 -my-5",
+            )}
+          >
             <span
               className={cn(
                 "block transition-transform will-change-transform",
@@ -54,15 +73,19 @@ export function TextReveal({
             </span>
           </span>
         ))}
-      </Component>
+      </Tag>
     );
   }
 
   return (
-    <Component
-      ref={ref as any}
-      className={cn("block overflow-hidden pb-1 -mb-1 tracking-tight", className)}
-      {...(props as any)}
+    <Tag
+      ref={ref}
+      className={cn(
+        "block transition-all",
+        revealed ? "overflow-visible" : "overflow-hidden pt-5 pb-5 -my-5",
+        className,
+      )}
+      {...props}
     >
       <span
         className={cn(
@@ -78,6 +101,6 @@ export function TextReveal({
       >
         {children}
       </span>
-    </Component>
+    </Tag>
   );
 }

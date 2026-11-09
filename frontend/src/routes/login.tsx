@@ -9,7 +9,39 @@ import { authApi } from "@/lib/api/auth";
 import { useAuth, ROLE_HOME } from "@/lib/auth";
 import { KeyRound, ShieldCheck, UserCheck } from "lucide-react";
 
+const LoginSearchSchema = z.object({
+  redirect: z.string().optional(),
+});
+
+/**
+ * Validates that a redirect target is a safe internal relative path.
+ * Rejects external domains, protocol-relative URLs (//), backslashes, and redirect loops.
+ */
+export function getSafeRedirectUrl(target: string | undefined): string | null {
+  if (!target || typeof target !== "string") {
+    return null;
+  }
+  const trimmed = target.trim();
+  if (!trimmed.startsWith("/") || trimmed.startsWith("//") || trimmed.includes("\\")) {
+    return null;
+  }
+  try {
+    const parsed = new URL(trimmed, "http://localhost");
+    if (parsed.host !== "localhost" || parsed.protocol !== "http:") {
+      return null;
+    }
+    // Avoid redirect loops back to auth routes
+    if (parsed.pathname === "/login" || parsed.pathname === "/register") {
+      return null;
+    }
+    return parsed.pathname + parsed.search + parsed.hash;
+  } catch {
+    return null;
+  }
+}
+
 export const Route = createFileRoute("/login")({
+  validateSearch: (search) => LoginSearchSchema.parse(search),
   head: () => ({
     meta: [
       { title: "Log In — Thikana" },
@@ -32,6 +64,7 @@ type LoginValues = z.infer<typeof loginSchema>;
 function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const searchParams = Route.useSearch();
   const { setUser } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -50,7 +83,12 @@ function LoginPage() {
     try {
       const user = await authApi.login(values.identifier, values.password);
       setUser(user);
-      navigate({ to: ROLE_HOME[user.role] });
+      const safeRedirect = getSafeRedirectUrl(searchParams.redirect);
+      if (safeRedirect) {
+        navigate({ href: safeRedirect });
+      } else {
+        navigate({ to: ROLE_HOME[user.role] });
+      }
     } catch (err: unknown) {
       const e = err as { message?: string };
       setServerError(e.message ? t(e.message) : t("auth.errors.invalid"));

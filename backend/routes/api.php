@@ -3,15 +3,27 @@
 use App\Http\Controllers\Api\V1\Admin\AdminCommunityController;
 use App\Http\Controllers\Api\V1\Admin\AdminDashboardController;
 use App\Http\Controllers\Api\V1\Admin\AdminPropertyController;
+use App\Http\Controllers\Api\V1\Admin\AdminReportController;
+use App\Http\Controllers\Api\V1\Admin\AdminReviewController;
+use App\Http\Controllers\Api\V1\Admin\AdminUserController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\Landlord\LandlordContactRequestController;
 use App\Http\Controllers\Api\V1\Landlord\LandlordImageController;
 use App\Http\Controllers\Api\V1\Landlord\LandlordPropertyController;
 use App\Http\Controllers\Api\V1\Landlord\LandlordVisitRequestController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PropertyController;
+use App\Http\Controllers\Api\V1\PropertyReviewController;
+use App\Http\Controllers\Api\V1\Tenant\ComparisonController as TenantComparisonController;
 use App\Http\Controllers\Api\V1\Tenant\ContactRequestController as TenantContactRequestController;
+use App\Http\Controllers\Api\V1\Tenant\FavoriteController as TenantFavoriteController;
+use App\Http\Controllers\Api\V1\Tenant\PropertyReportController as TenantPropertyReportController;
+use App\Http\Controllers\Api\V1\Tenant\RentalPreferenceController;
+use App\Http\Controllers\Api\V1\Tenant\ReviewController as TenantReviewController;
+use App\Http\Controllers\Api\V1\Tenant\TenantDashboardController;
 use App\Http\Controllers\Api\V1\Tenant\VisitRequestController as TenantVisitRequestController;
-use Illuminate\Http\Request;
+use App\Http\Middleware\OptionalSanctumAuth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,40 +45,85 @@ Route::prefix('v1')->group(function () {
 
     // Public Auth Endpoints
     Route::prefix('auth')->group(function () {
-        Route::post('/register', [AuthController::class, 'register']);
-        Route::post('/login', [AuthController::class, 'login']);
-        Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-        Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-        Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
-        Route::post('/resend-code', [AuthController::class, 'resendCode']);
+        Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
+        Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:forgot-password');
+        Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:reset-password');
+        Route::get('/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmailSigned'])
+            ->name('verification.verify')
+            ->middleware('throttle:6,1');
 
         // Protected Auth Endpoints (Requires valid Sanctum token & active account status)
         Route::middleware(['auth:sanctum', 'active'])->group(function () {
             Route::get('/me', [AuthController::class, 'me']);
+            Route::put('/me', [AuthController::class, 'updateProfile']);
+            Route::post('/resend-code', [AuthController::class, 'resendCode'])->middleware('throttle:verification-resend');
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::post('/logout-all', [AuthController::class, 'logoutAll']);
         });
     });
 
-    // Public Property Discovery & Catalogs
+    // Property Catalogs & Discovery
     Route::prefix('properties')->group(function () {
-        Route::get('/', [PropertyController::class, 'index']);
         Route::get('/areas', [PropertyController::class, 'areas']);
         Route::get('/amenities', [PropertyController::class, 'amenities']);
-        Route::get('/{idOrSlug}', [PropertyController::class, 'show']);
+
+        Route::middleware([OptionalSanctumAuth::class])->group(function () {
+            Route::get('/', [PropertyController::class, 'index']);
+            Route::get('/{idOrSlug}', [PropertyController::class, 'show']);
+            Route::get('/{idOrSlug}/reviews', [PropertyReviewController::class, 'index']);
+        });
     });
 
     // Tenant Protected Endpoints
     Route::middleware(['auth:sanctum', 'role:tenant', 'active'])->group(function () {
         Route::prefix('tenant')->group(function () {
+            Route::get('/dashboard/stats', [TenantDashboardController::class, 'stats']);
+            Route::get('/preferences', [RentalPreferenceController::class, 'show']);
+            Route::put('/preferences', [RentalPreferenceController::class, 'update']);
+            Route::delete('/preferences', [RentalPreferenceController::class, 'destroy']);
             Route::get('/contact-requests', [TenantContactRequestController::class, 'index']);
             Route::get('/visits', [TenantVisitRequestController::class, 'index']);
             Route::patch('/visits/{id}/cancel', [TenantVisitRequestController::class, 'cancel']);
+
+            // Favorites
+            Route::get('/favorites', [TenantFavoriteController::class, 'index']);
+            Route::post('/favorites', [TenantFavoriteController::class, 'store']);
+            Route::delete('/favorites/{propertyId}', [TenantFavoriteController::class, 'destroy']);
+
+            // Comparisons
+            Route::get('/comparisons', [TenantComparisonController::class, 'index']);
+            Route::post('/comparisons', [TenantComparisonController::class, 'store']);
+            Route::delete('/comparisons', [TenantComparisonController::class, 'clear']);
+            Route::delete('/comparisons/{propertyId}', [TenantComparisonController::class, 'destroy']);
+
+            // Reviews
+            Route::get('/reviews', [TenantReviewController::class, 'index']);
+            Route::post('/reviews', [TenantReviewController::class, 'store'])->middleware('throttle:5,1');
         });
         Route::post('/properties/{id}/contact', [TenantContactRequestController::class, 'store'])
             ->middleware('throttle:5,1');
         Route::post('/properties/{id}/visits', [TenantVisitRequestController::class, 'store'])
             ->middleware('throttle:5,1');
+        Route::post('/properties/{id}/reports', [TenantPropertyReportController::class, 'store'])
+            ->middleware('throttle:5,1');
+    });
+
+    // Shared Authenticated Endpoints (Messaging & In-App Notifications)
+    Route::middleware(['auth:sanctum', 'active'])->group(function () {
+        // Notifications
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+        Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+
+        // Direct Messaging
+        Route::get('/conversations', [ConversationController::class, 'index']);
+        Route::get('/conversations/{id}', [ConversationController::class, 'show']);
+        Route::post('/conversations/{id}/messages', [ConversationController::class, 'sendMessage'])
+            ->middleware('throttle:30,1');
+        Route::post('/contact-requests/{id}/messages', [ConversationController::class, 'startFromContactRequest'])
+            ->middleware('throttle:30,1');
     });
 
     // Landlord Protected Endpoints
@@ -110,5 +167,21 @@ Route::prefix('v1')->group(function () {
         Route::put('/properties/{id}/verifications', [AdminPropertyController::class, 'updateVerifications']);
         Route::get('/community', [AdminCommunityController::class, 'index']);
         Route::put('/community/{areaName}', [AdminCommunityController::class, 'update']);
+
+        // Review Moderation
+        Route::get('/reviews', [AdminReviewController::class, 'index']);
+        Route::get('/reviews/{id}', [AdminReviewController::class, 'show']);
+        Route::post('/reviews/{id}/approve', [AdminReviewController::class, 'approve']);
+        Route::post('/reviews/{id}/reject', [AdminReviewController::class, 'reject']);
+
+        // User Management
+        Route::get('/users', [AdminUserController::class, 'index']);
+        Route::get('/users/{id}', [AdminUserController::class, 'show']);
+        Route::patch('/users/{id}/status', [AdminUserController::class, 'updateStatus']);
+
+        // Property Report Moderation
+        Route::get('/reports', [AdminReportController::class, 'index']);
+        Route::get('/reports/{id}', [AdminReportController::class, 'show']);
+        Route::post('/reports/{id}/resolve', [AdminReportController::class, 'resolve']);
     });
 });
