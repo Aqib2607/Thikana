@@ -1,0 +1,113 @@
+services:
+  # -------------------------------------------------------------
+  # Frontend Web Service (Node.js TanStack Start SSR)
+  # -------------------------------------------------------------
+  - type: web
+    name: thikana-web
+    runtime: node
+    rootDir: frontend
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: node .output/server/index.mjs
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 26.13.0
+      - key: NITRO_PRESET
+        value: node-server
+      - key: VITE_USE_MOCK
+        value: "false"
+      - key: VITE_API_BASE_URL
+        value: https://thikana-api.onrender.com/api/v1
+
+  # -------------------------------------------------------------
+  # Backend Web Service (Laravel 13 Docker Headless API)
+  # -------------------------------------------------------------
+  - type: web
+    name: thikana-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: Dockerfile
+    dockerContext: .
+    plan: starter
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: APP_NAME
+        value: Thikana
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        value: https://thikana-api.onrender.com
+      - key: FRONTEND_URL
+        value: https://thikana-web.onrender.com
+      - key: FRONTEND_MODE
+        value: backend_only
+      - key: FRONTEND_BACKEND_ONLY
+        value: "true"
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        fromService:
+          type: pserv
+          name: thikana-mysql
+          property: host
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_DATABASE
+        value: thikana
+      - key: DB_USERNAME
+        fromService:
+          type: pserv
+          name: thikana-mysql
+          envVarKey: MYSQL_USER
+      - key: DB_PASSWORD
+        fromService:
+          type: pserv
+          name: thikana-mysql
+          envVarKey: MYSQL_PASSWORD
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: PROPERTY_IMAGES_DISK
+        value: s3
+      - key: TRUSTED_PROXIES
+        value: "10.0.0.0/8,172.16.0.0/12,127.0.0.1"
+      - key: SANCTUM_EXPIRATION
+        value: "1440"
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: AWS_DEFAULT_REGION
+        value: auto
+      - key: AWS_USE_PATH_STYLE_ENDPOINT
+        value: "false"
+
+  # -------------------------------------------------------------
+  # MySQL Private Service with Persistent Storage
+  # -------------------------------------------------------------
+  - type: pserv
+    name: thikana-mysql
+    runtime: image
+    image:
+      url: mysql:8.0
+    plan: starter
+    disk:
+      name: mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 10
+    envVars:
+      - key: MYSQL_DATABASE
+        value: thikana
+      - key: MYSQL_USER
+        value: thikana_app
+      - key: MYSQL_PASSWORD
+        generateValue: true
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true
+
