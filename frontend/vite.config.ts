@@ -12,10 +12,7 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
     prerender: {
-      enabled: true,
-      crawlLinks: false,
-      autoStaticPathsDiscovery: false,
-      pages: [{ path: "/" }],
+      enabled: false,
     },
   },
   vite: {
